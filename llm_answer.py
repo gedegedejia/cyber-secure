@@ -11,6 +11,8 @@ import packet_capture.draw
 import packet_capture.pcapng_analyse
 import tool 
 import packet_capture
+import asyncio
+
 
 load_dotenv()
 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -37,6 +39,7 @@ def index():
 
 @app.route('/chat', methods=['POST'])
 def chat():
+    asyncio.set_event_loop(asyncio.new_event_loop())
     question = request.json.get('message')
     context = search(question)
     answer = None  # 初始化 answer
@@ -60,26 +63,24 @@ def chat():
             "content": answer
         })
     elif '抓包' in question:
+
         tool.get_wireshark()
         pcapng_file = 'packet_capture\\my.pcapng'
         excel_file = 'packet_capture\\output.xlsx'
-
-        # 执行数据包分析并生成 Excel 文件
-        packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
         
+        packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
         # 生成唯一文件名
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         unique_chart_filename = f'协议计数饼图_{timestamp}.png'
         unique_chart_filepath = os.path.join('static', 'pictures', unique_chart_filename)
         print("unique_chart_filepath：",unique_chart_filepath)
-        # 绘制图表并保存到唯一文件名
-        packet_capture.draw.plot_from_excel(excel_file, unique_chart_filepath)
         
-        print("125458563782689661958657846")
-        
-        # 设置回答和图像 URL
+        packet_capture.draw.plot_from_excel(excel_file,unique_chart_filepath)
+
+         # 设置回答和图像 URL
         answer = "抓包操作已执行"
         image_url = f'/static/pictures/{unique_chart_filename}'
+
     else:
         print('3333')
         messages.append({

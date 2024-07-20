@@ -40,7 +40,7 @@ function sendMessage() {
       let responseMessage = data.response || '无响应';
       if (data.image_url) {
         // 包含图片URL
-        responseMessage += `<br><img src="${data.image_url}" alt="图像" style="max-width: 100%;">`;
+        responseMessage += `<br><img src="${data.image_url}" alt="图像" style="max-width: 50%;">`;
       }
       appendMessage("bot", responseMessage);
       saveCurrentChat();

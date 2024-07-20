@@ -1,10 +1,8 @@
-import matplotlib
-matplotlib.use('Agg')  # 使用 Agg 后端
-
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')  # 在导入plt之前设置
 import matplotlib.pyplot as plt
 import os
-from datetime import datetime
 
 def plot_from_excel(excel_file, output_filepath):
     try:

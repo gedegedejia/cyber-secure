@@ -2,7 +2,6 @@ import requests
 import os
 from datetime import datetime
 import json
-import packet_capture.pcapng_analyse
 import v2_uploadFile
 from dotenv import load_dotenv
 import packet_capture
@@ -115,24 +114,30 @@ def get_secure_report(file_name,file_path):
     print("************************************************")
     '''''
     return answer
+import subprocess
 
-def get_wireshark():
+def get_wireshark(interface="WLAN", duration=5):
     try:
-        wireshark_path = os.getenv('wireshark_path')
-        if not wireshark_path:
-            raise ValueError("Wireshark path is not set in environment variables.")
+        print(os.getenv('tshark_path'))
+        tshark_path = os.getenv('tshark_path')
+        if not tshark_path:
+            raise ValueError("TShark path is not set in environment variables.")
+        
+        # 构建tshark命令
+        filename = "packet_capture\\my.pcapng"
+        command = [tshark_path, "-i", interface, "-a", "duration:{}".format(duration), "-w", filename]
+        
+        # 启动tshark进行捕获
+        process = subprocess.Popen(command)
+        # 等待指定的捕获时长（这里直接通过tshark的duration参数控制，无需额外sleep）
+        process.wait()  # 这里会阻塞直到tshark进程结束
 
-        # 启动Wireshark进行流量捕获
-        process = subprocess.Popen([wireshark_path, "-i", "WLAN", "-w", "packet_capture\\my.pcapng"])
-        time.sleep(10)  # 根据需要调整等待时间
-
-        # 停止Wireshark流量捕获
-        process.terminate()
-        process.wait()
+        print(f"Capture completed. File saved as {filename}")
 
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
+
     
 def get_response(messages):
     api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -194,7 +199,3 @@ def call_with_messages(content):
     
     return tool_info["content"]
     
-     
-if __name__ == '__main__':
-    content=input('请输入：')
-    call_with_messages(content)

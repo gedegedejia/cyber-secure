@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPT-like Chat</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <button id="new-chat-btn">新对话</button>
+      <button id="upload-btn">上传文件</button>
+      <ul id="history-list"></ul>
+    </div>
+    <div class="chat-container">
+      <div class="chat-box" id="chat-box"></div>
+      <div class="input-box">
+        <input type="text" id="user-input" placeholder="提出你的问题...">
+        <button id="send-btn">发送</button>
+      </div>
+    </div>
+  </div>
+
+  <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" id="file-input" name="file" style="display: none;">
+  </form>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

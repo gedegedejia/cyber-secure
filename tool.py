@@ -116,7 +116,7 @@ def get_wireshark(interface="WLAN", duration=5):
             raise ValueError("TShark path is not set in environment variables.")
         
         # 构建tshark命令
-        filename = "packet_capture\\my.pcapng"
+        filename = "./static/assets/packet_capture/my.pcapng"
         command = [tshark_path, "-i", interface, "-a", "duration:{}".format(duration), "-w", filename]
         
         # 启动tshark进行捕获

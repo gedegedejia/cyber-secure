@@ -14,7 +14,8 @@
                 </div>
                 <div class="chat-bubble">
                   {{ msg.content }}
-                  <img v-if="msg.img" :src="msg.img" />
+                  <img v-if="msg.img" :src="msg.img"/>
+                  <a class="link link-hover" v-if="msg.link" :href="msg.link" target="_blank">点击下载文件</a>
                 </div>
               </div>
             </div>
@@ -128,6 +129,8 @@ export default {
           }
           if (data.image_url)
             m.img = data.image_url;
+          if (data.file_url)
+            m.link = data.file_url;
           this.messages.push(m);
         })
         .catch((err) => this.showErr(err))

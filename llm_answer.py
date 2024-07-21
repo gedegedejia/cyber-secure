@@ -78,9 +78,12 @@ def chat():
             tool.get_wireshark()
             # 生成唯一文件名
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            pcapng_file = 'packet_capture\\my.pcapng'
-            excel_file = 'packet_capture\\output.xlsx'
-            xlsx_file = f'packet_capture\\packet_data_{timestamp}.xlsx'
+            pcap_dir = 'static/assets/packet_capture'
+            if not os.path.exists(pcap_dir):
+                os.makedirs(pcap_dir)
+            pcapng_file = f'{pcap_dir}/my.pcapng'
+            excel_file = f'{pcap_dir}/output.xlsx'
+            xlsx_file = f'{pcap_dir}/packet_data_{timestamp}.xlsx'
             packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
             packet_capture.pcapng_analyse.pcapng_to_xlsx(pcapng_file, xlsx_file)
             unique_chart_filename = f'协议计数饼图_{timestamp}.png'
@@ -92,7 +95,7 @@ def chat():
             # 设置回答和图像 URL
             answer = "抓包操作已执行"
             image_url = f'/assets/pictures/{unique_chart_filename}'
-            file_url = f'http://localhost:1223/files/{xlsx_file}'
+            file_url = xlsx_file.strip('static')
 
         elif tool_call == 'get_current_time':
             answer=tool.get_current_time()

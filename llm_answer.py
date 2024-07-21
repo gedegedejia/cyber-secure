@@ -44,10 +44,8 @@ def chat():
     context = search(question)
     answer = None  # 初始化 answer
     image_url = None  # 初始化 image_url
-    print(uploaded_file_paths)
     
     if '分析' in question:
-        print('11111')
         tool_message = tool.call_with_messages(question + str(context) + str(uploaded_file_paths))
         answer = getAnswer(question, context, tool_message, messages)
         messages.append({
@@ -82,7 +80,6 @@ def chat():
         image_url = f'/static/pictures/{unique_chart_filename}'
 
     else:
-        print('3333')
         messages.append({
             "role": "user",
             "content": question

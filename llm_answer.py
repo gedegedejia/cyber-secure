@@ -28,8 +28,12 @@ messages = [
     }
 ]
 
-app = Flask(__name__)
-app.static_folder = 'static'
+app = Flask(
+    __name__,
+    static_folder='static/assets',
+    template_folder='static',
+    static_url_path='/assets'
+)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 @app.route('/')
@@ -37,7 +41,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/chat', methods=['POST'])
+@app.route('/api/chat', methods=['POST'])
 def chat():
     asyncio.set_event_loop(asyncio.new_event_loop())
     question = request.json.get('message')
@@ -70,14 +74,14 @@ def chat():
         # 生成唯一文件名
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         unique_chart_filename = f'协议计数饼图_{timestamp}.png'
-        unique_chart_filepath = os.path.join('static', 'pictures', unique_chart_filename)
+        unique_chart_filepath = os.path.join('static', 'assets', 'pictures', unique_chart_filename)
         print("unique_chart_filepath：",unique_chart_filepath)
         
         packet_capture.draw.plot_from_excel(excel_file,unique_chart_filepath)
 
          # 设置回答和图像 URL
         answer = "抓包操作已执行"
-        image_url = f'/static/pictures/{unique_chart_filename}'
+        image_url = f'/assets/pictures/{unique_chart_filename}'
 
     else:
         messages.append({
@@ -97,7 +101,7 @@ def chat():
 
     return jsonify(response_data)
 
-@app.route('/upload', methods=['POST'])
+@app.route('/api/upload', methods=['POST'])
 def upload():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
@@ -117,7 +121,7 @@ def upload():
     return jsonify({'fileName': file.filename, 'filePath': file_path})
 
     
-@app.route('/delete_chat', methods=['POST'])
+@app.route('/api/delete_chat', methods=['GET'])
 def delete_chat():
     global messages
     messages = [

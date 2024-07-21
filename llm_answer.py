@@ -104,12 +104,12 @@ def chat():
             
         
         response_message = generate_response(answer)
-        response_data = {'response': response_message}
         if image_url:
-            response_data['image_url'] = image_url
+            response_message = f'{response_message}\n![图片]({image_url})'
         if file_url:
-            response_data['file_url'] = file_url
+            response_message = f'{response_message}\n[点击下载文件]({file_url})'
         
+        response_data = {'response': response_message}
         return jsonify(response_data)
 
 @app.route('/api/upload', methods=['POST'])

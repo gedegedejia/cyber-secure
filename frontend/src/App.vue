@@ -12,10 +12,7 @@
                     <img :src="'https://api.multiavatar.com/' + msg.name + '.png'" />
                   </div>
                 </div>
-                <div class="chat-bubble">
-                  {{ msg.content }}
-                  <img v-if="msg.img" :src="msg.img"/>
-                  <a class="link link-hover" v-if="msg.link" :href="msg.link" target="_blank">点击下载文件</a>
+                <div class="chat-bubble" v-html="md2html(msg.content)">
                 </div>
               </div>
             </div>
@@ -60,6 +57,8 @@
 </template>
 
 <script>
+import { marked } from "marked";
+
 export default {
   setup() {
   },
@@ -121,17 +120,11 @@ export default {
       })
         .then(resp => resp.json())
         .then(data => {
-          let r = data.response;
-          let m = {
+          this.messages.push({
             user: false,
             name: this.botName,
-            content: r
-          }
-          if (data.image_url)
-            m.img = data.image_url;
-          if (data.file_url)
-            m.link = data.file_url;
-          this.messages.push(m);
+            content: data.response
+          });
         })
         .catch((err) => this.showErr(err))
         .finally(() => {
@@ -175,6 +168,9 @@ export default {
             });
         }
       }
+    },
+    md2html: function (md) {
+      return marked.parse(md);
     }
   }
 }

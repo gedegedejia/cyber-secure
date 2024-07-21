@@ -5,11 +5,11 @@ import os
 
 
 def pcapng_to_excel(pcapng_file, excel_file):
-    print('1222222222222ssssssss')
+    
     try:
         # 读取 .pcapng 文件
         cap = pyshark.FileCapture(pcapng_file, tshark_path=os.getenv('tshark_path'))
-        print('111111111111111111111111111111111111111111sadadssssssssssss')
+        
         # 创建一个列表来存储数据包信息
         packets_data = []
 
@@ -36,6 +36,6 @@ def pcapng_to_excel(pcapng_file, excel_file):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-'''pcapng_file = 'packet_capture\\my.pcapng'
+pcapng_file = 'packet_capture\\my.pcapng'
 excel_file = 'packet_capture\\output.xlsx'
-pcapng_to_excel(pcapng_file, excel_file)'''
+pcapng_to_excel(pcapng_file, excel_file)

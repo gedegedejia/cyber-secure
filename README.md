@@ -1,9 +1,9 @@
 
 # 2024年网络技术挑战赛A-ST 
 
-:scream: 需要在.env中自行更改tshark.exe的路径
+:scream: 需要在.env中自行更改tshark.exe的路径   
 
-直接运行llm_answer.py
+将IP地址加入白名单，运行llm_answer.py
 
 ## 功能：
 - 可以实现文件上传，输入'分析文件内容'，模型自动调用工具将文件上传至virtustotal平台，生成对文件的安全性分析报告，报告内容传回大语言模型，并通过检索增强生产（RAG）获得针对该文件的安全性建议<br>

@@ -1,14 +1,10 @@
 import requests
 import os
 from datetime import datetime
-import json
 import v2_uploadFile
 from dotenv import load_dotenv
-import packet_capture
 import subprocess
-import time
-
-
+import subprocess
 load_dotenv()
 
 # 定义工具列表，模型在选择使用哪个工具时会参考工具的name和description
@@ -60,13 +56,13 @@ def get_current_time():
     # 返回格式化后的当前时间
     return f"当前时间：{formatted_time}。"
 
-def get_secure_report(file_name,file_path):
-    #print(file_name,file_path)
+def get_secure_report(file_path):
     
     #v2_uploadFile_copy
+    print(file_path)
     url1 = 'https://www.virustotal.com/vtapi/v2/file/scan'
     url2 = "https://www.virustotal.com/vtapi/v2/file/report"
-    
+    file_name=os.path.basename(file_path)
     load_dotenv()
     apikey = os.getenv('API_KEY1')
     #获得文件scan_id
@@ -77,7 +73,8 @@ def get_secure_report(file_name,file_path):
     json = v2_uploadFile.getFieReportResult(url2,apikey,scan_id)
     
     json1 = v2_uploadFile.getFieReportResult_behaviour(apikey,md5)
-    
+    print(json)
+    print(json1)
     file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(json['type']+'文件'))
     txt=v2_uploadFile.getResult(json)
     behaviour=''
@@ -108,13 +105,8 @@ def get_secure_report(file_name,file_path):
 
     
     answer=file_info+ "\n" +str(v2_uploadFile.culuateDate(txt))+ "\n" +behaviour+ "\n" +signature_description+ "\n" +mat_description
-    '''''
-    print("************************************************")
-    print(f"answer:{answer}")
-    print("************************************************")
-    '''''
+   
     return answer
-import subprocess
 
 def get_wireshark(interface="WLAN", duration=5):
     try:
@@ -187,15 +179,24 @@ def call_with_messages(content):
     elif assistant_output['tool_calls'][0]['function']['name'] == 'get_current_time':
         tool_info = {"name": "get_current_time", "role":"tool"}
         tool_info['content'] = get_current_time()
+    
     elif assistant_output['tool_calls'][0]['function']['name'] == 'get_secure_report':
         tool_info = {"name": "get_secure_report", "role":"tool"}
-        arguments=json.loads(assistant_output['tool_calls'][0]['function']['arguments'])
-        file_name=arguments['file_name']
-        file_path=arguments['file_path']
-        #print(file_name,file_path)
-        tool_info['content'] = get_secure_report(file_name,file_path)
-        #print(tool_info['content'])
-        #print(tool_info)
-    
+        
     return tool_info["content"]
+
+def tool_jude(content):
+    messages = [
+            {
+                "content": content,  # 提问示例："现在几点了？" "一个小时后几点" "北京天气如何？"
+                "role": "user"
+            }
+    ]
+    response = get_response(messages)
+    assistant_output = response['output']['choices'][0]['message']
+    
+    if 'tool_calls' not in assistant_output:
+        return assistant_output['content']
+    else:
+        return assistant_output['tool_calls'][0]['function']['name'] 
     

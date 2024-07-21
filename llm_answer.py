@@ -21,6 +21,7 @@ headers = {'Content-Type': 'application/json',
            'Authorization': f'Bearer {api_key}'}
 
 uploaded_file_paths = []
+
 messages = [
     {
         "role": "system",
@@ -45,61 +46,68 @@ def index():
 def chat():
     asyncio.set_event_loop(asyncio.new_event_loop())
     question = request.json.get('message')
-    context = search(question)
+    
     answer = None  # 初始化 answer
     image_url = None  # 初始化 image_url
-    
-    if '分析' in question:
-        tool_message = tool.call_with_messages(question + str(context) + str(uploaded_file_paths))
-        answer = getAnswer(question, context, tool_message, messages)
-        messages.append({
-            'role': "user",
-            'content': '给出工具调通的结果'
-        })    
-        messages.append({
-            'role': "assistant",
-            'content': tool_message
-        })
-        messages.append({
-            "role": "assistant",
-            "content": answer
-        })
-    elif '抓包' in question:
+    file_url = None     # 初始化 file_url
+    if not question:
+        return jsonify({'error': 'No message provided'}), 400
+    else :
+        tool_call = tool.tool_jude(question)
+        print(tool_call)
+        if tool_call == 'get_secure_report':
+            context = search(question)
+            
+            tool_message = tool.call_with_messages(question + str(context) +str(tool.get_secure_report(str(uploaded_file_paths[0]))))
+            
+            answer = getAnswer(question, context, tool_message, messages)
+            messages.append({
+                'role': "user",
+                'content': '给出工具调通的结果'
+            })    
+            messages.append({
+                'role': "assistant",
+                'content': tool_message
+            })
+            messages.append({
+                "role": "assistant",
+                "content": answer
+            })
+        elif tool_call == 'get_wireshark':
 
-        tool.get_wireshark()
-        pcapng_file = 'packet_capture\\my.pcapng'
-        excel_file = 'packet_capture\\output.xlsx'
+            tool.get_wireshark()
+            # 生成唯一文件名
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            pcapng_file = 'packet_capture\\my.pcapng'
+            excel_file = 'packet_capture\\output.xlsx'
+            xlsx_file = f'packet_capture\\packet_data_{timestamp}.xlsx'
+            packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
+            packet_capture.pcapng_analyse.pcapng_to_xlsx(pcapng_file, xlsx_file)
+            unique_chart_filename = f'协议计数饼图_{timestamp}.png'
+            unique_chart_filepath = os.path.join('static', 'assets', 'pictures', unique_chart_filename)
+            print("unique_chart_filepath：",unique_chart_filepath)
+            
+            packet_capture.draw.plot_from_excel(excel_file,unique_chart_filepath)
+
+            # 设置回答和图像 URL
+            answer = "抓包操作已执行"
+            image_url = f'/assets/pictures/{unique_chart_filename}'
+            file_url = f'http://localhost:1223/files/{xlsx_file}'
+
+        elif tool_call == 'get_current_time':
+            answer=tool.get_current_time()
+        else:
+            answer = multi_round(question, '', messages)
+            
         
-        packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
-        # 生成唯一文件名
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        unique_chart_filename = f'协议计数饼图_{timestamp}.png'
-        unique_chart_filepath = os.path.join('static', 'assets', 'pictures', unique_chart_filename)
-        print("unique_chart_filepath：",unique_chart_filepath)
+        response_message = generate_response(answer)
+        response_data = {'response': response_message}
+        if image_url:
+            response_data['image_url'] = image_url
+        if file_url:
+            response_data['file_url'] = file_url
         
-        packet_capture.draw.plot_from_excel(excel_file,unique_chart_filepath)
-
-         # 设置回答和图像 URL
-        answer = "抓包操作已执行"
-        image_url = f'/assets/pictures/{unique_chart_filename}'
-
-    else:
-        messages.append({
-            "role": "user",
-            "content": question
-        })   
-        answer = multi_round(question, context, messages)
-        messages.append({
-            "role": "assistant",
-            "content": answer
-        })
-    
-    response_message = generate_response(answer)
-    response_data = {'response': response_message}
-    if image_url:
-        response_data['image_url'] = image_url
-
-    return jsonify(response_data)
+        return jsonify(response_data)
 
 @app.route('/api/upload', methods=['POST'])
 def upload():
@@ -118,8 +126,8 @@ def upload():
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(file_path)
     uploaded_file_paths.append(file_path)
+    print(f"Uploaded file paths: {uploaded_file_paths}")  # 添加日志
     return jsonify({'fileName': file.filename, 'filePath': file_path})
-
     
 @app.route('/api/delete_chat', methods=['GET'])
 def delete_chat():

@@ -235,7 +235,7 @@ if __name__ == '__main__':
     connections.connect(host=MILVUS_HOST, port=MILVUS_PORT, user=USER, password=PASSWORD)
 
     fields = [
-        FieldSchema(name='id', dtype=DataType.INT64, descrition='Ids', is_primary=True, auto_id=False),
+        FieldSchema(name='id', dtype=DataType.INT64, description='Ids', is_primary=True, auto_id=False),
         FieldSchema(name='text', dtype=DataType.VARCHAR, description='Text', max_length=4096),
         FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, description='Embedding vectors', dim=DIMENSION)
     ]

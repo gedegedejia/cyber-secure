@@ -4,7 +4,7 @@ from datetime import datetime
 import v2_uploadFile
 from dotenv import load_dotenv
 import subprocess
-import subprocess
+
 load_dotenv()
 
 # 定义工具列表，模型在选择使用哪个工具时会参考工具的name和description
@@ -57,56 +57,61 @@ def get_current_time():
     return f"当前时间：{formatted_time}。"
 
 def get_secure_report(file_path):
-    
-    #v2_uploadFile_copy
-    print(file_path)
-    url1 = 'https://www.virustotal.com/vtapi/v2/file/scan'
-    url2 = "https://www.virustotal.com/vtapi/v2/file/report"
-    file_name=os.path.basename(file_path)
-    load_dotenv()
-    apikey = os.getenv('API_KEY1')
-    #获得文件scan_id
-    scan_id = v2_uploadFile.getFileScanId(url1,apikey,file_name,file_path)
-    md5 = v2_uploadFile.getFile_md5(url1,apikey,file_name,file_path)
-    #获得返回的json结果并写入result文件
-    #getFieReportResult(url2, apikey, scan_id)
-    json = v2_uploadFile.getFieReportResult(url2,apikey,scan_id)
-    
-    json1 = v2_uploadFile.getFieReportResult_behaviour(apikey,md5)
-    print(json)
-    print(json1)
-    file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(json['type']+'文件'))
-    txt=v2_uploadFile.getResult(json)
-    behaviour=''
-    signature_description=''
-    mat_description=''
-    if 'tags' in json1['data']:
-        behaviour = str('文件行为标签为'+str(json1['data']['tags']))
+    try:
+        #v2_uploadFile_copy
+        print(file_path)
+        url1 = 'https://www.virustotal.com/vtapi/v2/file/scan'
+        url2 = "https://www.virustotal.com/vtapi/v2/file/report"
+        file_name=os.path.basename(file_path)
+        load_dotenv()
+        apikey = os.getenv('API_KEY1')
+        #获得文件scan_id
+        scan_id = v2_uploadFile.getFileScanId(url1,apikey,file_name,file_path)
 
-    
-    if 'signature_matches' in json1['data']:
-        signature_description ='signature描述为：'
-        for match in json1['data']['signature_matches']: 
-            if 'description' in match:
-                signature_description+=match['description']+','
-        else:
-            signature_description=''
-        signature_description = signature_description.rstrip(',')
+        md5 = v2_uploadFile.getFile_md5(url1,apikey,file_name,file_path)
+        
+        #获得返回的json结果并写入result文件
+        #getFieReportResult(url2, apikey, scan_id)
+        json = v2_uploadFile.getFieReportResult(url2,apikey,scan_id)
+        
+        json1 = v2_uploadFile.getFieReportResult_behaviour(apikey,md5)
+        print(json)
+        
+        file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(json['type']+'文件'))
+        txt=v2_uploadFile.getResult(json)
+        behaviour=''
+        signature_description=''
+        mat_description=''
+        if 'tags' in json1['data']:
+            behaviour = str('文件行为标签为'+str(json1['data']['tags']))
 
-
-    if 'mitre_attack_techniques' in json1['data']:
-        mat_description = 'mitre_attack_techniques描述为：'
-        for match in json1['data']['mitre_attack_techniques']: 
-            if 'signature_description' in match:
-                mat_description+=match['signature_description']+','
+        
+        if 'signature_matches' in json1['data']:
+            signature_description ='signature描述为：'
+            for match in json1['data']['signature_matches']: 
+                if 'description' in match:
+                    signature_description+=match['description']+','
             else:
-                mat_description=''
-        mat_description = mat_description.rstrip(',')
+                signature_description=''
+            signature_description = signature_description.rstrip(',')
 
+
+        if 'mitre_attack_techniques' in json1['data']:
+            mat_description = 'mitre_attack_techniques描述为：'
+            for match in json1['data']['mitre_attack_techniques']: 
+                if 'signature_description' in match:
+                    mat_description+=match['signature_description']+','
+                else:
+                    mat_description=''
+            mat_description = mat_description.rstrip(',')
+
+        
+        answer=file_info+ "\n" +str(v2_uploadFile.culuateDate(txt))+ "\n" +behaviour+ "\n" +signature_description+ "\n" +mat_description
     
-    answer=file_info+ "\n" +str(v2_uploadFile.culuateDate(txt))+ "\n" +behaviour+ "\n" +signature_description+ "\n" +mat_description
-   
-    return answer
+        return answer
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 def get_wireshark(interface="WLAN", duration=5):
     try:

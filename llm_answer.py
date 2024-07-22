@@ -12,7 +12,7 @@ import packet_capture.pcapng_analyse
 import tool 
 import packet_capture
 import asyncio
-import suggestions 
+import Recommended_words
 
 load_dotenv()
 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -40,7 +40,6 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -116,7 +115,7 @@ def chat():
         if file_url:
             response_message = f'{response_message}\n[点击下载文件]({file_url})'
         
-        suggestions = suggestions.get_suggestions(question)
+        suggestions = Recommended_words.get_suggestions()
         response_message = f'{response_message}\n\n可能的提示词：{suggestions}'
         print(response_message)
 

@@ -158,33 +158,6 @@ messages = [
     }
 ]
 
-def call_with_messages(content):
-    messages = [
-            {
-                "content": content,  # 提问示例："现在几点了？" "一个小时后几点" "北京天气如何？"
-                "role": "user"
-            }
-    ]
-    
-    # 模型的第一轮调用
-    first_response = get_response(messages)
-    #print(f"\n第一轮调用结果：{first_response}")
-    assistant_output = first_response['output']['choices'][0]['message']
-    messages.append(assistant_output)
-    if 'tool_calls' not in assistant_output:  # 如果模型判断无需调用工具，则将assistant的回复直接打印出来，无需进行模型的第二轮调用
-        #print(f"最终答案：{assistant_output['content']}")
-        return assistant_output['content']
-   
-    # 如果模型选择的工具是get_current_time
-    elif assistant_output['tool_calls'][0]['function']['name'] == 'get_current_time':
-        tool_info = {"name": "get_current_time", "role":"tool"}
-        tool_info['content'] = get_current_time()
-    
-    elif assistant_output['tool_calls'][0]['function']['name'] == 'get_secure_report':
-        tool_info = {"name": "get_secure_report", "role":"tool"}
-        
-    return tool_info["content"]
-
 def tool_jude(content):
     messages = [
             {
@@ -196,7 +169,7 @@ def tool_jude(content):
     assistant_output = response['output']['choices'][0]['message']
     
     if 'tool_calls' not in assistant_output:
-        return assistant_output['content']
+        return ''
     else:
         return assistant_output['tool_calls'][0]['function']['name'] 
     

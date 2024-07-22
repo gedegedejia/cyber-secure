@@ -54,13 +54,13 @@ def chat():
         return jsonify({'error': 'No message provided'}), 400
     else :
         tool_call = tool.tool_jude(question)
-        print(tool_call)
+        print("调用的工具是：",tool_call)
         if tool_call == 'get_secure_report':
             context = search(question)
             
-            tool_message = tool.call_with_messages(question + str(context) +str(tool.get_secure_report(str(uploaded_file_paths[0]))))
+            tool_message = str(tool.get_secure_report(str(uploaded_file_paths[0])))
             
-            answer = getAnswer(question, context, tool_message, messages)
+            answer = getAnswer(question, context, tool_message, messages,tool_call)
             messages.append({
                 'role': "user",
                 'content': '给出工具调通的结果'
@@ -100,8 +100,9 @@ def chat():
         elif tool_call == 'get_current_time':
             answer=tool.get_current_time()
         else:
-            answer = multi_round(question, '', messages)
-            
+            context = search(question)
+            print("数据库中查找到的内容：",context)
+            answer = getAnswer(question, context, '', messages,tool_call)
         
         response_message = generate_response(answer)
         if image_url:
@@ -148,15 +149,21 @@ def generate_response(message):
     # 或者调用更复杂的逻辑/模型来生成响应
     return message
 
-def getAnswer(query, context,tool_message,messages):
-    
-    prompt = f'''请基于```内的网络安全知识，回答我的问题。
-        ```
-        {context},
-        ```
-        我的问题是：{query},我通过工具调用得知 {context,tool_message}。请你解释文件标签，给出该文件的意图和文件可疑活动，并根据工具提供的信息给出建议和解决方案
-        '''
-
+def getAnswer(query, context,tool_message,messages,tool_call):
+    if tool_call == 'get_secure_report':
+        prompt = f'''请基于```内的网络安全知识，回答我的问题。
+            ```
+            {context},
+            ```
+            我的问题是：{query},我通过工具调用得知 {context,tool_message}。请你解释文件标签，给出该文件的意图和文件可疑活动，并根据工具提供的信息给出建议和解决方案
+            '''
+    else:
+        prompt = f'''请基于```内的网络安全知识，回答我的问题。
+            ```
+            {context},
+            ```
+            我的问题是：{query},我通过工具调用得知 {context,tool_call}。
+            '''
     rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
     
     res = ''

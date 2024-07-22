@@ -12,7 +12,7 @@ import packet_capture.pcapng_analyse
 import tool 
 import packet_capture
 import asyncio
-
+import suggestions 
 
 load_dotenv()
 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -54,13 +54,16 @@ def chat():
         return jsonify({'error': 'No message provided'}), 400
     else :
         tool_call = tool.tool_jude(question)
-        print("调用的工具是：",tool_call)
+        if tool_call == '':
+            print("没有调用工具")
+        else:
+            print("调用的工具是：",tool_call)
+
         if tool_call == 'get_secure_report':
             context = search(question)
-            
-            tool_message = str(tool.get_secure_report(str(uploaded_file_paths[0])))
-            
+            tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))
             answer = getAnswer(question, context, tool_message, messages,tool_call)
+            #多轮对话
             messages.append({
                 'role': "user",
                 'content': '给出工具调通的结果'
@@ -73,6 +76,7 @@ def chat():
                 "role": "assistant",
                 "content": answer
             })
+        
         elif tool_call == 'get_wireshark':
 
             tool.get_wireshark()
@@ -98,10 +102,12 @@ def chat():
             file_url = xlsx_file.strip('static')
 
         elif tool_call == 'get_current_time':
-            answer=tool.get_current_time()
+            context=''
+            tool_message=tool.get_current_time()
+            answer=getAnswer(question,context,tool_message,messages,tool_call)
+        
         else:
             context = search(question)
-            print("数据库中查找到的内容：",context)
             answer = getAnswer(question, context, '', messages,tool_call)
         
         response_message = generate_response(answer)
@@ -110,6 +116,10 @@ def chat():
         if file_url:
             response_message = f'{response_message}\n[点击下载文件]({file_url})'
         
+        suggestions = suggestions.get_suggestions(question)
+        response_message = f'{response_message}\n\n可能的提示词：{suggestions}'
+        print(response_message)
+
         response_data = {'response': response_message}
         return jsonify(response_data)
 
@@ -157,18 +167,31 @@ def getAnswer(query, context,tool_message,messages,tool_call):
             ```
             我的问题是：{query},我通过工具调用得知 {context,tool_message}。请你解释文件标签，给出该文件的意图和文件可疑活动，并根据工具提供的信息给出建议和解决方案
             '''
+    
+    elif tool_call == 'get_current_time':
+        prompt = f'''
+            我的问题是：{query},我通过工具调用得知 {tool_message}。请根据我工具调用的内容给我回答。
+            '''
+    
+    elif tool_call == 'get_wireshark':
+        prompt = f'''
+            我的问题是：{query},我通过工具调用得知 {tool_message}。
+            '''
+    
     else:
         prompt = f'''请基于```内的网络安全知识，回答我的问题。
             ```
             {context},
             ```
-            我的问题是：{query},我通过工具调用得知 {context,tool_call}。
+            我的问题是：{query},我通过查找库文件得知 {context},通过工具调用得知{tool_call}。
             '''
+    
     rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
     
     res = ''
     for response in rsp:
         if response.status_code == HTTPStatus.OK:
+            
             print(response.output.choices[0]['message']['content'], end='')
             res += response.output.choices[0]['message']['content']
         else:
@@ -176,6 +199,7 @@ def getAnswer(query, context,tool_message,messages,tool_call):
                 response.request_id, response.status_code,
                 response.code, response.message
             ))
+    print(res)
     return res
 
 def search(text):
@@ -197,27 +221,6 @@ def search(text):
         ret.append(hit.entity.get('text'))
     return ret
 
-def multi_round(query, context,messages):
-    prompt = f'''请基于```内的网络安全知识，回答我的问题。
-        ```
-        {context},
-        ```
-        我的问题是：{query}
-       '''
-
-    rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
-    
-    res = ''
-    for response in rsp:
-        if response.status_code == HTTPStatus.OK:
-            print(response.output.choices[0]['message']['content'], end='')
-            res += response.output.choices[0]['message']['content']
-        else:
-            print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
-                response.request_id, response.status_code,
-                response.code, response.message
-            ))
-    return res
 
 if __name__ == '__main__':
 

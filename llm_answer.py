@@ -22,12 +22,6 @@ headers = {'Content-Type': 'application/json',
 
 uploaded_file_paths = []
 
-messages = [
-    {
-        "role": "system",
-        "content": "你是一个网络安全分析小助手，你的任务是对用户上传的网络安全文件进行分析并解决用户的问题。"
-    }
-]
 
 app = Flask(
     __name__,
@@ -47,80 +41,82 @@ def chat():
     question = request.json.get('message')
     
     answer = None  # 初始化 answer
-    image_url = None  # 初始化 image_url
-    file_url = None     # 初始化 file_url
     if not question:
         return jsonify({'error': 'No message provided'}), 400
-    else :
-        tool_call = tool.tool_jude(question)
-        if tool_call == '':
-            print("没有调用工具")
-        else:
-            print("调用的工具是：",tool_call)
+    context = search(question)
+    answer = getAnswer(question, context, '', messages,'')
+    response_message = generate_response(answer)
+    suggestions = Recommended_words.get_suggestions()
+    response_message = f'{response_message}\n\n可能的提示词：{suggestions}'
+    print(response_message)
+    response_data = {'response': response_message}
+    return jsonify(response_data)
 
-        if tool_call == 'get_secure_report':
-            context = search(question)
-            tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))
-            answer = getAnswer(question, context, tool_message, messages,tool_call)
-            #多轮对话
-            messages.append({
-                'role': "user",
-                'content': '给出工具调通的结果'
-            })    
-            messages.append({
-                'role': "assistant",
-                'content': tool_message
-            })
-            messages.append({
-                "role": "assistant",
-                "content": answer
-            })
-        
-        elif tool_call == 'get_wireshark':
+@app.route('/api/get_secure_report', methods=['POST'])
+def get_secure_report_api():
+    question = request.json.get('message')
+    answer = None  # 初始化 answer
+    if not question:
+        return jsonify({'error': 'No message provided'}), 400
+    
+    context = search(question)  # 假设search函数已定义
+    tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))  # 调用get_secure_report工具函数
+    answer = getAnswer(question, context, str(tool_message), messages, 'get_secure_report')  # 获取答案
+    #多轮对话
+    messages.append({
+        'role': "user",
+        'content': '给出工具调通的结果'
+    })    
+    messages.append({
+        'role': "assistant",
+        'content': tool_message
+    })
+    messages.append({
+        "role": "assistant",
+        "content": answer
+    })
+    response_message = generate_response(answer)
+    suggestions = Recommended_words.get_suggestions()
+    response_message = f'{response_message}\n\n可能的提示词：{suggestions}'    
+    return jsonify({'response': response_message})
 
-            tool.get_wireshark()
-            # 生成唯一文件名
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            pcap_dir = 'static/assets/packet_capture'
-            if not os.path.exists(pcap_dir):
-                os.makedirs(pcap_dir)
-            pcapng_file = f'{pcap_dir}/my.pcapng'
-            excel_file = f'{pcap_dir}/output.xlsx'
-            xlsx_file = f'{pcap_dir}/packet_data_{timestamp}.xlsx'
-            packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
-            packet_capture.pcapng_analyse.pcapng_to_xlsx(pcapng_file, xlsx_file)
-            unique_chart_filename = f'协议计数饼图_{timestamp}.png'
-            unique_chart_filepath = os.path.join('static', 'assets', 'pictures', unique_chart_filename)
-            print("unique_chart_filepath：",unique_chart_filepath)
-            
-            packet_capture.draw.plot_from_excel(excel_file,unique_chart_filepath)
+@app.route('/api/get_wireshark', methods=['POST'])
+def get_wireshark_api():
+    asyncio.set_event_loop(asyncio.new_event_loop())
+    tool.get_wireshark()  # 执行Wireshark抓包操作
+    answer = None  # 初始化 answer
+    image_url = None  # 初始化 image_url
+    file_url = None     # 初始化 file_url
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    pcap_dir = 'static/assets/packet_capture'
+    if not os.path.exists(pcap_dir):
+        os.makedirs(pcap_dir, exist_ok=True)  # 确保目录存在
+    pcapng_file = f'{pcap_dir}/my.pcapng'
+    excel_file = f'{pcap_dir}/output.xlsx'
+    xlsx_file = f'{pcap_dir}/packet_data_{timestamp}.xlsx'
+    
+    packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
+    packet_capture.pcapng_analyse.pcapng_to_xlsx(pcapng_file, xlsx_file)
+    
+    unique_chart_filename = f'protocol_count_pie_{timestamp}.png'
+    unique_chart_filepath = os.path.join('static', 'assets', 'pictures', unique_chart_filename)
+    packet_capture.draw.plot_from_excel(excel_file, unique_chart_filepath)
+    
+    answer = "抓包分析已完成"
+    image_url = f'/assets/pictures/{unique_chart_filename}'
+    file_url = xlsx_file.strip('static')
 
-            # 设置回答和图像 URL
-            answer = "抓包操作已执行"
-            image_url = f'/assets/pictures/{unique_chart_filename}'
-            file_url = xlsx_file.strip('static')
-
-        elif tool_call == 'get_current_time':
-            context=''
-            tool_message=tool.get_current_time()
-            answer=getAnswer(question,context,tool_message,messages,tool_call)
-        
-        else:
-            context = search(question)
-            answer = getAnswer(question, context, '', messages,tool_call)
-        
-        response_message = generate_response(answer)
-        if image_url:
-            response_message = f'{response_message}\n![图片]({image_url})'
-        if file_url:
-            response_message = f'{response_message}\n[点击下载文件]({file_url})'
-        
-        suggestions = Recommended_words.get_suggestions()
-        response_message = f'{response_message}\n\n可能的提示词：{suggestions}'
-        print(response_message)
-
-        response_data = {'response': response_message}
-        return jsonify(response_data)
+    response_message = generate_response(answer)
+    if image_url:
+        response_message = f'{response_message}\n![图片]({image_url})'
+    if file_url:
+        response_message = f'{response_message}\n[点击下载文件]({file_url})'
+    
+    suggestions = Recommended_words.get_suggestions()
+    response_message = f'{response_message}\n\n可能的提示词：{suggestions}'
+    print(response_message)
+    response_data = {'response': response_message}
+    return jsonify(response_data)
 
 @app.route('/api/upload', methods=['POST'])
 def upload():
@@ -148,7 +144,7 @@ def delete_chat():
     messages = [
         {
             "role": "system",
-            "content": "我叫cc."
+            "content": "你是一个网络安全分析小助手，你的任务是解决用户的网络安全问题。你的功能:1.分析用户上传的文件。2.抓取数据包"
         }
     ]
     return jsonify({'response': 'Chat history deleted successfully'})
@@ -164,7 +160,7 @@ def getAnswer(query, context,tool_message,messages,tool_call):
             ```
             {context},
             ```
-            我的问题是：{query},我通过工具调用得知 {context,tool_message}。请你解释文件标签，给出该文件的意图和文件可疑活动，并根据工具提供的信息给出建议和解决方案
+            我的问题是：{query},我通过工具调用得知 {context,tool_message}。请你列出文件标签并解释，给出该文件的意图和可疑活动，并给出建议和解决方案。
             '''
     
     elif tool_call == 'get_current_time':
@@ -176,13 +172,12 @@ def getAnswer(query, context,tool_message,messages,tool_call):
         prompt = f'''
             我的问题是：{query},我通过工具调用得知 {tool_message}。
             '''
-    
     else:
-        prompt = f'''请基于```内的网络安全知识，回答我的问题。
+        prompt = f'''回答我。
             ```
             {context},
             ```
-            我的问题是：{query},我通过查找库文件得知 {context},通过工具调用得知{tool_call}。
+            我的问题是：{query}。
             '''
     
     rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)

@@ -2,30 +2,30 @@
   <div class="hero min-h-screen max-h-full" style="background-image: url(https://cover.sli.dev)">
     <div class="flex w-full h-full">
       <!-- 侧边栏 -->
-      <div class="sidebar w-1/5 bg-gray-300 p-4 overflow-y-auto">
+      <div class="sidebar w-1/5 bg-gray-300 p-4 overflow-y-auto" style="opacity: 0.9">
         <h2 class="text-xl font-bold mb-4 text-gray-700">网络安全助手</h2>
         <ul>
           <li class="mb-2">
             <button
-              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 1, 'btn-primary': selectedButton !== 1, 'text-white': true }"
+              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 1, 'btn-primary': selectedButton !== 3, 'text-white': true }"
               class="btn w-full" @click="selectButton(1)">
+              对话
+            </button>
+          </li>
+
+          <li class="mb-2">
+            <button
+              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 2, 'btn-primary': selectedButton !== 1, 'text-white': true }"
+              class="btn w-full" @click="selectButton(2)">
               文件漏洞分析
             </button>
           </li>
 
           <li class="mb-2">
             <button
-              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 2, 'btn-primary': selectedButton !== 2, 'text-white': true }"
-              class="btn w-full" @click="selectButton(2)">
-              抓包流量分析
-            </button>
-          </li>
-
-          <li class="mb-2">
-            <button
-              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 3, 'btn-primary': selectedButton !== 3, 'text-white': true }"
+              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 3, 'btn-primary': selectedButton !== 2, 'text-white': true }"
               class="btn w-full" @click="selectButton(3)">
-              对话
+              抓包流量分析
             </button>
           </li>
 
@@ -137,6 +137,7 @@ export default {
     },
     deleteChat: function () {
       this.ready = false;
+      this.messages=[]
       fetch('/api/delete_chat', {
         method: 'GET'
       })
@@ -148,11 +149,11 @@ export default {
       let apiUrl = '';
       let msg = this.textMessage.trim();
       if (this.ButtonNumber === 1) {
-        apiUrl = '/api/get_secure_report';
-      } else if (this.ButtonNumber === 2) {
-        apiUrl = '/api/get_wireshark';
-      }else if (this.ButtonNumber === 3) {
         apiUrl = '/api/chat';
+      } else if (this.ButtonNumber === 2) {
+        apiUrl = '/api/get_secure_report';
+      }else if (this.ButtonNumber === 3) {
+        apiUrl = '/api/get_wireshark';
       }
 
       if (!msg) return;

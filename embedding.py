@@ -33,10 +33,10 @@ if __name__ == '__main__':
     data_path = f'D:/CEC-Corpus/raw corpus/1'  # 数据下载git clone https://github.com/shijiebei2009/CEC-Corpus.git
 
     # 配置Dashscope API KEY
-    dashscope.api_key = 'sk-182776810944437196a71cd5f6e55ea6'
+    dashscope.api_key = os.getenv('DASHSCOPE_API_KEY')
 
     # 配置Milvus参数
-    COLLECTION_NAME = 'ccc'
+    COLLECTION_NAME = 'web_leak'
     DIMENSION = 1536
     MILVUS_HOST = 'c-e920f955ee756dbc.milvus.aliyuncs.com'
     MILVUS_PORT = '19530'

@@ -134,7 +134,6 @@ def get_wireshark(interface="WLAN", duration=5):
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
-
     
 def get_response(messages):
     api_key = os.getenv("DASHSCOPE_API_KEY")

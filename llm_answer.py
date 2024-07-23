@@ -12,7 +12,6 @@ import packet_capture.pcapng_analyse
 import tool 
 import packet_capture
 import asyncio
-import Recommended_words
 
 load_dotenv()
 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -36,6 +35,7 @@ def index():
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
+    print(messages)
     asyncio.set_event_loop(asyncio.new_event_loop())
     question = request.json.get('message')
     answer = None  # 初始化 answer
@@ -43,11 +43,19 @@ def chat():
         return jsonify({'error': 'No message provided'}), 400
     context = search(question,'ccc')
     answer = getAnswer(question, context, '', messages,'')
-    suggestions = Recommended_words.get_suggestions()
+    suggestions = get_suggestions(messages)
+    messages.append({
+        'role': "user",
+        'content': question
+    })    
+    messages.append({
+        "role": "assistant",
+        "content": answer
+    })
+
     answer = f'{answer}\n\n可能的提示词：{suggestions}'
     response_data = {'response': answer}
     return jsonify(response_data)
-
 @app.route('/api/get_secure_report', methods=['POST'])
 def get_secure_report_api():
     question = request.json.get('message')
@@ -65,7 +73,7 @@ def get_secure_report_api():
     #多轮对话
     messages.append({
         'role': "user",
-        'content': '给出工具调通的结果'
+        'content': question
     })    
     messages.append({
         'role': "assistant",
@@ -75,7 +83,7 @@ def get_secure_report_api():
         "role": "assistant",
         "content": answer
     })
-    suggestions = Recommended_words.get_suggestions()
+    suggestions = get_suggestions(messages)
     answer = f'{answer}\n\n可能的提示词：{suggestions}'    
     return jsonify({'response': answer})
 
@@ -106,8 +114,8 @@ def get_wireshark_api():
         answer = f'{answer}\n![图片]({image_url})'
     if file_url:
         answer = f'{answer}\n[点击下载文件]({file_url})'
-    
-    suggestions = Recommended_words.get_suggestions()
+    print(messages)
+    suggestions = get_suggestions(messages)
     answer = f'{answer}\n\n可能的提示词：{suggestions}'
     print(answer)
     response_data = {'response': answer}
@@ -218,6 +226,39 @@ def search(text,DashVector_name):
     for hit in results[0]:
         ret.append(hit.entity.get('text'))
     return ret
+
+def get_suggestions(messages):
+    prompt = f'''
+            目前你的功能有：
+            侧边栏点击文件漏洞分析功能，可以文件上传，在聊天框输入'分析文件内容'，模型自动调用工具将文件上传至virtustotal平台，生成对文件的安全性分析报告，报告内容传回大语言模型，并通过检索增强生产（RAG）获得针对该文件的安全性建议。
+            侧边栏点击抓包流量分析功能，可以自动抓包，对流量进行分析，目前只能对流量的协议占比进行扇形图绘制。
+            侧边栏点击对话功能，可以一些正常对话和网络安全知识的问答。
+            
+            请根据我的历史记录和我的功能，给用户3个可能的提示词来引导用户进行操作。
+            以下是我的历史记录
+            ```
+            {messages},
+            ```
+            输出格式：
+            1.（引导词1）
+            2.（引导词2）
+            3.（引导词3）
+            '''
+    rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
+    res=''
+    for response in rsp:
+        if response.status_code == HTTPStatus.OK:
+            
+            print(response.output.choices[0]['message']['content'], end='')
+            res += response.output.choices[0]['message']['content']
+        else:
+            print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
+                response.request_id, response.status_code,
+                response.code, response.message
+            ))
+
+    return res
+
 
 if __name__ == '__main__':
     # 配置Dashscope API KEY

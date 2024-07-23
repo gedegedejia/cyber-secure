@@ -121,6 +121,16 @@ def get_wireshark(interface="WLAN", duration=5):
             raise ValueError("TShark path is not set in environment variables.")
         
         # 构建tshark命令
+
+        folder_path = "/static/assets/packet_capture"
+
+        # 检查目录是否存在
+        if not os.path.exists(folder_path):
+            # 如果目录不存在，则创建它
+            os.makedirs(folder_path)
+            print(f"目录 {folder_path} 已创建。")
+        else:
+            print(f"目录 {folder_path} 已经存在。")        
         filename = "./static/assets/packet_capture/my.pcapng"
         command = [tshark_path, "-i", interface, "-a", "duration:{}".format(duration), "-w", filename]
         
@@ -134,7 +144,7 @@ def get_wireshark(interface="WLAN", duration=5):
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
-    
+
 def get_response(messages):
     api_key = os.getenv("DASHSCOPE_API_KEY")
     url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation'

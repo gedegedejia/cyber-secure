@@ -137,6 +137,7 @@ export default {
     },
     deleteChat: function () {
       this.ready = false;
+      this.messages=[]
       fetch('/api/delete_chat', {
         method: 'GET'
       })

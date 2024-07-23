@@ -22,7 +22,6 @@ headers = {'Content-Type': 'application/json',
 
 uploaded_file_paths = []
 
-
 app = Flask(
     __name__,
     static_folder='static/assets',
@@ -39,17 +38,14 @@ def index():
 def chat():
     asyncio.set_event_loop(asyncio.new_event_loop())
     question = request.json.get('message')
-    
     answer = None  # 初始化 answer
     if not question:
         return jsonify({'error': 'No message provided'}), 400
-    context = search(question)
+    context = search(question,'ccc')
     answer = getAnswer(question, context, '', messages,'')
-    response_message = generate_response(answer)
     suggestions = Recommended_words.get_suggestions()
-    response_message = f'{response_message}\n\n可能的提示词：{suggestions}'
-    print(response_message)
-    response_data = {'response': response_message}
+    answer = f'{answer}\n\n可能的提示词：{suggestions}'
+    response_data = {'response': answer}
     return jsonify(response_data)
 
 @app.route('/api/get_secure_report', methods=['POST'])
@@ -58,10 +54,14 @@ def get_secure_report_api():
     answer = None  # 初始化 answer
     if not question:
         return jsonify({'error': 'No message provided'}), 400
+    context = search(question,'web_leak')  # 假设search函数已定义
     
-    context = search(question)  # 假设search函数已定义
-    tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))  # 调用get_secure_report工具函数
-    answer = getAnswer(question, context, str(tool_message), messages, 'get_secure_report')  # 获取答案
+    tool_call=tool.tool_jude(question)
+    if uploaded_file_paths!=[]:
+        tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))  # 调用get_secure_report工具函数
+    else:
+        tool_message=''
+    answer = getAnswer(question, context, str(tool_message), messages, tool_call)  # 获取答案
     #多轮对话
     messages.append({
         'role': "user",
@@ -75,10 +75,9 @@ def get_secure_report_api():
         "role": "assistant",
         "content": answer
     })
-    response_message = generate_response(answer)
     suggestions = Recommended_words.get_suggestions()
-    response_message = f'{response_message}\n\n可能的提示词：{suggestions}'    
-    return jsonify({'response': response_message})
+    answer = f'{answer}\n\n可能的提示词：{suggestions}'    
+    return jsonify({'response': answer})
 
 @app.route('/api/get_wireshark', methods=['POST'])
 def get_wireshark_api():
@@ -94,10 +93,8 @@ def get_wireshark_api():
     pcapng_file = f'{pcap_dir}/my.pcapng'
     excel_file = f'{pcap_dir}/output.xlsx'
     xlsx_file = f'{pcap_dir}/packet_data_{timestamp}.xlsx'
-    
     packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
     packet_capture.pcapng_analyse.pcapng_to_xlsx(pcapng_file, xlsx_file)
-    
     unique_chart_filename = f'protocol_count_pie_{timestamp}.png'
     unique_chart_filepath = os.path.join('static', 'assets', 'pictures', unique_chart_filename)
     packet_capture.draw.plot_from_excel(excel_file, unique_chart_filepath)
@@ -105,17 +102,15 @@ def get_wireshark_api():
     answer = "抓包分析已完成"
     image_url = f'/assets/pictures/{unique_chart_filename}'
     file_url = xlsx_file.strip('static')
-
-    response_message = generate_response(answer)
     if image_url:
-        response_message = f'{response_message}\n![图片]({image_url})'
+        answer = f'{answer}\n![图片]({image_url})'
     if file_url:
-        response_message = f'{response_message}\n[点击下载文件]({file_url})'
+        answer = f'{answer}\n[点击下载文件]({file_url})'
     
     suggestions = Recommended_words.get_suggestions()
-    response_message = f'{response_message}\n\n可能的提示词：{suggestions}'
-    print(response_message)
-    response_data = {'response': response_message}
+    answer = f'{answer}\n\n可能的提示词：{suggestions}'
+    print(answer)
+    response_data = {'response': answer}
     return jsonify(response_data)
 
 @app.route('/api/upload', methods=['POST'])
@@ -149,18 +144,13 @@ def delete_chat():
     ]
     return jsonify({'response': 'Chat history deleted successfully'})
 
-def generate_response(message):
-    # 在这里实现你的对话逻辑，可以简单地返回一个预设的响应
-    # 或者调用更复杂的逻辑/模型来生成响应
-    return message
-
 def getAnswer(query, context,tool_message,messages,tool_call):
     if tool_call == 'get_secure_report':
         prompt = f'''请基于```内的网络安全知识，回答我的问题。
             ```
             {context},
             ```
-            我的问题是：{query},我通过工具调用得知 {context,tool_message}。请你列出文件标签并解释，给出该文件的意图和可疑活动，并给出建议和解决方案。
+            我的问题是：{query},我通过工具调用得知 {tool_message}。请你列出文件标签并解释，给出该文件的意图和可疑活动，并给出建议和解决方案。
             '''
     
     elif tool_call == 'get_current_time':
@@ -177,7 +167,7 @@ def getAnswer(query, context,tool_message,messages,tool_call):
             ```
             {context},
             ```
-            我的问题是：{query}。
+            我的问题是：{query}。回答尽量精炼。
             '''
     
     rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
@@ -196,12 +186,26 @@ def getAnswer(query, context,tool_message,messages,tool_call):
     print(res)
     return res
 
-def search(text):
+def search(text,DashVector_name):
     # Search parameters for the index
     search_params = {
         "metric_type": "L2"
     }
+    COLLECTION_NAME = DashVector_name
+    DIMENSION = 1536
+    MILVUS_HOST = 'c-e920f955ee756dbc.milvus.aliyuncs.com'
+    MILVUS_PORT = '19530'
+    USER = 'root'
+    PASSWORD = '200413Cwj@'
 
+    connections.connect(host=MILVUS_HOST, port=MILVUS_PORT, user=USER, password=PASSWORD)
+    fields = [
+        FieldSchema(name='id', dtype=DataType.INT64, description='Ids', is_primary=True, auto_id=False),
+        FieldSchema(name='text', dtype=DataType.VARCHAR, description='Text', max_length=4096),
+        FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, description='Embedding vectors', dim=DIMENSION)
+    ]
+    schema = CollectionSchema(fields=fields, description='CEC Corpus Collection')
+    collection = Collection(name=COLLECTION_NAME, schema=schema)
     results = collection.search(
         data=[getEmbedding(text)],  # Embeded search value
         anns_field="embedding",  # Search across embeddings
@@ -215,30 +219,8 @@ def search(text):
         ret.append(hit.entity.get('text'))
     return ret
 
-
 if __name__ == '__main__':
-
     # 配置Dashscope API KEY
     dashscope.api_key = api_key
-
-    # 配置Milvus参数
-    COLLECTION_NAME = 'ccc'
-    DIMENSION = 1536
-    MILVUS_HOST = 'c-e920f955ee756dbc.milvus.aliyuncs.com'
-    MILVUS_PORT = '19530'
-    USER = 'root'
-    PASSWORD = '200413Cwj@'
-
-    connections.connect(host=MILVUS_HOST, port=MILVUS_PORT, user=USER, password=PASSWORD)
-
-    fields = [
-        FieldSchema(name='id', dtype=DataType.INT64, description='Ids', is_primary=True, auto_id=False),
-        FieldSchema(name='text', dtype=DataType.VARCHAR, description='Text', max_length=4096),
-        FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, description='Embedding vectors', dim=DIMENSION)
-    ]
-    schema = CollectionSchema(fields=fields, description='CEC Corpus Collection')
-    collection = Collection(name=COLLECTION_NAME, schema=schema)
-
-    # Load the collection into memory for searching
-    collection.load()
     app.run(debug=True,host='0.0.0.0',port=1223)
+

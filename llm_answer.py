@@ -1,4 +1,3 @@
-from datetime import datetime
 import os
 import dashscope
 from dashscope import Generation
@@ -6,12 +5,14 @@ from dotenv import load_dotenv
 from pymilvus import connections, FieldSchema, CollectionSchema, DataType, Collection
 from embedding import getEmbedding
 from http import HTTPStatus
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template,Response,stream_with_context,json
 import packet_capture.draw
 import packet_capture.pcapng_analyse
 import tool 
 import packet_capture
 import asyncio
+from datetime import datetime
+import time
 
 load_dotenv()
 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -175,7 +176,7 @@ def getAnswer(query, context,tool_message,messages,tool_call):
             ```
             {context},
             ```
-            我的问题是：{query}。回答尽量精炼。
+            我的问题是：{query}。回答尽量精炼，但需要有礼貌。
             '''
     
     rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
@@ -227,12 +228,64 @@ def search(text,DashVector_name):
         ret.append(hit.entity.get('text'))
     return ret
 
+
+
+@app.route('/api/sse')
+def sse():
+    question = request.args.get('message')
+    request_type = request.args.get('type')
+    if not question:
+        return jsonify({'error': 'No message provided'}), 400
+
+    def stream():
+        if request_type == 'chat':
+
+            context = search(question, 'ccc')
+            answer = getAnswer(question, context, '', messages, '')
+            suggestions = get_suggestions(messages)
+            messages.append({'role': "user", 'content': question})
+            messages.append({"role": "assistant", "content": answer})
+            answer = f'{answer}\n\n可能的提示词：{suggestions}'
+
+        elif request_type == 'get_secure_report':
+
+            context = search(question, 'web_leak')
+            tool_call = tool.tool_jude(question)
+            
+            if uploaded_file_paths:
+                tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))
+            else:
+                tool_message = ''
+
+            answer = getAnswer(question, context, str(tool_message), messages, tool_call)
+            messages.append({'role': "user", 'content': question})
+            messages.append({'role': "assistant", 'content': tool_message})
+            messages.append({"role": "assistant", "content": answer})
+            suggestions = get_suggestions(messages)
+            answer = f'{answer}\n\n可能的提示词：{suggestions}'
+
+        else:
+            response_data = {'message': 'Invalid type provided', 'done': True}
+            yield f'data: {json.dumps(response_data)}\n\n'
+            return
+
+        for char in answer:
+            response_data = {'message': char, 'done': False}
+            yield f'data: {json.dumps(response_data)}\n\n'
+            time.sleep(0.05)  # 控制发送速度
+
+        response_data = {'message': '', 'done': True}
+        yield f'data: {json.dumps(response_data)}\n\n'
+
+    return Response(stream(), content_type='text/event-stream')
+
+
 def get_suggestions(messages):
     prompt = f'''
-            目前你的功能有：
-            侧边栏点击文件漏洞分析功能，可以文件上传，在聊天框输入'分析文件内容'，模型自动调用工具将文件上传至virtustotal平台，生成对文件的安全性分析报告，报告内容传回大语言模型，并通过检索增强生产（RAG）获得针对该文件的安全性建议。
-            侧边栏点击抓包流量分析功能，可以自动抓包，对流量进行分析，目前只能对流量的协议占比进行扇形图绘制。
-            侧边栏点击对话功能，可以一些正常对话和网络安全知识的问答。
+            目前你的推荐的功能有：
+            侧边栏点击文件漏洞分析功能，上传文件后，可以文件的安全性分析报告和建议。
+            侧边栏点击抓包流量分析功能，自动抓包，对流量进行分析。
+            侧边栏点击网安知识问答功能，可以进行网络安全知识的问答。
             
             请根据我的历史记录和我的功能，给用户3个可能的提示词来引导用户进行操作。
             以下是我的历史记录

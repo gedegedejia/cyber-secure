@@ -7,16 +7,18 @@
         <ul>
           <li class="mb-2">
             <button   
-              :class="{'btn btn-primary w-full mb-4 ': selectedButton === 1, 'btn-primary-500': selectedButton !== 2 && selectedButton !== 3 && selectedButton !== 4, 'text-black': true }"
+              :class="{'btn btn-primary w-full mb-4 ': selectedButton === 1, 'btn-primary-500': selectedButton === 1, 'text-black': selectedButton !== 1, 'text-white': selectedButton === 1}"
               class="btn w-full" @click="selectButton(1)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 1024 1024"
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                :fill="selectedButton === 1 ? 'white' : 'black'" 
+                viewBox="0 0 1024 1024"
                 stroke="currentColor" stroke-width="2">
                 <path
                   d="M512 117.76c218.065455 0 395.636364 135.68 395.636364 302.545455s-177.570909 302.545455-395.636364 302.545454a144.058182 144.058182 0 0 0-50.501818 10.472727 791.272727 791.272727 0 0 0-162.909091 99.374546c-4.421818-128.232727-23.272727-168.96-56.087273-191.534546C162.909091 584.145455 116.363636 503.621818 116.363636 420.538182c0-167.098182 177.570909-302.545455 395.636364-302.545455m0-69.818182c-256 0-465.454545 166.632727-465.454545 372.363637 0 110.312727 59.810909 209.454545 155.22909 277.643636 23.272727 16.756364 27.694545 116.363636 27.694546 192.232727a41.192727 41.192727 0 0 0 40.494545 41.89091 40.029091 40.029091 0 0 0 23.272728-8.61091c58.414545-45.149091 141.730909-105.425455 192-124.50909a74.007273 74.007273 0 0 1 26.763636-6.05091c256 0 465.454545-166.865455 465.454545-372.363636s-209.454545-372.363636-465.454545-372.363636z"
-                  fill="#000000" p-id="6651"></path>
+                  :fill="selectedButton === 1 ? 'white' : 'black'"></path>
                 <path
                   d="M663.272727 325.818182h-302.545454a34.909091 34.909091 0 0 0 0 69.818182h302.545454a34.909091 34.909091 0 0 0 0-69.818182zM616.727273 488.727273h-209.454546a34.909091 34.909091 0 0 0 0 69.818182h209.454546a34.909091 34.909091 0 0 0 0-69.818182z"
-                  fill="#000000" p-id="6652"></path>
+                  :fill="selectedButton === 1 ? 'white' : 'black'"></path>
               </svg>
               网安知识问答
             </button>
@@ -24,16 +26,16 @@
 
           <li class="mb-2">
             <button
-              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 2, 'btn-primary-500': selectedButton !== 1 && selectedButton !== 3 && selectedButton !== 4, 'text-black': true }"
+              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 2, 'btn-primary-500': selectedButton === 2, 'text-black': selectedButton !== 2, 'text-white': selectedButton === 2}"
               class="btn w-full" @click="selectButton(2)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 1024 1024"
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :fill="selectedButton === 2 ? 'white' : 'black'" viewBox="0 0 1024 1024"
                 stroke="currentColor" stroke-width="2">
                 <path
                   d="M715.001756 430.579512h-413.596097c-22.078439 0-39.960976-17.882537-39.960976-39.960975s17.882537-39.960976 39.960976-39.960976h413.596097c22.078439 0 39.960976 17.882537 39.960976 39.960976s-17.882537 39.960976-39.960976 39.960975zM715.001756 580.433171h-413.596097c-22.078439 0-39.960976-17.882537-39.960976-39.960976s17.882537-39.960976 39.960976-39.960975h413.596097c22.078439 0 39.960976 17.882537 39.960976 39.960975s-17.882537 39.960976-39.960976 39.960976zM715.001756 730.286829h-413.596097c-22.078439 0-39.960976-17.882537-39.960976-39.960975s17.882537-39.960976 39.960976-39.960976h413.596097c22.078439 0 39.960976 17.882537 39.960976 39.960976s-17.882537 39.960976-39.960976 39.960975zM611.602732 237.767805h-206.798049c-22.078439 0-39.960976-17.882537-39.960976-39.960976s17.882537-39.960976 39.960976-39.960975h206.798049c22.078439 0 39.960976 17.882537 39.960975 39.960975s-17.882537 39.960976-39.960975 39.960976zM700.515902 870.150244h-80.920975c-22.078439 0-39.960976-17.882537-39.960976-39.960976s17.882537-39.960976 39.960976-39.960975h80.920975c22.078439 0 39.960976 17.882537 39.960976 39.960975s-17.882537 39.960976-39.960976 39.960976z"
-                  fill="#000000" p-id="4301"></path>
+                  :fill="selectedButton === 2 ? 'white' : 'black'" p-id="4301"></path>
                 <path
                   d="M827.891512 79.921951v863.157073h-639.37561V292.214634L400.808585 79.921951h427.082927m19.980488-79.921951H392.516683c-15.884488 0-31.169561 6.293854-42.358634 17.582829L126.076878 241.564098c-11.288976 11.288976-17.582829 26.474146-17.582829 42.358634V963.059512c0 33.067707 26.873756 59.941463 59.941463 59.941464h679.336586c33.067707 0 59.941463-26.873756 59.941463-59.941464V59.941463c0.099902-33.067707-26.773854-59.941463-59.841561-59.941463z"
-                  fill="#000000" p-id="4302"></path>
+                  :fill="selectedButton === 2 ? 'white' : 'black'" p-id="4302"></path>
               </svg>
               文件漏洞分析
             </button>
@@ -41,7 +43,7 @@
 
           <li class="mb-2">
             <button
-              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 3, 'btn-primary-500': selectedButton !== 2 && selectedButton !== 2 && selectedButton !== 4, 'text-black': true }"
+              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 3, 'btn-primary-500': selectedButton === 3, 'text-black': selectedButton !== 3, 'text-white': selectedButton === 3}"
               class="btn w-full" @click="selectButton(3)">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor" stroke-width="2">
@@ -55,19 +57,19 @@
 
           <li class="mb-4">
             <button
-              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 4,'btn-primary-500': selectedButton !== 2 && selectedButton !== 3 && selectedButton !== 1, 'text-black': true }"
+              :class="{ 'btn btn-primary w-full mb-4': selectedButton === 4,'btn-primary-500': selectedButton === 4, 'text-black': selectedButton !== 4, 'text-white': selectedButton === 4}"
               class="btn w-full" @click="selectButton(4)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 1024 1024"
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :fill="selectedButton === 4 ? 'white' : 'black'" viewBox="0 0 1024 1024"
                 stroke="currentColor" stroke-width="2">
                 <path
                   d="M959.718832 123.963683C872.444401 50.185297 704.593576 0.299912 511.850044 0.299912S151.255687 50.185297 63.981255 123.963683C23.193205 158.453578 0 198.04198 0 240.22962v543.840672c0 132.461193 229.132871 239.929708 511.850044 239.929708s511.850044-107.468515 511.850044-239.929708v-543.840672c0-42.18764-23.193205-81.776042-63.981256-116.265937zM87.774285 189.64444c19.794201-21.893586 50.685151-43.087377 89.373816-61.182075 42.287611-19.794201 92.073025-35.489603 147.956653-46.586352C384.087474 70.17944 446.869081 64.281168 511.850044 64.281168s127.76257 5.898272 186.745289 17.594845c55.883628 11.096749 105.669042 26.792151 147.956654 46.586352 38.688665 18.094699 69.579615 39.28849 89.373816 61.182075 15.795372 17.494875 23.793029 34.489896 23.793029 50.48521 0 16.095285-7.997657 33.090306-23.793029 50.485209-19.794201 21.893586-50.685151 43.087377-89.373816 61.182075-42.287611 19.894172-92.073025 35.489603-147.956654 46.586352-58.98272 11.696573-121.864298 17.594845-186.745289 17.594845s-127.76257-5.898272-186.74529-17.594845c-55.883628-11.096749-105.669042-26.792151-147.956653-46.586352-38.688665-18.094699-69.579615-39.28849-89.373816-61.182075C71.978912 273.319926 63.981255 256.324905 63.981255 240.22962s7.997657-33.090306 23.79303-50.58518zM63.981255 356.495558c87.274431 73.778385 255.125256 123.66377 447.868789 123.66377s360.594357-49.885385 447.868788-123.66377v155.254515c0 16.095285-7.997657 33.090306-23.793029 50.48521-19.794201 21.893586-50.685151 43.087377-89.373816 61.182075-42.287611 19.794201-92.073025 35.489603-147.956654 46.586352-58.98272 11.696573-121.864298 17.594845-186.745289 17.594845s-127.76257-5.898272-186.74529-17.594845c-55.883628-11.096749-105.669042-26.792151-147.956653-46.586352-38.688665-18.094699-69.579615-39.28849-89.373816-61.182075C71.978912 544.740408 63.981255 527.745387 63.981255 511.750073V356.495558z m895.737577 427.574734c0 16.095285-7.997657 33.090306-23.793029 50.485209-19.794201 21.893586-50.685151 43.087377-89.373816 61.182076-42.287611 19.894172-92.073025 35.489603-147.956654 46.586352-58.98272 11.696573-121.864298 17.594845-186.745289 17.594845s-127.76257-5.898272-186.74529-17.594845c-55.883628-11.096749-105.669042-26.792151-147.956653-46.586352-38.688665-18.094699-69.579615-39.28849-89.373816-61.182076C71.978912 817.160597 63.981255 800.165576 63.981255 784.070292V627.91604c87.274431 73.778385 255.125256 123.66377 447.868789 123.663771s360.594357-49.885385 447.868788-123.663771v156.154252z"
-                  p-id="5503" fill="#000000"></path>
+                  p-id="5503" :fill="selectedButton === 4 ? 'white' : 'black'"></path>
                 <path
                   d="M167.950796 519.847701m-39.988285 0a39.988285 39.988285 0 1 0 79.976569 0 39.988285 39.988285 0 1 0-79.976569 0Z"
-                  p-id="5504" fill="#000000"></path>
+                  p-id="5504" :fill="selectedButton === 4 ? 'white' : 'black'"></path>
                 <path
                   d="M167.950796 791.768037m-39.988285 0a39.988285 39.988285 0 1 0 79.976569 0 39.988285 39.988285 0 1 0-79.976569 0Z"
-                  p-id="5505" fill="#000000"></path>
+                  p-id="5505" :fill="selectedButton === 4 ? 'white' : 'black'"></path>
               </svg>
               数据库的管理
             </button>
@@ -96,9 +98,9 @@
               </div>
             </div>
             <div class="flex justify-between mr-2">
-              <button class="btn btn-primary w-1/3 mb-4 " @click="setTextMessage('提示词一')">提示词一</button>
-              <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage('提示词二')">提示词二</button>
-              <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage('提示词三')">提示词三</button>
+              <button class="btn btn-primary w-1/3 mb-4 " @click="setTextMessage(suggestions[0])">{{ suggestions[0] || '向我提问网络安全知识' }}</button>
+              <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[1])">{{ suggestions[1] || '侧边栏点击抓包流量分析' }}</button>
+              <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[2])">{{ suggestions[2] || '侧边栏点击文件漏洞分析' }}</button>
             </div>
             <div class="card-actions justify-end flex-nowrap">
               <button class="btn btn-primary btn-circle btn-md" @click="selectUpload" :disabled="!ready">
@@ -159,7 +161,8 @@ export default {
       },
       messages: [],
       selectedButton: 1,
-      tool:'chat'
+      tool:'chat',
+      suggestions: [] 
     }
   },
   mounted() {
@@ -186,6 +189,9 @@ export default {
         .catch((err) => this.showErr(err))
         .finally(() => this.ready = true);
     },
+    setTextMessage(suggestion) {
+      this.textMessage = suggestion;
+    },
     sendMessage: function () {
       this.ready = false;
       const msg = this.textMessage.trim();
@@ -206,7 +212,7 @@ export default {
           content: msg
         });
         
-        this.initSSE(msg,this.tool);
+        this.initSSE(msg);
       }else{
         return;
       }
@@ -253,9 +259,8 @@ export default {
         }
       }
     },
-    initSSE: function (msg,tool) {
+    initSSE: function (msg) {
       // 初始化 SSE 连接
-      
       try {
         const eventSource = new EventSource(`/api/sse?message=${encodeURIComponent(msg)}&type=${this.tool}`);
         let fullMessage = '';
@@ -264,12 +269,12 @@ export default {
         eventSource.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            console.log(data);
             
             if (data.done) {
               this.scrollToBottom();
               eventSource.close();
               this.ready = true; 
+              this.suggestions=data.suggestions
             } else {
               // 累积完整消息
               fullMessage += data.message;

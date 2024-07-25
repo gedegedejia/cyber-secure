@@ -45,18 +45,12 @@ def chat():
     context = search(question,'ccc')
     answer = getAnswer(question, context, '', messages,'')
     suggestions = get_suggestions(messages)
-    messages.append({
-        'role': "user",
-        'content': question
-    })    
-    messages.append({
-        "role": "assistant",
-        "content": answer
-    })
+    messages.append({'role': "user", 'content': question})    
+    messages.append({ "role": "assistant", "content": answer })
 
-    answer = f'{answer}\n\n可能的提示词：{suggestions}'
-    response_data = {'response': answer}
+    response_data = {'response': answer,'suggestions':suggestions}
     return jsonify(response_data)
+
 @app.route('/api/get_secure_report', methods=['POST'])
 def get_secure_report_api():
     question = request.json.get('message')
@@ -117,9 +111,8 @@ def get_wireshark_api():
         answer = f'{answer}\n[点击下载文件]({file_url})'
     print(messages)
     suggestions = get_suggestions(messages)
-    answer = f'{answer}\n\n可能的提示词：{suggestions}'
-    print(answer)
-    response_data = {'response': answer}
+    
+    response_data = {'response': answer,'suggestions':suggestions}
     return jsonify(response_data)
 
 @app.route('/api/upload', methods=['POST'])
@@ -244,9 +237,9 @@ def sse():
             answer = getAnswer(question, context, '', messages, '')
             suggestions = get_suggestions(messages)
             messages.append({'role': "user", 'content': question})
-            messages.append({"role": "assistant", "content": answer})
-            answer = f'{answer}\n\n可能的提示词：{suggestions}'
-
+            messages.append({"role": "assistant", "content": answer})    
+            Response={'content':answer,'suggestions':suggestions}
+        
         elif request_type == 'get_secure_report':
 
             context = search(question, 'web_leak')
@@ -262,55 +255,57 @@ def sse():
             messages.append({'role': "assistant", 'content': tool_message})
             messages.append({"role": "assistant", "content": answer})
             suggestions = get_suggestions(messages)
-            answer = f'{answer}\n\n可能的提示词：{suggestions}'
+            Response={'content':answer,'suggestions':suggestions}
 
         else:
             response_data = {'message': 'Invalid type provided', 'done': True}
             yield f'data: {json.dumps(response_data)}\n\n'
             return
 
-        for char in answer:
-            response_data = {'message': char, 'done': False}
+        for char in Response['content']:
+            response_data = {'message': char,'done': False}
             yield f'data: {json.dumps(response_data)}\n\n'
             time.sleep(0.05)  # 控制发送速度
 
-        response_data = {'message': '', 'done': True}
+        response_data = {'message': '', 'suggestions' : suggestions, 'done': True}
         yield f'data: {json.dumps(response_data)}\n\n'
 
     return Response(stream(), content_type='text/event-stream')
 
 
 def get_suggestions(messages):
-    prompt = f'''
-            目前你的推荐的功能有：
-            侧边栏点击文件漏洞分析功能，上传文件后，可以文件的安全性分析报告和建议。
-            侧边栏点击抓包流量分析功能，自动抓包，对流量进行分析。
-            侧边栏点击网安知识问答功能，可以进行网络安全知识的问答。
-            
-            请根据我的历史记录和我的功能，给用户3个可能的提示词来引导用户进行操作。
+    functions = [
+        '点击位于侧边栏的文件漏洞分析功能,可以上传文件,给出对文件的安全性分析报告和建议',
+        '点击位于侧边栏的抓包流量分析功能,可以自动抓包,对流量进行分析',
+        '点击位于侧边栏的网安知识问答功能,可以进行网络安全知识的问答'
+    ]
+
+    suggestions = []
+
+    for func in functions:
+        prompt = f'''
+            {func}，请根据用户的历史记录和用户想要使用的功能，给用户1个可能的提示词来引导用户进行操作，突出操作性。
             以下是我的历史记录
             ```
-            {messages},
+            {messages}
             ```
-            输出格式：
-            1.（引导词1）
-            2.（引导词2）
-            3.（引导词3）
-            '''
-    rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
-    res=''
-    for response in rsp:
-        if response.status_code == HTTPStatus.OK:
-            
-            print(response.output.choices[0]['message']['content'], end='')
-            res += response.output.choices[0]['message']['content']
-        else:
-            print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
-                response.request_id, response.status_code,
-                response.code, response.message
-            ))
-
-    return res
+            输出在30字以内
+        '''
+        rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
+        res=''
+        for response in rsp:
+            if response.status_code == HTTPStatus.OK:
+                print(response.output.choices[0]['message']['content'], end='')
+                res += response.output.choices[0]['message']['content']
+            else:
+                print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
+                    response.request_id, response.status_code,
+                    response.code, response.message
+                ))
+        suggestions.append(res.strip('"').rstrip('。')
+)
+        print(suggestions)
+    return suggestions
 
 
 if __name__ == '__main__':

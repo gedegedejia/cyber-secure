@@ -78,7 +78,8 @@ def get_secure_report(file_path):
         print(json)
         
         file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(json['type']+'文件'))
-        txt=v2_uploadFile.getResult(json)
+        txt,permalink=v2_uploadFile.getResult(json)
+        
         behaviour=''
         signature_description=''
         mat_description=''
@@ -106,7 +107,7 @@ def get_secure_report(file_path):
             mat_description = mat_description.rstrip(',')
 
         
-        answer=file_info+ "\n" +str(v2_uploadFile.culuateDate(txt))+ "\n" +behaviour+ "\n" +signature_description+ "\n" +mat_description
+        answer=file_info+'网页链接：'+permalink+ "\n" +str(v2_uploadFile.culuateDate(txt))+ "\n" +behaviour+ "\n" +signature_description+ "\n" +mat_description
     
         return answer
     except Exception as e:

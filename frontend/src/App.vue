@@ -98,9 +98,9 @@
               </div>
             </div>
             <div class="flex justify-between mr-2">
-              <button class="btn btn-primary w-1/3 mb-4 " @click="setTextMessage(suggestions[0])">{{ suggestions[0] || '向我提问网络安全知识' }}</button>
-              <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[1])">{{ suggestions[1] || '侧边栏点击抓包流量分析' }}</button>
-              <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[2])">{{ suggestions[2] || '侧边栏点击文件漏洞分析' }}</button>
+              <button class="btn btn-primary w-1/3 mb-4 " @click="setTextMessage(suggestions[0])">{{ suggestions[0]}}</button>
+              <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[1])">{{ suggestions[1]}}</button>
+              <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[2])">{{ suggestions[2]}}</button>
             </div>
             <div class="card-actions justify-end flex-nowrap">
               <button class="btn btn-primary btn-circle btn-md" @click="selectUpload" :disabled="!ready">
@@ -162,7 +162,7 @@ export default {
       messages: [],
       selectedButton: 1,
       tool:'chat',
-      suggestions: [] 
+      suggestions: ['向我提问网络安全知识', '侧边栏点击抓包流量分析', '侧边栏点击文件漏洞分析'] 
     }
   },
   mounted() {

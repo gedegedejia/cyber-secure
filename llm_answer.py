@@ -44,7 +44,7 @@ def chat():
         return jsonify({'error': 'No message provided'}), 400
     context = search(question,'ccc')
     answer = getAnswer(question, context, '', messages,'')
-    suggestions = get_suggestions(messages)
+    suggestions = get_suggestions(messages,'chat')
     messages.append({'role': "user", 'content': question})    
     messages.append({ "role": "assistant", "content": answer })
 
@@ -63,24 +63,16 @@ def get_secure_report_api():
     if uploaded_file_paths!=[]:
         tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))  # 调用get_secure_report工具函数
     else:
-        tool_message=''
+        tool_message='请上传文件'
+        context=''
     answer = getAnswer(question, context, str(tool_message), messages, tool_call)  # 获取答案
     #多轮对话
-    messages.append({
-        'role': "user",
-        'content': question
-    })    
-    messages.append({
-        'role': "assistant",
-        'content': tool_message
-    })
-    messages.append({
-        "role": "assistant",
-        "content": answer
-    })
-    suggestions = get_suggestions(messages)
-    answer = f'{answer}\n\n可能的提示词：{suggestions}'    
-    return jsonify({'response': answer})
+    messages.append({'role': "user",'content': question})    
+    messages.append({'role': "assistant",'content': tool_message})
+    messages.append({"role": "assistant","content": answer })
+    suggestions = get_suggestions(messages,tool_call)
+    response_data = {'response': answer,'suggestions':suggestions}
+    return jsonify({'response': response_data})
 
 @app.route('/api/get_wireshark', methods=['POST'])
 def get_wireshark_api():
@@ -110,7 +102,7 @@ def get_wireshark_api():
     if file_url:
         answer = f'{answer}\n[点击下载文件]({file_url})'
     print(messages)
-    suggestions = get_suggestions(messages)
+    suggestions = get_suggestions(messages,'get_wireshark')
     
     response_data = {'response': answer,'suggestions':suggestions}
     return jsonify(response_data)
@@ -133,7 +125,8 @@ def upload():
     file.save(file_path)
     uploaded_file_paths.append(file_path)
     print(f"Uploaded file paths: {uploaded_file_paths}")  # 添加日志
-    return jsonify({'fileName': file.filename, 'filePath': file_path})
+    suggestions = ['分析文件安全性','分析文件安全性','分析文件安全性']
+    return jsonify({'fileName': file.filename, 'filePath': file_path,'suggestions':suggestions})
     
 @app.route('/api/delete_chat', methods=['GET'])
 def delete_chat():
@@ -152,7 +145,8 @@ def getAnswer(query, context,tool_message,messages,tool_call):
             ```
             {context},
             ```
-            我的问题是：{query},我通过工具调用得知 {tool_message}。请你列出文件标签并解释，给出该文件的意图和可疑活动，并给出建议和解决方案。
+            我的问题是：{query},我通过工具调用得知 {tool_message}。
+            请你概括工具调用的信息，并解释文件标签，给出该文件的意图和可疑活动，并给出建议和解决方案。
             '''
     
     elif tool_call == 'get_current_time':
@@ -235,7 +229,7 @@ def sse():
 
             context = search(question, 'ccc')
             answer = getAnswer(question, context, '', messages, '')
-            suggestions = get_suggestions(messages)
+            suggestions = get_suggestions(messages,request_type)
             messages.append({'role': "user", 'content': question})
             messages.append({"role": "assistant", "content": answer})    
             Response={'content':answer,'suggestions':suggestions}
@@ -254,7 +248,7 @@ def sse():
             messages.append({'role': "user", 'content': question})
             messages.append({'role': "assistant", 'content': tool_message})
             messages.append({"role": "assistant", "content": answer})
-            suggestions = get_suggestions(messages)
+            suggestions = get_suggestions(messages,request_type)
             Response={'content':answer,'suggestions':suggestions}
 
         else:
@@ -273,23 +267,21 @@ def sse():
     return Response(stream(), content_type='text/event-stream')
 
 
-def get_suggestions(messages):
-    functions = [
-        '点击位于侧边栏的文件漏洞分析功能,可以上传文件,给出对文件的安全性分析报告和建议',
-        '点击位于侧边栏的抓包流量分析功能,可以自动抓包,对流量进行分析',
-        '点击位于侧边栏的网安知识问答功能,可以进行网络安全知识的问答'
-    ]
-
+def get_suggestions(messages,tool):
     suggestions = []
-
-    for func in functions:
+    if tool == 'get_secure_report':
+        function = '文件漏洞分析功能,可以上传文件,给出对文件的安全性分析报告和建议'
+    if tool == 'get_wireshark':
+        function = '抓包流量分析功能,可以自动抓包,对流量进行分析'
+    if tool == 'chat':
+        function = '网安知识问答功能,可以进行网络安全知识的问答'
+    
+    for i in range(3):
         prompt = f'''
-            {func}，请根据用户的历史记录和用户想要使用的功能，给用户1个可能的提示词来引导用户进行操作，突出操作性。
+            用户正在使用{function}，请根据用户的历史记录，给用户第{i}个可能的提示词来引导用户进行操作。
             以下是我的历史记录
-            ```
-            {messages}
-            ```
-            输出在30字以内
+            ```{messages}```
+            输出严格在10-12字
         '''
         rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
         res=''
@@ -302,9 +294,8 @@ def get_suggestions(messages):
                     response.request_id, response.status_code,
                     response.code, response.message
                 ))
-        suggestions.append(res.strip('"').rstrip('。')
-)
-        print(suggestions)
+        suggestions.append(res.strip('"').rstrip('。'))
+    print(suggestions)
     return suggestions
 
 

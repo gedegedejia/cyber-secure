@@ -57,6 +57,7 @@ def getResult(json):
     result = {}
     #print(json)
     print("网页：",json["permalink"])
+    permalink=json['permalink']
     for k,v in json["scans"].items():
         result[k] = v['result']
     #print(result)
@@ -65,7 +66,7 @@ def getResult(json):
     with open("result.txt","w") as g:
         g.write(str(result))
     '''
-    return result
+    return result,permalink
 
 def culuateDate(txt):
     #print(txt)

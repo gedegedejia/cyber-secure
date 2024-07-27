@@ -140,7 +140,30 @@
                   <select id="database-select" v-model="selectedDatabase" class="select-box">
                     <option v-for="db in databases" :key="db" :value="db">{{ db }}</option>
                   </select>  
+                </div>
+                
+                <div class="mb-4">
+                  <button class="btn btn-primary btn-circle btn-md" @click="selectUpload" :disabled="!ready">
+                    <input type="file" id="file-input" class="hidden" />
+                    <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5">
+                      <path
+                        d="M15 21H9C6.17157 21 4.75736 21 3.87868 20.1213C3 19.2426 3 17.8284 3 15M21 15C21 17.8284 21 19.2426 20.1213 20.1213C19.8215 20.4211 19.4594 20.6186 19 20.7487"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M12 16V3M12 3L16 7.375M12 3L8 7.375" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                </div>
 
+                <div class="mb-4">
+                  <button class="btn btn-primary btn-circle btn-md" @click="deleteUpload" :disabled="!ready">
+                    <input type="file" id="file-delete" class="hidden" />
+                    <svg class="w-5 h-5" viewBox="0 0 1024 1024"  fill="#d1dbff">
+                      <path d="M876.879741 902.256583a37.107206 37.107206 0 0 1-26.405002-10.982611L129.594815 170.440783A37.387614 37.387614 0 0 1 182.264616 117.53731L903.331477 838.417233a37.387614 37.387614 0 0 1-26.451736 63.83935z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      </path>
+                      <path d="M156.046552 902.256583a37.387614 37.387614 0 0 1-26.451737-63.83935L850.568208 117.53731a37.387614 37.387614 0 0 1 52.856738 52.903473L182.264616 891.273972a37.060472 37.060472 0 0 1-26.218064 10.982611z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </path>
+                  </svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -340,7 +363,7 @@ export default {
   display: none;
 }
 .select-box {
-  border: 2px solid #85b3de; /* 边框样式 */
+  border: 2px solid #4a00ff; /* 边框样式 */
   padding: 5px;
   border-radius: 5px;
   width: 100%;

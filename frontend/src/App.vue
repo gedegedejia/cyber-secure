@@ -241,11 +241,11 @@ export default {
       const msg = this.textMessage.trim();
 
       // 选择请求类型
-      if (this.selectedButton === 1) {
+      if (this.selectedButtonNumber === 1) {
         this.tool = 'chat';
-      } else if (this.selectedButton === 2) {
+      } else if (this.selectedButtonNumber === 2) {
         this.tool = 'get_secure_report';
-      } else if (this.selectedButton === 3) {
+      } else if (this.selectedButtonNumber === 3) {
         this.tool = 'get_wireshark';
       }
       if (msg) {

@@ -215,8 +215,6 @@ def search(text,DashVector_name):
         ret.append(hit.entity.get('text'))
     return ret
 
-
-
 @app.route('/api/sse')
 def sse():
     question = request.args.get('message')
@@ -303,4 +301,3 @@ if __name__ == '__main__':
     # 配置Dashscope API KEY
     dashscope.api_key = api_key
     app.run(debug=True,host='0.0.0.0',port=1223)
-

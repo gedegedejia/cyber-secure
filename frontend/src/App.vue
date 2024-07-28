@@ -9,8 +9,9 @@
             <button
               :class="{ 'btn btn-primary w-full mb-4 ': this.selectedButtonNumber === 1, 'btn-primary-500': this.selectedButtonNumber === 1, 'text-black': this.selectedButtonNumber !== 1, 'text-white': this.selectedButtonNumber === 1 }"
               class="btn w-full" @click="this.selectButton(1)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :fill="this.selectedButton === 1 ? 'white' : 'black'"
-                viewBox="0 0 1024 1024" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                :fill="this.selectedButton === 1 ? 'white' : 'black'" viewBox="0 0 1024 1024" stroke="currentColor"
+                stroke-width="2">
                 <path
                   d="M512 117.76c218.065455 0 395.636364 135.68 395.636364 302.545455s-177.570909 302.545455-395.636364 302.545454a144.058182 144.058182 0 0 0-50.501818 10.472727 791.272727 791.272727 0 0 0-162.909091 99.374546c-4.421818-128.232727-23.272727-168.96-56.087273-191.534546C162.909091 584.145455 116.363636 503.621818 116.363636 420.538182c0-167.098182 177.570909-302.545455 395.636364-302.545455m0-69.818182c-256 0-465.454545 166.632727-465.454545 372.363637 0 110.312727 59.810909 209.454545 155.22909 277.643636 23.272727 16.756364 27.694545 116.363636 27.694546 192.232727a41.192727 41.192727 0 0 0 40.494545 41.89091 40.029091 40.029091 0 0 0 23.272728-8.61091c58.414545-45.149091 141.730909-105.425455 192-124.50909a74.007273 74.007273 0 0 1 26.763636-6.05091c256 0 465.454545-166.865455 465.454545-372.363636s-209.454545-372.363636-465.454545-372.363636z"
                   :fill="this.selectedButtonNumber === 1 ? 'white' : 'black'"></path>
@@ -26,8 +27,9 @@
             <button
               :class="{ 'btn btn-primary w-full mb-4': this.selectedButtonNumber === 2, 'btn-primary-500': this.selectedButtonNumber === 2, 'text-black': this.selectedButtonNumber !== 2, 'text-white': this.selectedButtonNumber === 2 }"
               class="btn w-full" @click="this.selectButton(2)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :fill="this.selectedButtonNumber === 2 ? 'white' : 'black'"
-                viewBox="0 0 1024 1024" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                :fill="this.selectedButtonNumber === 2 ? 'white' : 'black'" viewBox="0 0 1024 1024"
+                stroke="currentColor" stroke-width="2">
                 <path
                   d="M715.001756 430.579512h-413.596097c-22.078439 0-39.960976-17.882537-39.960976-39.960975s17.882537-39.960976 39.960976-39.960976h413.596097c22.078439 0 39.960976 17.882537 39.960976 39.960976s-17.882537 39.960976-39.960976 39.960975zM715.001756 580.433171h-413.596097c-22.078439 0-39.960976-17.882537-39.960976-39.960976s17.882537-39.960976 39.960976-39.960975h413.596097c22.078439 0 39.960976 17.882537 39.960976 39.960975s-17.882537 39.960976-39.960976 39.960976zM715.001756 730.286829h-413.596097c-22.078439 0-39.960976-17.882537-39.960976-39.960975s17.882537-39.960976 39.960976-39.960976h413.596097c22.078439 0 39.960976 17.882537 39.960976 39.960976s-17.882537 39.960976-39.960976 39.960975zM611.602732 237.767805h-206.798049c-22.078439 0-39.960976-17.882537-39.960976-39.960976s17.882537-39.960976 39.960976-39.960975h206.798049c22.078439 0 39.960976 17.882537 39.960975 39.960975s-17.882537 39.960976-39.960975 39.960976zM700.515902 870.150244h-80.920975c-22.078439 0-39.960976-17.882537-39.960976-39.960976s17.882537-39.960976 39.960976-39.960975h80.920975c22.078439 0 39.960976 17.882537 39.960976 39.960975s-17.882537 39.960976-39.960976 39.960976z"
                   :fill="this.selectedButtonNumber === 2 ? 'white' : 'black'" p-id="4301"></path>
@@ -57,8 +59,9 @@
             <button
               :class="{ 'btn btn-primary w-full mb-4': this.selectedButtonNumber === 4, 'btn-primary-500': this.selectedButtonNumber === 4, 'text-black': this.selectedButtonNumber !== 4, 'text-white': this.selectedButtonNumber === 4 }"
               class="btn w-full" @click="this.selectButton(4)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :fill="this.selectedButtonNumber === 4 ? 'white' : 'black'"
-                viewBox="0 0 1024 1024" stroke="currentColor" stroke-width="2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                :fill="this.selectedButtonNumber === 4 ? 'white' : 'black'" viewBox="0 0 1024 1024"
+                stroke="currentColor" stroke-width="2">
                 <path
                   d="M959.718832 123.963683C872.444401 50.185297 704.593576 0.299912 511.850044 0.299912S151.255687 50.185297 63.981255 123.963683C23.193205 158.453578 0 198.04198 0 240.22962v543.840672c0 132.461193 229.132871 239.929708 511.850044 239.929708s511.850044-107.468515 511.850044-239.929708v-543.840672c0-42.18764-23.193205-81.776042-63.981256-116.265937zM87.774285 189.64444c19.794201-21.893586 50.685151-43.087377 89.373816-61.182075 42.287611-19.794201 92.073025-35.489603 147.956653-46.586352C384.087474 70.17944 446.869081 64.281168 511.850044 64.281168s127.76257 5.898272 186.745289 17.594845c55.883628 11.096749 105.669042 26.792151 147.956654 46.586352 38.688665 18.094699 69.579615 39.28849 89.373816 61.182075 15.795372 17.494875 23.793029 34.489896 23.793029 50.48521 0 16.095285-7.997657 33.090306-23.793029 50.485209-19.794201 21.893586-50.685151 43.087377-89.373816 61.182075-42.287611 19.894172-92.073025 35.489603-147.956654 46.586352-58.98272 11.696573-121.864298 17.594845-186.745289 17.594845s-127.76257-5.898272-186.74529-17.594845c-55.883628-11.096749-105.669042-26.792151-147.956653-46.586352-38.688665-18.094699-69.579615-39.28849-89.373816-61.182075C71.978912 273.319926 63.981255 256.324905 63.981255 240.22962s7.997657-33.090306 23.79303-50.58518zM63.981255 356.495558c87.274431 73.778385 255.125256 123.66377 447.868789 123.66377s360.594357-49.885385 447.868788-123.66377v155.254515c0 16.095285-7.997657 33.090306-23.793029 50.48521-19.794201 21.893586-50.685151 43.087377-89.373816 61.182075-42.287611 19.794201-92.073025 35.489603-147.956654 46.586352-58.98272 11.696573-121.864298 17.594845-186.745289 17.594845s-127.76257-5.898272-186.74529-17.594845c-55.883628-11.096749-105.669042-26.792151-147.956653-46.586352-38.688665-18.094699-69.579615-39.28849-89.373816-61.182075C71.978912 544.740408 63.981255 527.745387 63.981255 511.750073V356.495558z m895.737577 427.574734c0 16.095285-7.997657 33.090306-23.793029 50.485209-19.794201 21.893586-50.685151 43.087377-89.373816 61.182076-42.287611 19.894172-92.073025 35.489603-147.956654 46.586352-58.98272 11.696573-121.864298 17.594845-186.745289 17.594845s-127.76257-5.898272-186.74529-17.594845c-55.883628-11.096749-105.669042-26.792151-147.956653-46.586352-38.688665-18.094699-69.579615-39.28849-89.373816-61.182076C71.978912 817.160597 63.981255 800.165576 63.981255 784.070292V627.91604c87.274431 73.778385 255.125256 123.66377 447.868789 123.663771s360.594357-49.885385 447.868788-123.663771v156.154252z"
                   p-id="5503" :fill="this.selectedButtonNumber === 4 ? 'white' : 'black'"></path>
@@ -98,11 +101,11 @@
               </div>
               <div class="flex justify-between mr-2">
                 <button class="btn btn-primary w-1/3 mb-4 " @click="setTextMessage(suggestions[0])">{{
-                  suggestions[0]}}</button>
+                  suggestions[0] }}</button>
                 <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[1])">{{
-                  suggestions[1]}}</button>
+                  suggestions[1] }}</button>
                 <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[2])">{{
-                  suggestions[2]}}</button>
+                  suggestions[2] }}</button>
               </div>
               <div class="card-actions justify-end flex-nowrap">
                 <button class="btn btn-primary btn-circle btn-md" @click="selectUpload" :disabled="!ready">
@@ -125,45 +128,101 @@
                       stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </button>
+                <div class="drawer drawer-end justify-end w-1/5">
+                  <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+                  <div class="drawer-content">
+                    <!-- Page content here -->
+                    <label for="my-drawer-4" class="drawer-button btn btn-primary">提示词模板</label>
+                  </div>
+                  <div class="drawer-side">
+                    <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
+                    <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+                      <!-- Sidebar content here -->
+                      <h2 class="card-title justify-center my-2 text-primary">提示词模板中心</h2>
+                        <li v-for="db in instructions" :key="db" >
+                          <a  @click="setTextMessage(db)" class="my-1 primary-content border-2 border-indigo-300/50 bg-indigo-200 text-base">
+                          {{ truncateText(db, 15)  }}
+                          </a >
+                        </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
-            
+
             <div v-if="this.selectedButtonNumber === 4">
               <h2 class="card-title">知识库配置</h2>
+
               <div class="h-[32rem] max-h-full py-3 overflow-auto">
-                <div>
-                  <label for="database-select">
-                    <Text class='mt-8 text-lg font-bold text-center text-gray-700 '>
-                      知识库选择:
-                    </Text>
-                  </label>
-                  <select id="database-select" v-model="selectedDatabase" class="select-box">
-                    <option v-for="db in databases" :key="db" :value="db">{{ db }}</option>
-                  </select>  
-                </div>
+                <div class="mx-2 my-2">
+                  <a aria-hidden="true" tabindex="-1" href="#heading-1">
+                    <span class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle relative -mt-1">
+                      #
+                    </span>
+                    <text class="font-bold ml-1">知识库选择</text>
+                  </a>
                 
-                <div class="mb-4">
-                  <button class="btn btn-primary btn-circle btn-md" @click="selectUpload" :disabled="!ready">
-                    <input type="file" id="file-input" class="hidden" />
-                    <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5">
-                      <path
-                        d="M15 21H9C6.17157 21 4.75736 21 3.87868 20.1213C3 19.2426 3 17.8284 3 15M21 15C21 17.8284 21 19.2426 20.1213 20.1213C19.8215 20.4211 19.4594 20.6186 19 20.7487"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                      <path d="M12 16V3M12 3L16 7.375M12 3L8 7.375" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </button>
+                
+                  <div class="dropdown ml-7 my-2">
+                    <div tabindex="0" role="button" class="btn m-1" @click="toggleDropdown">
+                      {{ selectedDatabase || '点击选择知识库' }}
+                    </div>
+                    <ul v-show="dropdownVisible" tabindex="0"
+                      class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                      <li v-for="db in databases" :key="db">
+                        <a @click="selectDatabase(db)">{{ db }}</a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
 
-                <div class="mb-4">
-                  <button class="btn btn-primary btn-circle btn-md" @click="deleteUpload" :disabled="!ready">
-                    <input type="file" id="file-delete" class="hidden" />
-                    <svg class="w-5 h-5" viewBox="0 0 1024 1024"  fill="#d1dbff">
-                      <path d="M876.879741 902.256583a37.107206 37.107206 0 0 1-26.405002-10.982611L129.594815 170.440783A37.387614 37.387614 0 0 1 182.264616 117.53731L903.331477 838.417233a37.387614 37.387614 0 0 1-26.451736 63.83935z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      </path>
-                      <path d="M156.046552 902.256583a37.387614 37.387614 0 0 1-26.451737-63.83935L850.568208 117.53731a37.387614 37.387614 0 0 1 52.856738 52.903473L182.264616 891.273972a37.060472 37.060472 0 0 1-26.218064 10.982611z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    </path>
-                  </svg>
-                  </button>
+                <div class="mx-2 flex align ">
+                  <div class="flex justify-start items-center">
+                    <a aria-hidden="true" tabindex="-1" href="#heading-1" class="flex items-center">
+                      <span class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle relative -mt-1">
+                        #
+                      </span>
+                      <span class="font-bold ml-1 w-auto whitespace-nowrap">文件选择</span>
+                    </a>
+                  </div>
+                  
+                  <div class="justify-between">
+                    <input type="file" class="file-input file-input-bordered file-input-primary w-full max-w-xs mx-4" />
+                  </div>
+                  <div class="flex items-center justify-end w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-gray-500 stroke-current">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="ml-2 text-med text-gray-500 font-bold">文件上传仅支持格式为txt的文件</span>
+                  </div>
+                </div>
+                
+                
+                <div class="mx-2">
+                  <h2 class="card-title my-4">知识库简介</h2>
+                  <textarea class="textarea textarea-primary w-full " placeholder="请输入知识库简介"></textarea>
+                </div>
+
+                <div class="mx-2">
+                  <h2 class="card-title my-4">知识库{{selectedDatabase}}中已有文件</h2>
+                  <div class="overflow-x-auto">
+                    <table class="table table-zebra">
+                      <thead>
+                        <tr>
+                          <th>序号</th>
+                          <th>文件名称</th>
+                          <th>分词器</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(file, index) in files" :key="index">
+                          <th>{{ index + 1 }}</th>
+                          <td>{{ file.name }}</td>
+                          <td>text_embedding_v1</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -206,13 +265,41 @@ export default {
       selectedButtonNumber: 1,
       tool: 'chat',
       suggestions: ['向我提问网络安全知识', '侧边栏点击抓包流量分析', '侧边栏点击文件漏洞分析'],
-      databases: ['ccc', 'web-leak','cve','cve1']
+      databases: ['ccc', 'web-leak', 'cve'],
+      selectedDatabase: null,
+      dropdownVisible: false,
+      files: [
+        { name: '123.txt' },
+        { name: 'hello.txt' },
+        { name: 'my.txt' }
+      ],
+      instructions: [
+        '作为网络安全专家，在公司最近经历了一次数据泄露事件的背景下，为了增强公司整体的网络安全防护能力，你如何制定一套全面的网络安全策略？',
+        '你作为企业的网络安全顾问，面对公司网络基础设施近期频繁遭受DDoS攻击的情况，为了增强网络的抗攻击能力，你会推荐并实施哪些具体的防御措施？',
+        '作为信息技术主管，在公司最近发生了一次严重的恶意软件感染事件之后，为了提高系统的防御和响应能力，你会如何改进现有的端点检测与响应（EDR）系统？',
+        '你作为公司网络安全团队的领导，鉴于最近发现多个员工账户被未授权访问的事件，为了加强账户和权限管理，你会如何优化和实施多因素认证（MFA）系统？',
+        '作为企业的IT安全经理，在公司最近的安全审计中发现了一些高风险的安全漏洞之后，为了确保这些漏洞得到及时修复并避免未来的风险，你会如何制定和实施漏洞管理流程？'
+        // 根据需要添加更多指令
+      ]
     }
   },
   mounted() {
     this.deleteChat();
   },
   methods: {
+    truncateText(text, length) {
+      if (text.length > length) {
+        return text.substring(0, length) + '...';
+      }
+      return text;
+    },
+    toggleDropdown() {
+      this.dropdownVisible = !this.dropdownVisible;
+    },
+    selectDatabase(db) {
+      this.selectedDatabase = db;
+      this.dropdownVisible = false;
+    },
     scrollToBottom: function () {
       setTimeout(() => {
         const chatPanel = document.getElementById('chat-panel');
@@ -362,20 +449,4 @@ export default {
 ::-webkit-scrollbar {
   display: none;
 }
-.select-box {
-  border: 2px solid #4a00ff; /* 边框样式 */
-  padding: 5px;
-  border-radius: 5px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-#database-select {
-  margin-bottom: 1rem;
-}
-
-#file-upload {
-  margin-bottom: 1rem;
-}
-
 </style>

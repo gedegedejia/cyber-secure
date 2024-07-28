@@ -6,17 +6,6 @@ import json
 import os
 from dotenv import load_dotenv
 
-def getFileScanId(url,apikey,a,b):
-    # /file/scan
-    # /文件/扫描
-    # 上传并扫描文件
-    # 限制为32MB
-    params = {'apikey': apikey}
-    files = {'file': (a, open(b, 'rb'))}
-    response = requests.post(url, files=files, params=params)
-    my_scan_id = str(response.json()['scan_id'])
-    return my_scan_id
-
 def getFile_md5(url,apikey,a,b):
     params = {'apikey': apikey}
     files = {'file': (a, open(b, 'rb'))}

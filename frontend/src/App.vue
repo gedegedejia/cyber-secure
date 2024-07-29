@@ -96,7 +96,7 @@
               class="menu rounded-box w-full">
             <li v-for="(chat, index) in chatHistory" :key="index" @click="loadChat(index)">
               <div class="flex items-center justify-between mr-2">
-                <a class="text-base font-bold text-gray-700">chat {{ index + 1 }}</a>
+                <a class="text-base font-bold text-gray-700">Chat {{ index + 1 }}</a>
                 <button @click="deleteChat(index)">
                   <svg t="1722251570726" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5947" width="20" height="20">
                     <path 
@@ -107,7 +107,7 @@
 
                 </button>
               </div>
-              <div class="divider -my-1 w-full"></div>
+              <div class="divider -my-1 w-full" style="pointer-events: none;"></div>
             </li>
           </ul>
         </div>

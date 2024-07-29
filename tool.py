@@ -65,14 +65,11 @@ def get_secure_report(file_path):
         file_name=os.path.basename(file_path)
         load_dotenv()
         apikey = os.getenv('API_KEY1')
-        #获得文件scan_id
-        scan_id = v2_uploadFile.getFileScanId(url1,apikey,file_name,file_path)
-
         md5 = v2_uploadFile.getFile_md5(url1,apikey,file_name,file_path)
         
         #获得返回的json结果并写入result文件
         #getFieReportResult(url2, apikey, scan_id)
-        json = v2_uploadFile.getFieReportResult(url2,apikey,scan_id)
+        json = v2_uploadFile.getFieReportResult(url2,apikey,md5)
         
         json1 = v2_uploadFile.getFieReportResult_behaviour(apikey,md5)
         print(json)

@@ -76,34 +76,3 @@ def culuateDate(txt):
     else:
         answer = '经过virus total(专业病毒检测软件)的检测,此文件未发现病毒'
     return answer
-
-def main():
-    file_name = input("请输入文件名:")
-    a = str(file_name)
-    file_src  = input("请输入文件路径:")
-    b = str(file_src)
-
-    url1 = 'https://www.virustotal.com/vtapi/v2/file/scan'
-    url2 = "https://www.virustotal.com/vtapi/v2/file/report"
-    #需要提供密钥，否者会出现403错误
-    load_dotenv()
-    apikey = os.getenv('API_KEY1')
-    
-    #获得文件scan_id
-    scan_id = getFileScanId(url1,apikey,a,b)
-    my_md5 = getFile_md5(url1,apikey,a,b)
-    #获得返回的json结果并写入result文件
-    #getFieReportResult(url2, apikey, scan_id)
-    json = getFieReportResult(url2,apikey,scan_id)
-    getFieReportResult_behaviour(apikey,my_md5)
-    #getFieReportResult1(url2,apikey,scan_id)
-    file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(json['type']+'文件'))
-    #print(json)
-    txt=getResult(json)
-    #print(txt)
-    #answer=file_info+str(culuateDate(txt))
-    #print(qwen_7b_chat.call_with_messages(str(answer)))
-
-
-if __name__ == '__main__':
-   main()

@@ -140,7 +140,7 @@
                       <!-- Sidebar content here -->
                       <h2 class="card-title justify-center my-2 text-primary">提示词模板中心</h2>
                         <li v-for="db in instructions" :key="db" >
-                          <a  @click="setTextMessage(db)" class="my-1 primary-content border-2 border-indigo-300/50 bg-indigo-200 text-base">
+                          <a  @click="setTextMessage(db)" class="my-1 primary-content text-base ">
                           {{ truncateText(db, 15)  }}
                           </a >
                         </li>
@@ -154,7 +154,7 @@
               <h2 class="card-title">知识库配置</h2>
 
               <div class="h-[32rem] max-h-full py-3 overflow-auto">
-                <div class="mx-2 my-2">
+                <div class="mx-2 my-2 align">
                   <a aria-hidden="true" tabindex="-1" href="#heading-1">
                     <span class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle relative -mt-1">
                       #
@@ -186,21 +186,21 @@
                     </a>
                   </div>
                   
-                  <div class="justify-between">
-                    <input type="file" class="file-input file-input-bordered file-input-primary w-full max-w-xs mx-4" />
+                  <div class="justify-between ml-12">
+                    <input type="file" class="file-input file-input-bordered file-input-primary"/>
                   </div>
                   <div class="flex items-center justify-end w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-gray-500 stroke-current">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    <span class="ml-2 text-med text-gray-500 font-bold">文件上传仅支持格式为txt的文件</span>
+                    <span class="mr-2 text-med text-gray-500 font-bold">文件上传仅支持格式为txt的文件</span>
                   </div>
                 </div>
                 
                 
-                <div class="mx-2">
+                <div class="mx-2 my-4">
                   <h2 class="card-title my-4">知识库简介</h2>
-                  <textarea class="textarea textarea-primary w-full " placeholder="请输入知识库简介"></textarea>
+                  <textarea class="textarea textarea-primary w-full my-2" placeholder="请输入知识库简介"></textarea>
                 </div>
 
                 <div class="mx-2">
@@ -223,6 +223,9 @@
                       </tbody>
                     </table>
                   </div>
+                </div>
+                <div class="card-actions card-body items-center text-center">
+                  <button class="btn btn-outline btn-primary w-full">确认上传</button>
                 </div>
               </div>
             </div>

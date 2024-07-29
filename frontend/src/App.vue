@@ -1,8 +1,7 @@
 <template>
   <div class="hero min-h-screen max-h-full" style="background-image: url(https://cover.sli.dev)">
     <div class="flex w-full h-full">
-      <!-- 侧边栏 -->
-      <div class="sidebar w-1/5 bg-gray-300 p-4 overflow-y-auto" style="opacity: 0.9">
+      <div class="sidebar fixed top-0 left-0 w-1/5 h-full bg-gray-300 p-4 overflow-y-auto " style="opacity: 0.9; z-index: 10">
         <h2 class="text-xl font-bold mb-4 text-gray-700">网络安全助手</h2>
         <ul>
           <li class="mb-2">
@@ -77,11 +76,44 @@
           </li>
         </ul>
 
-        <Text class='mt-8 text-lg font-bold text-center text-gray-700 '>
-          知识库配置
-        </Text>
+        <div class="flex items-center justify-between mr-2">
+          <text class='text-lg font-bold text-gray-700 '>历史对话</text>
+          <div class="card-actions tooltip lg:tooltip tooltip-left" data-tip="新聊天">
+            <button @click="createNewConversation">
+              <svg t="1722247665926" class="icon " viewBox="0 0 1024 1024" version="1.1"
+                xmlns="http://www.w3.org/2000/svg" p-id="4349" width="20" height="20">
+                <path
+                  d="M696.1152 0C908.6976 0 1024 115.3024 1024 327.8848v368.2304C1024 908.6976 908.6976 1024 696.1152 1024H97.792A98.048 98.048 0 0 1 0 926.208V327.8848C0 115.3024 115.3024 0 327.8848 0h368.2304z m0 103.5264H327.8848c-155.4432 0-224.3584 68.9152-224.3584 224.3584v592.4864h592.5888c150.272 0 219.648-64.256 224.0512-208.9984l0.3072-15.2576V327.8848c0-155.4432-68.9152-224.3584-224.3584-224.3584zM512 299.1616c28.5696 0 51.7632 23.1936 51.7632 51.8144v109.1584l109.2608 0.1024a51.7632 51.7632 0 1 1 0 103.5264h-109.2608l0.1024 109.2608a51.7632 51.7632 0 1 1-103.5776 0v-109.2608l-109.2608 0.1024a51.7632 51.7632 0 1 1 0-103.5776h109.2096l0.0512-109.2608c0-28.6208 23.1936-51.7632 51.7632-51.7632L512 299.1616z"
+                  p-id="4350" fill="#374151"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-2">
+          <ul id="history-list" 
+              :class="{'bg-white': chatHistory.length >= 1, 'bg-transparent': chatHistory.length === 0}" 
+              class="menu rounded-box w-full">
+            <li v-for="(chat, index) in chatHistory" :key="index" @click="loadChat(index)">
+              <div class="flex items-center justify-between mr-2">
+                <a class="text-base font-bold text-gray-700">chat {{ index + 1 }}</a>
+                <button @click="deleteChat(index)">
+                  <svg t="1722251570726" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5947" width="20" height="20">
+                    <path 
+                      d="M799.2 874.4c0 34.4-28.001 62.4-62.4 62.4H287.2c-34.4 0-62.4-28-62.4-62.4V212h574.4v662.4zM349.6 100c0-7.2 5.6-12.8 12.8-12.8h300c7.2 0 12.8 5.6 12.8 12.8v37.6H349.6V100z m636.8 37.6H749.6V100c0-48.001-39.2-87.2-87.2-87.2h-300c-48 0-87.2 39.199-87.2 87.2v37.6H37.6C16.8 137.6 0 154.4 0 175.2s16.8 37.6 37.6 37.6h112v661.6c0 76 61.6 137.6 137.6 137.6h449.6c76 0 137.6-61.6 137.6-137.6V212h112c20.8 0 37.6-16.8 37.6-37.6s-16.8-36.8-37.6-36.8zM512 824c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0 20.8 16.8 37.6 37.6 37.6m-175.2 0c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0.8 20.8 17.6 37.6 37.6 37.6m350.4 0c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0 20.8 16.8 37.6 37.6 37.6"
+                      fill="#374151" p-id="5948">
+                    </path>
+                  </svg>
+
+                </button>
+              </div>
+              <div class="divider -my-1 w-full"></div>
+            </li>
+          </ul>
+        </div>
+        
       </div>
-      <div class="hero-content w-4/5">
+      <div class="hero-content w-4/5 overflow-hidden" style="margin-left: 20%;">
         <div class="card w-auto shadow-2xl bg-base-100 md:w-4/5">
           <div class="card-body p-5">
             <div v-if="this.selectedButtonNumber !== 4">
@@ -139,11 +171,11 @@
                     <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
                       <!-- Sidebar content here -->
                       <h2 class="card-title justify-center my-2 text-primary">提示词模板中心</h2>
-                        <li v-for="db in instructions" :key="db" >
-                          <a  @click="setTextMessage(db)" class="my-1 primary-content text-base ">
-                          {{ truncateText(db, 15)  }}
-                          </a >
-                        </li>
+                      <li v-for="db in instructions" :key="db">
+                        <a @click="setTextMessage(db)" class="my-1 primary-content text-base ">
+                          {{ truncateText(db, 15) }}
+                        </a>
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -156,13 +188,14 @@
               <div class="h-[32rem] max-h-full py-3 overflow-auto">
                 <div class="mx-2 my-2 align">
                   <a aria-hidden="true" tabindex="-1" href="#heading-1">
-                    <span class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle relative -mt-1">
+                    <span
+                      class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle relative -mt-1">
                       #
                     </span>
                     <text class="font-bold ml-1">知识库选择</text>
                   </a>
-                
-                
+
+
                   <div class="dropdown ml-7 my-2">
                     <div tabindex="0" role="button" class="btn m-1" @click="toggleDropdown">
                       {{ selectedDatabase || '点击选择知识库' }}
@@ -179,32 +212,35 @@
                 <div class="mx-2 flex align ">
                   <div class="flex justify-start items-center">
                     <a aria-hidden="true" tabindex="-1" href="#heading-1" class="flex items-center">
-                      <span class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle relative -mt-1">
+                      <span
+                        class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle relative -mt-1">
                         #
                       </span>
                       <span class="font-bold ml-1 w-auto whitespace-nowrap">文件选择</span>
                     </a>
                   </div>
-                  
+
                   <div class="justify-between ml-12">
-                    <input type="file" class="file-input file-input-bordered file-input-primary"/>
+                    <input type="file" class="file-input file-input-bordered file-input-primary" />
                   </div>
                   <div class="flex items-center justify-end w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-5 w-5 shrink-0 text-gray-500 stroke-current">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      class="h-5 w-5 shrink-0 text-gray-500 stroke-current">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <span class="mr-2 text-med text-gray-500 font-bold">文件上传仅支持格式为txt的文件</span>
                   </div>
                 </div>
-                
-                
+
+
                 <div class="mx-2 my-4">
                   <h2 class="card-title my-4">知识库简介</h2>
                   <textarea class="textarea textarea-primary w-full my-2" placeholder="请输入知识库简介"></textarea>
                 </div>
 
                 <div class="mx-2">
-                  <h2 class="card-title my-4">知识库{{selectedDatabase}}中已有文件</h2>
+                  <h2 class="card-title my-4">知识库{{ selectedDatabase }}中已有文件</h2>
                   <div class="overflow-x-auto">
                     <table class="table table-zebra">
                       <thead>
@@ -264,6 +300,8 @@ export default {
         title: '',
         content: ''
       },
+      chatHistory: [], // 存储所有聊天记录
+      currentChatIndex: 0, // 当前加载的聊天记录索引
       messages: [],
       selectedButtonNumber: 1,
       tool: 'chat',
@@ -287,7 +325,13 @@ export default {
     }
   },
   mounted() {
-    this.deleteChat();
+    this.loadChatHistoryFromLocalStorage();
+
+    // 如果 chatHistory 为空，则创建一个默认的聊天记录
+    if (this.chatHistory.length === 0) {
+      this.createNewConversation();
+      this.loadChat(0);
+    }
   },
   methods: {
     truncateText(text, length) {
@@ -314,17 +358,41 @@ export default {
       this.modal.content = e;
       document.getElementById('modal').showModal();
     },
-    deleteChat: function () {
+    deleteChat: function (index) {
       this.ready = false;
-      this.messages = []
-      fetch('/api/delete_chat', {
-        method: 'GET'
-      })
-        .catch((err) => this.showErr(err))
-        .finally(() => this.ready = true);
+
+      // 从 chatHistory 数组中删除指定索引的聊天记录
+      this.chatHistory.splice(index, 1);
+
+      // 如果当前显示的聊天记录索引大于或等于被删除的聊天记录索引，则递减当前显示的聊天记录索引
+      if (this.currentChatIndex >= index) {
+        this.currentChatIndex--;
+      }
+
+      // 如果当前显示的聊天记录索引超出了剩余聊天记录的范围，则设置为最后一个聊天记录的索引
+      if (this.currentChatIndex >= this.chatHistory.length) {
+        this.currentChatIndex = this.chatHistory.length - 1;
+      }
+
+      // 清空当前显示的聊天记录
+      this.messages = [];
+      this.saveChatHistoryToLocalStorage();
+      this.ready = true;  // 设置 ready 为 true 表示操作完成
     },
     setTextMessage(suggestion) {
       this.textMessage = suggestion;
+    },
+    saveChatHistoryToLocalStorage: function () {
+      localStorage.setItem('chatHistory', JSON.stringify(this.chatHistory));
+    },
+    loadChatHistoryFromLocalStorage: function () {
+      const storedChatHistory = localStorage.getItem('chatHistory');
+      if (storedChatHistory) {
+        this.chatHistory = JSON.parse(storedChatHistory);
+        if (this.chatHistory.length > 0) {
+          this.loadChat(0); // 加载第一个聊天记录
+        }
+      }
     },
     sendMessage: function () {
       this.ready = false;
@@ -354,7 +422,6 @@ export default {
     selectButton: function (buttonNumber) {
       this.selectedButtonNumber = buttonNumber;
       console.log(this.selectedButtonNumber)
-      this.deleteChat();
     },
     selectUpload: function () {
       let fileInput = document.getElementById('file-input');
@@ -443,6 +510,41 @@ export default {
     },
     md2html: function (md) {
       return marked.parse(md);
+    },
+    loadChat(index) {
+      console.log(index)
+      this.currentChatIndex = index;
+      this.messages = this.chatHistory[index];
+      console.log(this.chatHistory[index])
+    },
+    createNewConversation: function () {
+      this.saveChatHistoryToLocalStorage();
+      // 清空当前聊天记录
+      this.messages = [];
+
+      // 如果 chatHistory 为空，创建第一个聊天记录
+      if (this.chatHistory.length === 0) {
+        this.chatHistory.push(this.messages.slice());
+        this.currentChatIndex = 0;
+      } else {
+        // 如果 chatHistory 不为空，则在列表末尾添加新聊天记录
+        this.currentChatIndex = this.chatHistory.length;
+        this.chatHistory.push(this.messages.slice());
+      }
+
+      // 保存当前聊天记录到 localStorage
+      this.saveChatHistoryToLocalStorage();
+
+      this.loadChat(this.currentChatIndex); // 加载新创建的聊天记录
+    },
+    // 保存当前聊天记录到 localStorage
+    saveCurrentChat: function () {
+      this.chatHistory.push(this.messages.slice());
+      this.loadChat(this.chatHistory.length - 1); // 加载最新保存的聊天记录
+    },
+    // 设置预设消息
+    setTextMessage(message) {
+      this.textMessage = message;
     }
   }
 }

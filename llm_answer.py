@@ -19,7 +19,13 @@ api_key = os.getenv("DASHSCOPE_API_KEY")
 url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation'
 headers = {'Content-Type': 'application/json',
            'Authorization': f'Bearer {api_key}'}
-
+global messages
+messages = [
+    {
+        "role": "system",
+        "content": "你是一个网络安全分析小助手，你的任务是解决用户的网络安全问题。你的功能:1.分析用户上传的文件。2.抓取数据包"
+    }
+]
 uploaded_file_paths = []
 
 app = Flask(
@@ -128,17 +134,6 @@ def upload():
     suggestions = ['分析文件安全性','分析文件安全性','分析文件安全性']
     return jsonify({'fileName': file.filename, 'filePath': file_path,'suggestions':suggestions})
     
-@app.route('/api/delete_chat', methods=['GET'])
-def delete_chat():
-    global messages
-    messages = [
-        {
-            "role": "system",
-            "content": "你是一个网络安全分析小助手，你的任务是解决用户的网络安全问题。你的功能:1.分析用户上传的文件。2.抓取数据包"
-        }
-    ]
-    return jsonify({'response': 'Chat history deleted successfully'})
-
 def getAnswer(query, context,tool_message,messages,tool_call):
     if tool_call == 'get_secure_report':
         prompt = f'''请基于```内的网络安全知识，回答我的问题。

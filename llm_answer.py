@@ -1,8 +1,8 @@
 import os
 import dashscope
-from dashscope import Generation
+from dashscope import Generation,TextEmbedding
 from dotenv import load_dotenv
-from pymilvus import connections, FieldSchema, CollectionSchema, DataType, Collection
+from pymilvus import connections, FieldSchema, CollectionSchema, DataType, Collection,utility
 from embedding import getEmbedding
 from http import HTTPStatus
 from flask import Flask, request, jsonify, render_template,Response,stream_with_context,json
@@ -13,6 +13,8 @@ import packet_capture
 import asyncio
 from datetime import datetime
 import time
+import embedding
+from tqdm import tqdm
 
 load_dotenv()
 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -197,6 +199,7 @@ def search(text,DashVector_name):
     ]
     schema = CollectionSchema(fields=fields, description='CEC Corpus Collection')
     collection = Collection(name=COLLECTION_NAME, schema=schema)
+    collection.load()
     results = collection.search(
         data=[getEmbedding(text)],  # Embeded search value
         anns_field="embedding",  # Search across embeddings
@@ -220,7 +223,7 @@ def sse():
     def stream():
         if request_type == 'chat':
 
-            context = search(question, 'ccc')
+            context = search(question, 'web_leak')
             answer = getAnswer(question, context, '', messages, '')
             suggestions = get_suggestions(messages,request_type)
             messages.append({'role': "user", 'content': question})
@@ -231,9 +234,8 @@ def sse():
 
             context = search(question, 'web_leak')
             tool_call = tool.tool_jude(question)
-            
             if uploaded_file_paths:
-                tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))
+                tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))  
             else:
                 tool_message = ''
 
@@ -258,7 +260,6 @@ def sse():
         yield f'data: {json.dumps(response_data)}\n\n'
 
     return Response(stream(), content_type='text/event-stream')
-
 
 def get_suggestions(messages,tool):
     suggestions = []
@@ -291,6 +292,35 @@ def get_suggestions(messages,tool):
     print(suggestions)
     return suggestions
 
+@app.route('/api/uploadKnowledge', methods=['POST'])
+def uploadKnowledge():
+    data_path = 'uploads/knowledge'
+    knowledge_name = request.form.get('KnowledgeName')
+    file = request.files['file']
+    
+    print("knowledge_name:", knowledge_name)
+
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+
+    if not os.path.exists(data_path):
+        os.makedirs(data_path)
+
+    file_path = os.path.join(data_path, file.filename)
+    file.save(file_path)
+    uploaded_file_paths.append(file_path)
+    print(f"Uploaded file paths: {uploaded_file_paths}")  # 添加日志
+    
+    # Assuming embedding.uploadKnowledge is a function you defined elsewhere
+    try:
+        embedding.uploadKnowledge(knowledge_name, data_path)
+        
+        return jsonify({'message': 'File uploaded successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     # 配置Dashscope API KEY

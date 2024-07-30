@@ -221,7 +221,7 @@
                   </div>
 
                   <div class="justify-between ml-12">
-                    <input type="file" class="file-input file-input-bordered file-input-primary" />
+                    <input type="file" class="file-input file-input-bordered file-input-primary" id="fileInput"/>
                   </div>
                   <div class="flex items-center justify-end w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -261,7 +261,7 @@
                   </div>
                 </div>
                 <div class="card-actions card-body items-center text-center">
-                  <button class="btn btn-outline btn-primary w-full">确认上传</button>
+                  <button class="btn btn-outline btn-primary w-full" @click="addKnowledge(selectedDatabase)">确认上传</button>
                 </div>
               </div>
             </div>
@@ -306,7 +306,7 @@ export default {
       selectedButtonNumber: 1,
       tool: 'chat',
       suggestions: ['向我提问网络安全知识', '侧边栏点击抓包流量分析', '侧边栏点击文件漏洞分析'],
-      databases: ['ccc', 'web-leak', 'cve'],
+      databases: ['ccc', 'web_leak', 'cve'],
       selectedDatabase: null,
       dropdownVisible: false,
       files: [
@@ -346,6 +346,7 @@ export default {
     selectDatabase(db) {
       this.selectedDatabase = db;
       this.dropdownVisible = false;
+      console.log(db)
     },
     scrollToBottom: function () {
       setTimeout(() => {
@@ -512,11 +513,9 @@ export default {
       return marked.parse(md);
     },
     loadChat(index) {
-      console.log(index)
       this.currentChatIndex = index;
       this.messages = this.chatHistory[index];
-      console.log(this.chatHistory[index])
-    },
+      },
     createNewConversation: function () {
       this.saveChatHistoryToLocalStorage();
       // 清空当前聊天记录
@@ -545,6 +544,25 @@ export default {
     // 设置预设消息
     setTextMessage(message) {
       this.textMessage = message;
+    },
+    addKnowledge:function(KnowledgeName){
+      const fileInput = document.getElementById('fileInput');
+      if (fileInput.files.length > 0 ) {
+          const file = fileInput.files[0];
+          const formData = new FormData();
+
+          formData.append('file',file)
+          formData.append('KnowledgeName',KnowledgeName); 
+                    
+          fetch('/api/uploadKnowledge', {
+              method: 'POST',
+              body: formData
+          })
+          .then(data => {
+              console.log(data)
+          })
+          .catch((err) => this.showErr(err))
+      }
     }
   }
 }

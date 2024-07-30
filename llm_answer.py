@@ -223,7 +223,7 @@ def sse():
     def stream():
         if request_type == 'chat':
 
-            context = search(question, 'web_leak')
+            context = search(question, 'ccc')
             answer = getAnswer(question, context, '', messages, '')
             suggestions = get_suggestions(messages,request_type)
             messages.append({'role': "user", 'content': question})
@@ -294,8 +294,8 @@ def get_suggestions(messages,tool):
 
 @app.route('/api/uploadKnowledge', methods=['POST'])
 def uploadKnowledge():
-    data_path = 'uploads/knowledge'
     knowledge_name = request.form.get('KnowledgeName')
+    data_path = 'uploads/knowledge/'+knowledge_name
     file = request.files['file']
     
     print("knowledge_name:", knowledge_name)

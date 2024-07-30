@@ -251,9 +251,9 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="(file, index) in files" :key="index">
+                        <tr v-for="(file, index) in files[selectedDatabase]" :key="index">
                           <th>{{ index + 1 }}</th>
-                          <td>{{ file.name }}</td>
+                          <td>{{ file }}</td>
                           <td>text_embedding_v1</td>
                         </tr>
                       </tbody>
@@ -261,7 +261,7 @@
                   </div>
                 </div>
                 <div class="card-actions card-body items-center text-center">
-                  <button class="btn btn-outline btn-primary w-full" @click="addKnowledge(selectedDatabase)">确认上传</button>
+                  <button class="btn btn-outline btn-primary w-full" @click="addKnowledge(selectedDatabase)" @change="handleFileChange(selectedDatabase)">确认上传</button>
                 </div>
               </div>
             </div>
@@ -309,11 +309,11 @@ export default {
       databases: ['ccc', 'web_leak', 'cve'],
       selectedDatabase: null,
       dropdownVisible: false,
-      files: [
-        { name: '123.txt' },
-        { name: 'hello.txt' },
-        { name: 'my.txt' }
-      ],
+      files: {
+        'ccc':[],
+        'web_leak':[],
+        'cve':[]
+      },
       instructions: [
         '作为网络安全专家，在公司最近经历了一次数据泄露事件的背景下，为了增强公司整体的网络安全防护能力，你如何制定一套全面的网络安全策略？',
         '你作为企业的网络安全顾问，面对公司网络基础设施近期频繁遭受DDoS攻击的情况，为了增强网络的抗攻击能力，你会推荐并实施哪些具体的防御措施？',
@@ -559,7 +559,8 @@ export default {
               body: formData
           })
           .then(data => {
-              console.log(data)
+            this.files[KnowledgeName].push(file.name);
+            console.log(this.files[KnowledgeName])
           })
           .catch((err) => this.showErr(err))
       }

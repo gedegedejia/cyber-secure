@@ -21,11 +21,11 @@ api_key = os.getenv("DASHSCOPE_API_KEY")
 url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation'
 headers = {'Content-Type': 'application/json',
            'Authorization': f'Bearer {api_key}'}
-global messages
+
 messages = [
     {
         "role": "system",
-        "content": "你是一个网络安全分析小助手，你的任务是解决用户的网络安全问题。你的功能:1.分析用户上传的文件。2.抓取数据包"
+        "content": "你是一个网络安全分析小助手，你的任务是解决用户的网络安全问题。你的功能:1.分析用户上传的文件。2.抓取并分析pcapng数据包"
     }
 ]
 uploaded_file_paths = []
@@ -42,48 +42,6 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 def index():
     return render_template('index.html')
 
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    print(messages)
-    asyncio.set_event_loop(asyncio.new_event_loop())
-    question = request.json.get('message')
-    answer = None  # 初始化 answer
-    if not question:
-        return jsonify({'error': 'No message provided'}), 400
-    context = search(question,'ccc')
-    answer = getAnswer(question, context, '', messages,'')
-    suggestions = get_suggestions(messages,'chat')
-    messages.append({'role': "user", 'content': question})    
-    messages.append({ "role": "assistant", "content": answer })
-
-    response_data = {'response': answer,'suggestions':suggestions}
-    return jsonify(response_data)
-
-@app.route('/api/get_secure_report', methods=['POST'])
-def get_secure_report_api():
-    question = request.json.get('message')
-    answer = None  # 初始化 answer
-    if not question:
-        return jsonify({'error': 'No message provided'}), 400
-    context = search(question,'web_leak')  # 假设search函数已定义
-    
-    tool_call=tool.tool_jude(question)
-    if uploaded_file_paths!=[]:
-        tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))  # 调用get_secure_report工具函数
-    else:
-        tool_message='请上传文件'
-        context=''
-    answer = getAnswer(question, context, str(tool_message), messages, tool_call)  # 获取答案
-    #多轮对话
-    messages.append({'role': "user",'content': question})    
-    messages.append({'role': "assistant",'content': tool_message})
-    messages.append({"role": "assistant","content": answer })
-    suggestions = get_suggestions(messages,tool_call)
-    response_data = {'response': answer,'suggestions':suggestions}
-    return jsonify({'response': response_data})
-
-@app.route('/api/get_wireshark', methods=['POST'])
-def get_wireshark_api():
     asyncio.set_event_loop(asyncio.new_event_loop())
     tool.get_wireshark()  # 执行Wireshark抓包操作
     answer = None  # 初始化 answer
@@ -153,13 +111,10 @@ def getAnswer(query, context,tool_message,messages,tool_call):
     
     elif tool_call == 'get_wireshark':
         prompt = f'''
-            我的问题是：{query},我通过工具调用得知 {tool_message}。
+            我通过wireshark工具抓包得知 {tool_message}， 请你描述数据包信息，并判断是否有可疑数据包，并给出建议和解决方案。
             '''
     else:
         prompt = f'''回答我。
-            ```
-            {context},
-            ```
             我的问题是：{query}。回答尽量精炼，但需要有礼貌。
             '''
     
@@ -176,7 +131,6 @@ def getAnswer(query, context,tool_message,messages,tool_call):
                 response.request_id, response.status_code,
                 response.code, response.message
             ))
-    print(res)
     return res
 
 def search(text,DashVector_name):
@@ -213,6 +167,43 @@ def search(text,DashVector_name):
         ret.append(hit.entity.get('text'))
     return ret
 
+@app.route('/api/update-chat', methods=['POST'])
+def update_chat():
+    data = request.get_json()
+    messages = data.get('messages')
+    if not messages:
+        return jsonify({'error': 'No messages provided'}), 400
+    global update_messages
+    # 在这里处理 messages，例如保存到数据库或进行其他操作
+    update_messages = convert_messages_format(messages)
+    # 返回成功响应
+    return jsonify({'success': True}), 200
+
+def convert_messages_format(messages):
+    converted_messages = []
+
+    # 添加系统角色的消息
+    system_message = {
+        'role': 'system',
+        'content': '你是一个网络安全分析小助手，你的任务是解决用户的网络安全问题。你的功能:1.分析用户上传的文件。2.抓取并分析pcapng数据包'
+    }
+    converted_messages.append(system_message)
+
+    for message in messages:
+        role = 'user' if message['user'] else 'assistant'
+        content = message['content']
+
+        # 构建新的消息字典
+        new_message = {
+            'role': role,
+            'content': content
+        }
+
+        # 将新消息添加到转换后的消息列表中
+        converted_messages.append(new_message)
+
+    return converted_messages
+
 @app.route('/api/sse')
 def sse():
     question = request.args.get('message')
@@ -222,28 +213,59 @@ def sse():
 
     def stream():
         if request_type == 'chat':
-
-            context = search(question, 'ccc')
+            messages = update_messages
+            context = search(question, 'web_leak')
             answer = getAnswer(question, context, '', messages, '')
             suggestions = get_suggestions(messages,request_type)
-            messages.append({'role': "user", 'content': question})
-            messages.append({"role": "assistant", "content": answer})    
+
             Response={'content':answer,'suggestions':suggestions}
-        
+            """print("+++++++++++++++++++++++++++++++++++++")
+            print(messages)
+            print("+++++++++++++++++++++++++++++++++++++")"""
         elif request_type == 'get_secure_report':
 
             context = search(question, 'web_leak')
             tool_call = tool.tool_jude(question)
+            messages = update_messages
             if uploaded_file_paths:
-                tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))  
+                tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))
             else:
                 tool_message = ''
 
-            answer = getAnswer(question, context, str(tool_message), messages, tool_call)
-            messages.append({'role': "user", 'content': question})
-            messages.append({'role': "assistant", 'content': tool_message})
-            messages.append({"role": "assistant", "content": answer})
+            answer = getAnswer(question, context, str(tool_message), messages, tool_call)        
             suggestions = get_suggestions(messages,request_type)
+            Response={'content':answer,'suggestions':suggestions}
+        elif request_type == 'get_wireshark':
+            asyncio.set_event_loop(asyncio.new_event_loop())
+            tool.get_wireshark()  # 执行Wireshark抓包操作
+            answer = None  # 初始化 answer
+            image_url = None  # 初始化 image_url
+            file_url = None     # 初始化 file_url
+            context = search(question, 'web_leak')
+            tool_call = tool.tool_jude(question)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            pcap_dir = 'static/assets/packet_capture'
+            if not os.path.exists(pcap_dir):
+                os.makedirs(pcap_dir, exist_ok=True)  # 确保目录存在
+            pcapng_file = f'{pcap_dir}/my.pcapng'
+            excel_file = f'{pcap_dir}/output.xlsx'
+            xlsx_file = f'{pcap_dir}/packet_data_{timestamp}.xlsx'
+            packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
+            packet_capture.pcapng_analyse.pcapng_to_xlsx(pcapng_file, xlsx_file)
+            unique_chart_filename = f'protocol_count_pie_{timestamp}.png'
+            unique_chart_filepath = os.path.join('static', 'assets', 'pictures', unique_chart_filename)
+            packet_capture.draw.plot_from_excel(excel_file, unique_chart_filepath)
+            tool_message = packet_capture.pcapng_analyse.read_packet_info_from_excel(xlsx_file)
+            image_url = f'/assets/pictures/{unique_chart_filename}'
+            file_url = xlsx_file.strip('static')
+            if file_url:
+                answer = f'[点击下载文件]({file_url})'
+            if image_url:
+                answer = f'{answer}\n![图片]({image_url})'
+            messages = update_messages
+            llm_answer = getAnswer(question, context, str(tool_message), messages, tool_call)
+            answer = f'{answer}\n'+llm_answer
+            suggestions = get_suggestions(messages,'get_wireshark')
             Response={'content':answer,'suggestions':suggestions}
 
         else:

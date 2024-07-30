@@ -260,8 +260,13 @@
                     </table>
                   </div>
                 </div>
-                <div class="card-actions card-body items-center text-center">
-                  <button class="btn btn-outline btn-primary w-full" @click="addKnowledge(selectedDatabase)" @change="handleFileChange(selectedDatabase)">确认上传</button>
+                <div>
+                  <div class="flex flex-col items-center justify-center h-full mx-8">
+                    <progress v-if="isUploading" class="progress w-full"></progress>
+                  </div>
+                  <div class="card-actions card-body items-center text-center">
+                    <button class="btn btn-outline btn-primary w-full" @click="handleUpload(selectedDatabase)">确认上传</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -321,7 +326,8 @@ export default {
         '你作为公司网络安全团队的领导，鉴于最近发现多个员工账户被未授权访问的事件，为了加强账户和权限管理，你会如何优化和实施多因素认证（MFA）系统？',
         '作为企业的IT安全经理，在公司最近的安全审计中发现了一些高风险的安全漏洞之后，为了确保这些漏洞得到及时修复并避免未来的风险，你会如何制定和实施漏洞管理流程？'
         // 根据需要添加更多指令
-      ]
+      ],
+      isUploading: false
     }
   },
   mounted() {
@@ -334,6 +340,13 @@ export default {
     }
   },
   methods: {
+    handleUpload(selectedDatabase) {
+      this.isUploading = true; // 显示进度条
+      this.addKnowledge(selectedDatabase)
+      .finally(() => {
+        this.isUploading = false; // 隐藏进度条
+      });
+    },
     truncateText(text, length) {
       if (text.length > length) {
         return text.substring(0, length) + '...';
@@ -419,6 +432,7 @@ export default {
       } else {
         return;
       }
+      this.sendMessagesToBackend();
     },
     selectButton: function (buttonNumber) {
       this.selectedButtonNumber = buttonNumber;
@@ -513,9 +527,32 @@ export default {
       return marked.parse(md);
     },
     loadChat(index) {
+      console.log(index)
       this.currentChatIndex = index;
       this.messages = this.chatHistory[index];
-      },
+      console.log(this.chatHistory[index][0])
+      this.sendMessagesToBackend();
+    },
+    async sendMessagesToBackend() {
+      try {
+        const response = await fetch('/api/update-chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ messages: this.messages }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log(result);
+      } catch (error) {
+        console.error('Error sending messages:', error);
+      }
+    },
     createNewConversation: function () {
       this.saveChatHistoryToLocalStorage();
       // 清空当前聊天记录
@@ -545,24 +582,32 @@ export default {
     setTextMessage(message) {
       this.textMessage = message;
     },
-    addKnowledge:function(KnowledgeName){
+    addKnowledge(KnowledgeName) {
       const fileInput = document.getElementById('fileInput');
-      if (fileInput.files.length > 0 ) {
-          const file = fileInput.files[0];
-          const formData = new FormData();
-
-          formData.append('file',file)
-          formData.append('KnowledgeName',KnowledgeName); 
-                    
-          fetch('/api/uploadKnowledge', {
-              method: 'POST',
-              body: formData
-          })
-          .then(data => {
-            this.files[KnowledgeName].push(file.name);
-            console.log(this.files[KnowledgeName])
-          })
-          .catch((err) => this.showErr(err))
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        
+        formData.append('file', file);
+        formData.append('KnowledgeName', KnowledgeName);
+        
+        return fetch('/api/uploadKnowledge', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json(); // 假设服务器返回 JSON
+        })
+        .then(data => {
+          // 处理服务器返回的数据
+          this.files[KnowledgeName].push(file.name);
+          console.log(this.files[KnowledgeName]);
+        });
+      } else {
+        return Promise.reject(new Error('No file selected'));
       }
     }
   }

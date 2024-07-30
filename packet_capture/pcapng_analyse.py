@@ -47,8 +47,10 @@ def pcapng_to_xlsx(pcap_file, excel_file):
             timestamp_float = float(pkt.time)
             dt_object = datetime.fromtimestamp(timestamp_float)
             formatted_time = dt_object.strftime('%Y-%m-%d %H:%M:%S')
+            # 添加数据包长度
+            packet_length = len(pkt)
             # 假设我们只保存时间戳和数据包的简化描述，你可以根据需要添加更多字段
-            data.append({"Time": formatted_time, "Packet Summary": pkt.summary()})
+            data.append({"Time": formatted_time,"Packet_Length": packet_length,"Packet Summary": pkt.summary()})
         except (TypeError, ValueError) as e:
             print(f"Error converting timestamp: {e}")
 
@@ -56,6 +58,24 @@ def pcapng_to_xlsx(pcap_file, excel_file):
     df = pd.DataFrame(data)
     df.to_excel(excel_file, index=False)  # index=False避免写入索引列
 
+def read_packet_info_from_excel(file_path):
+    # 读取Excel文件
+    df = pd.read_excel(file_path)
+
+    # 检查DataFrame中是否存在 "Packet Length" 和 "Packet Summary" 列
+    if "Packet_Length" in df.columns and "Packet Summary" in df.columns:
+        # 提取 "Packet Length" 和 "Packet Summary" 列的数据
+        packet_length = df["Packet_Length"]
+        packet_summary = df["Packet Summary"]
+
+        # 合并两列的数据到一个字符串中
+        tool_message = "\n".join([f"数据包长度: {length}, 数据包概要: {summary}" 
+                                  for length, summary in zip(packet_length, packet_summary)])
+
+        return tool_message
+    else:
+        return "Required columns not found in the Excel file."
+
 pcapng_file = 'packet_capture\\my.pcapng'
 excel_file = 'packet_capture\\output.xlsx'
-pcapng_to_excel(pcapng_file, excel_file)
+pcapng_to_xlsx(pcapng_file, excel_file)

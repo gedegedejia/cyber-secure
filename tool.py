@@ -73,10 +73,10 @@ def get_secure_report(file_path):
         
         json1 = v2_uploadFile.getFieReportResult_behaviour(apikey,md5)
         print(json)
-        
-        file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(json['type']+'文件'))
-        txt,permalink=v2_uploadFile.getResult(json)
-        
+        virus_type = json['type']
+        file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(virus_type+'文件'))
+        txt=v2_uploadFile.getResult(json)
+        tool_answer,virus_number,fine_number = v2_uploadFile.culuateDate(txt)
         behaviour=''
         signature_description=''
         mat_description=''
@@ -103,8 +103,8 @@ def get_secure_report(file_path):
                     mat_description=''
             mat_description = mat_description.rstrip(',')
 
-        
-        answer=file_info+'网页链接：'+permalink+ "\n" +str(v2_uploadFile.culuateDate(txt))+ "\n" +behaviour+ "\n" +signature_description+ "\n" +mat_description
+        v2_uploadFile.save_virus_detection_results(file_name,virus_type,virus_number,fine_number)
+        answer=file_info+"\n"+str(tool_answer)+ "\n" +behaviour+ "\n" +signature_description+ "\n" +mat_description
     
         return answer
     except Exception as e:
@@ -151,13 +151,6 @@ def get_response(messages):
     response = requests.post(url, headers=headers, json=body)
     #print(response.json())
     return response.json()
-
-messages = [
-    {
-        "role": "user",
-        "content": "今天天气怎么样？"
-    }
-]
 
 def tool_jude(content):
     messages = [

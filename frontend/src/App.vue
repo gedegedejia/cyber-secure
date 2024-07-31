@@ -38,6 +38,21 @@
               </svg>
               文件漏洞分析
             </button>
+            <div v-if="this.selectedButtonNumber === 2 ||  this.selectedButtonNumber === 5" class="flex items-center mt-2">
+              <svg t="1722429322042" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                xmlns="http://www.w3.org/2000/svg" p-id="6932" width="24" height="24">
+                <path
+                  d="M377.018182 802.909091c-6.981818 0-11.636364-2.327273-16.290909-6.981818-9.309091-9.309091-9.309091-23.272727 0-32.581818L612.072727 512 360.727273 260.654545c-9.309091-9.309091-9.309091-23.272727 0-32.581818s23.272727-9.309091 32.581818 0l267.636364 267.636364c9.309091 9.309091 9.309091 23.272727 0 32.581818L395.636364 795.927273c-4.654545 4.654545-11.636364 6.981818-18.618182 6.981818z"
+                  p-id="6933" fill="#707070"></path>
+              </svg>
+              <div class="flex items-center">
+                <button 
+                :class="{ 'btn btn-primary w-full mb-4': this.selectedButtonNumber === 5, 'btn-primary-500': this.selectedButtonNumber === 5, 'text-black': this.selectedButtonNumber !== 5, 'text-white': this.selectedButtonNumber === 5 }"
+                class="btn " @click="this.selectButton(5);getFileHistory()">
+                历史文件漏洞分析
+                </button>
+              </div>
+            </div>
           </li>
 
           <li class="mb-2">
@@ -116,7 +131,7 @@
       <div class="hero-content w-4/5 overflow-hidden" style="margin-left: 20%;">
         <div class="card w-auto shadow-2xl bg-base-100 md:w-4/5">
           <div class="card-body p-5">
-            <div v-if="this.selectedButtonNumber !== 4">
+            <div v-if="selectedButtonNumber !== 4 && selectedButtonNumber !== 5">
               <h2 class="card-title">Cyber Secure</h2>
               <div id="chat-panel" class="h-[32rem] max-h-full py-3 overflow-auto">
                 <div v-for="msg in messages" :key="msg.id">
@@ -240,7 +255,7 @@
                 </div>
 
                 <div class="mx-2">
-                  <h2 class="card-title my-4">知识库{{ selectedDatabase }}中已有文件</h2>
+                  <h2 class="card-title my-4">用户对知识库{{ selectedDatabase }}上传的文件</h2>
                   <div class="overflow-x-auto">
                     <table class="table table-zebra">
                       <thead>
@@ -269,6 +284,37 @@
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div v-if="this.selectedButtonNumber === 5">
+              <h2 class="card-title">历史上传文件</h2>
+              
+              <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                  <!-- 表头 -->
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>文件名称</th>
+                      <th>文件类型</th>
+                      <th>提交时间</th>
+                      <th>反病毒引擎检出</th>
+                      <th>判定</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, index) in fileHistory" :key="index">
+                      <th>{{ index + 1 }}</th>
+                      <td>{{ item.文件名称 }}</td>
+                      <td>{{ item.文件类型 }}</td>
+                      <td>{{ item.提交时间 }}</td>
+                      <td>{{ item.反病毒引擎检出 }}</td>
+                      <td :style="{ color: item.判定 === '安全' ? 'green' : 'red',fontWeight: 'bold' }">{{ item.判定 }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
             </div>
           </div>
         </div>
@@ -327,6 +373,8 @@ export default {
         '作为企业的IT安全经理，在公司最近的安全审计中发现了一些高风险的安全漏洞之后，为了确保这些漏洞得到及时修复并避免未来的风险，你会如何制定和实施漏洞管理流程？'
         // 根据需要添加更多指令
       ],
+      isUploading: false,
+      fileHistory: [],
       isUploading: false
     }
   },
@@ -340,6 +388,32 @@ export default {
     }
   },
   methods: {
+    async getFileHistory() {
+      console.log('getFileHistory called');
+      try {
+        const response = await fetch('/api/uploadFileHistory', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        this.fileHistory = data;
+        console.log('File history fetched:', this.fileHistory);
+      } catch (error) {
+        console.error('Error fetching file history:', error);
+      }
+    },
+    handleUpload(selectedDatabase) {
+      this.isUploading = true; // 显示进度条
+      this.addKnowledge(selectedDatabase)
+      .finally(() => {
+        this.isUploading = false; // 隐藏进度条
+      });
+    },
     handleUpload(selectedDatabase) {
       this.isUploading = true; // 显示进度条
       this.addKnowledge(selectedDatabase)

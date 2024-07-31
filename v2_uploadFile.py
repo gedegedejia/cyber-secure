@@ -2,9 +2,11 @@
 
 import requests
 import json
-
+import pandas as pd
 import os
 from dotenv import load_dotenv
+from datetime import datetime
+from openpyxl import load_workbook
 
 def getFile_md5(url,apikey,a,b):
     params = {'apikey': apikey}
@@ -46,7 +48,6 @@ def getResult(json):
     result = {}
     #print(json)
     print("网页：",json["permalink"])
-    permalink=json['permalink']
     for k,v in json["scans"].items():
         result[k] = v['result']
     #print(result)
@@ -55,7 +56,7 @@ def getResult(json):
     with open("result.txt","w") as g:
         g.write(str(result))
     '''
-    return result,permalink
+    return result
 
 def culuateDate(txt):
     #print(txt)
@@ -71,8 +72,70 @@ def culuateDate(txt):
         elif txt[i] == None:
             fine_number+=1
     #print(prompt)
+    
     if virus_number > 0:
         answer=f"经过virus total(专业病毒检测软件)的检测，有{str(virus_number)}个不同的著名引擎检测出病毒{str(fine_number)}个不同的著名引擎没有检测出病毒。分别是{prompt}"
     else:
         answer = '经过virus total(专业病毒检测软件)的检测,此文件未发现病毒'
-    return answer
+
+    return answer,virus_number,fine_number
+def save_virus_detection_results(file_name, virus_type, virus_number, fine_number):
+    # 创建DataFrame
+    timestamp = datetime.now().strftime('%Y-%m-%d')
+    df = pd.DataFrame({
+        '文件名称': [file_name],
+        '文件类型': [virus_type],
+        '提交时间': [timestamp],
+        '反病毒引擎检出': [f'{virus_number}/{virus_number + fine_number}'],
+        '判定': ['高危' if float(virus_number) / (virus_number + fine_number) > 0.3 else '安全']
+    })
+
+    # 设置Excel文件的路径
+    file_path = 'virus_detection_results.xlsx'
+    
+    try:
+        # 如果文件存在，加载文件并追加数据
+        book = load_workbook(file_path)
+        with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+            # Find the last row in the existing sheet
+            startrow = writer.sheets['Sheet1'].max_row
+            
+            # Append the new data without the header
+            df.to_excel(writer, index=False, header=False, startrow=startrow)
+    except FileNotFoundError:
+        # 如果文件不存在，创建新的文件
+        with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+
+def main():
+    #file_name = input("请输入文件名:")
+    a = 'test.txt'
+    #file_src  = input("请输入文件路径:")
+    b = 'D://test.txt'
+
+    url1 = 'https://www.virustotal.com/vtapi/v2/file/scan'
+    url2 = "https://www.virustotal.com/vtapi/v2/file/report"
+    #需要提供密钥，否者会出现403错误
+    load_dotenv()
+    apikey = os.getenv('API_KEY1')
+    
+    #获得文件scan_id
+    my_md5 = getFile_md5(url1,apikey,a,b)
+    #获得返回的json结果并写入result文件
+    #getFieReportResult(url2, apikey, scan_id)
+    json = getFieReportResult(url2,apikey,my_md5)
+    getFieReportResult_behaviour(apikey,my_md5)
+    #getFieReportResult1(url2,apikey,scan_id)
+    file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(json['type']+'文件'))
+    #print(json)
+    txt=getResult(json)
+    print(txt)
+    tool_answer,virus_number,fine_number = culuateDate(txt)
+    answer=file_info+str(tool_answer)
+    virus_type = json['type']
+    save_virus_detection_results(a,virus_type,virus_number,fine_number)
+    print(answer)
+
+
+if __name__ == '__main__':
+   main()

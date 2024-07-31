@@ -14,7 +14,7 @@ import asyncio
 from datetime import datetime
 import time
 import embedding
-from tqdm import tqdm
+import pandas as pd
 
 load_dotenv()
 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -343,6 +343,17 @@ def uploadKnowledge():
         return jsonify({'message': 'File uploaded successfully'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/uploadFileHistory', methods=['POST'])
+def excel_data():
+    file_path = 'virus_detection_results.xlsx'
+    # 使用 pandas 读取 Excel 文件
+    df = pd.read_excel(file_path, engine='openpyxl')
+    
+    # 将 DataFrame 转换为字典
+    data_dict = df.to_dict(orient='records')
+    return jsonify(data_dict)
 
 if __name__ == '__main__':
     # 配置Dashscope API KEY

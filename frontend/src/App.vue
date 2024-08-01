@@ -1,12 +1,13 @@
 <template>
   <div class="hero min-h-screen max-h-full" style="background-image: url(https://cover.sli.dev)">
     <div class="flex w-full h-full">
-      <div class="sidebar fixed top-0 left-0 w-1/5 h-full bg-gray-300 p-4 overflow-y-auto " style="opacity: 0.9; z-index: 10">
+      <div class="sidebar fixed top-0 left-0 w-1/5 h-full bg-gray-300 p-4 overflow-y-auto "
+        style="opacity: 0.9; z-index: 10">
         <h2 class="text-xl font-bold mb-4 text-gray-700">网络安全助手</h2>
         <ul>
           <li class="mb-2">
             <button
-              :class="{ 'btn btn-primary w-full mb-4 ': this.selectedButtonNumber === 1, 'btn-primary-500': this.selectedButtonNumber === 1, 'text-black': this.selectedButtonNumber !== 1, 'text-white': this.selectedButtonNumber === 1 }"
+              :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 1, 'btn-primary-500': this.selectedButtonNumber === 1, 'text-black': this.selectedButtonNumber !== 1, 'text-white': this.selectedButtonNumber === 1 }"
               class="btn w-full" @click="this.selectButton(1)">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
                 :fill="this.selectedButton === 1 ? 'white' : 'black'" viewBox="0 0 1024 1024" stroke="currentColor"
@@ -24,7 +25,7 @@
 
           <li class="mb-2">
             <button
-              :class="{ 'btn btn-primary w-full mb-4': this.selectedButtonNumber === 2, 'btn-primary-500': this.selectedButtonNumber === 2, 'text-black': this.selectedButtonNumber !== 2, 'text-white': this.selectedButtonNumber === 2 }"
+              :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 2, 'btn-primary-500': this.selectedButtonNumber === 2, 'text-black': this.selectedButtonNumber !== 2, 'text-white': this.selectedButtonNumber === 2 }"
               class="btn w-full" @click="this.selectButton(2)">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
                 :fill="this.selectedButtonNumber === 2 ? 'white' : 'black'" viewBox="0 0 1024 1024"
@@ -38,18 +39,20 @@
               </svg>
               文件漏洞分析
             </button>
-            <div v-if="this.selectedButtonNumber === 2 ||  this.selectedButtonNumber === 5" class="flex items-center mt-2">
-              <svg t="1722429322042" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                xmlns="http://www.w3.org/2000/svg" p-id="6932" width="24" height="24">
-                <path
-                  d="M377.018182 802.909091c-6.981818 0-11.636364-2.327273-16.290909-6.981818-9.309091-9.309091-9.309091-23.272727 0-32.581818L612.072727 512 360.727273 260.654545c-9.309091-9.309091-9.309091-23.272727 0-32.581818s23.272727-9.309091 32.581818 0l267.636364 267.636364c9.309091 9.309091 9.309091 23.272727 0 32.581818L395.636364 795.927273c-4.654545 4.654545-11.636364 6.981818-18.618182 6.981818z"
-                  p-id="6933" fill="#707070"></path>
-              </svg>
-              <div class="flex items-center">
-                <button 
-                :class="{ 'btn btn-primary w-full mb-4': this.selectedButtonNumber === 5, 'btn-primary-500': this.selectedButtonNumber === 5, 'text-black': this.selectedButtonNumber !== 5, 'text-white': this.selectedButtonNumber === 5 }"
-                class="btn " @click="this.selectButton(5);getFileHistory()">
-                历史文件漏洞分析
+            <div v-if="this.selectedButtonNumber === 2 || this.selectedButtonNumber === 5" class="flex items-center">
+              <div class="flex items-center mt-2">
+                <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                  xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
+                  <path
+                    d="M477.8 816.4l304.1-304.6-303.8-303.2c-18.5-18.5-18.5-48.5 0-67.1 18.5-18.6 48.6-18.6 67.1-0.1l337.3 336.7c18.5 18.5 18.5 48.5 0 67.1L544.9 883.4c-18.5 18.6-48.6 18.6-67.1 0.1-18.5-18.5-18.5-48.5 0-67.1z"
+                    fill="#515151" p-id="2643"></path>
+                </svg>
+              </div>
+              <div class="flex items-center mt-2 ml-4">
+                <button
+                  :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 5, 'btn-primary-500': this.selectedButtonNumber === 5, 'text-black': this.selectedButtonNumber !== 5, 'text-white': this.selectedButtonNumber === 5 }"
+                  class="btn" @click="this.selectButton(5); getFileHistory()">
+                  历史文件漏洞分析
                 </button>
               </div>
             </div>
@@ -57,7 +60,7 @@
 
           <li class="mb-2">
             <button
-              :class="{ 'btn btn-primary w-full mb-4': this.selectedButtonNumber === 3, 'btn-primary-500': this.selectedButtonNumber === 3, 'text-black': this.selectedButtonNumber !== 3, 'text-white': this.selectedButtonNumber === 3 }"
+              :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 3, 'btn-primary-500': this.selectedButtonNumber === 3, 'text-black': this.selectedButtonNumber !== 3, 'text-white': this.selectedButtonNumber === 3 }"
               class="btn w-full" @click="this.selectButton(3)">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor" stroke-width="2">
@@ -71,7 +74,7 @@
 
           <li class="mb-4">
             <button
-              :class="{ 'btn btn-primary w-full mb-4': this.selectedButtonNumber === 4, 'btn-primary-500': this.selectedButtonNumber === 4, 'text-black': this.selectedButtonNumber !== 4, 'text-white': this.selectedButtonNumber === 4 }"
+              :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 4, 'btn-primary-500': this.selectedButtonNumber === 4, 'text-black': this.selectedButtonNumber !== 4, 'text-white': this.selectedButtonNumber === 4 }"
               class="btn w-full" @click="this.selectButton(4)">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
                 :fill="this.selectedButtonNumber === 4 ? 'white' : 'black'" viewBox="0 0 1024 1024"
@@ -106,15 +109,16 @@
         </div>
 
         <div class="mt-2">
-          <ul id="history-list" 
-              :class="{'bg-white': chatHistory.length >= 1, 'bg-transparent': chatHistory.length === 0}" 
-              class="menu rounded-box w-full">
+          <ul id="history-list"
+            :class="{ 'bg-white': chatHistory.length >= 1, 'bg-transparent': chatHistory.length === 0 }"
+            class="menu rounded-box w-full">
             <li v-for="(chat, index) in chatHistory" :key="index" @click="loadChat(index)">
               <div class="flex items-center justify-between mr-2">
                 <a class="text-base font-bold text-gray-700">Chat {{ index + 1 }}</a>
                 <button @click="deleteChat(index)">
-                  <svg t="1722251570726" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5947" width="20" height="20">
-                    <path 
+                  <svg t="1722251570726" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                    xmlns="http://www.w3.org/2000/svg" p-id="5947" width="20" height="20">
+                    <path
                       d="M799.2 874.4c0 34.4-28.001 62.4-62.4 62.4H287.2c-34.4 0-62.4-28-62.4-62.4V212h574.4v662.4zM349.6 100c0-7.2 5.6-12.8 12.8-12.8h300c7.2 0 12.8 5.6 12.8 12.8v37.6H349.6V100z m636.8 37.6H749.6V100c0-48.001-39.2-87.2-87.2-87.2h-300c-48 0-87.2 39.199-87.2 87.2v37.6H37.6C16.8 137.6 0 154.4 0 175.2s16.8 37.6 37.6 37.6h112v661.6c0 76 61.6 137.6 137.6 137.6h449.6c76 0 137.6-61.6 137.6-137.6V212h112c20.8 0 37.6-16.8 37.6-37.6s-16.8-36.8-37.6-36.8zM512 824c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0 20.8 16.8 37.6 37.6 37.6m-175.2 0c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0.8 20.8 17.6 37.6 37.6 37.6m350.4 0c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0 20.8 16.8 37.6 37.6 37.6"
                       fill="#374151" p-id="5948">
                     </path>
@@ -126,7 +130,7 @@
             </li>
           </ul>
         </div>
-        
+
       </div>
       <div class="hero-content w-4/5 overflow-hidden" style="margin-left: 20%;">
         <div class="card w-auto shadow-2xl bg-base-100 md:w-4/5">
@@ -236,7 +240,7 @@
                   </div>
 
                   <div class="justify-between ml-12">
-                    <input type="file" class="file-input file-input-bordered file-input-primary" id="fileInput"/>
+                    <input type="file" class="file-input file-input-bordered file-input-primary" id="fileInput" />
                   </div>
                   <div class="flex items-center justify-end w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -280,7 +284,8 @@
                     <progress v-if="isUploading" class="progress w-full"></progress>
                   </div>
                   <div class="card-actions card-body items-center text-center">
-                    <button class="btn btn-outline btn-primary w-full" @click="handleUpload(selectedDatabase)">确认上传</button>
+                    <button class="btn btn-outline btn-primary w-full"
+                      @click="handleUpload(selectedDatabase)">确认上传</button>
                   </div>
                 </div>
               </div>
@@ -289,7 +294,7 @@
             <div v-if="this.selectedButtonNumber === 5">
               <div class="h-[40rem] max-h-full py-3 overflow-auto">
                 <h2 class="card-title">最近上传样本</h2>
-                
+
                 <div class="overflow-auto">
                   <table class="table table-zebra">
                     <!-- 表头 -->
@@ -310,7 +315,7 @@
                         <td>{{ item.文件类型 }}</td>
                         <td>{{ item.提交时间 }}</td>
                         <td>{{ item.反病毒引擎检出 }}</td>
-                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red',fontWeight: 'bold' }">{{ item.判定 }}</td>
+                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red', fontWeight: 'bold' }">{{ item.判定 }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -362,9 +367,9 @@ export default {
       selectedDatabase: null,
       dropdownVisible: false,
       files: {
-        'ccc':[],
-        'web_leak':[],
-        'cve':[]
+        'ccc': [],
+        'web_leak': [],
+        'cve': []
       },
       instructions: [
         '作为网络安全专家，在公司最近经历了一次数据泄露事件的背景下，为了增强公司整体的网络安全防护能力，你如何制定一套全面的网络安全策略？',
@@ -411,16 +416,16 @@ export default {
     handleUpload(selectedDatabase) {
       this.isUploading = true; // 显示进度条
       this.addKnowledge(selectedDatabase)
-      .finally(() => {
-        this.isUploading = false; // 隐藏进度条
-      });
+        .finally(() => {
+          this.isUploading = false; // 隐藏进度条
+        });
     },
     handleUpload(selectedDatabase) {
       this.isUploading = true; // 显示进度条
       this.addKnowledge(selectedDatabase)
-      .finally(() => {
-        this.isUploading = false; // 隐藏进度条
-      });
+        .finally(() => {
+          this.isUploading = false; // 隐藏进度条
+        });
     },
     truncateText(text, length) {
       if (text.length > length) {
@@ -662,25 +667,25 @@ export default {
       if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
         const formData = new FormData();
-        
+
         formData.append('file', file);
         formData.append('KnowledgeName', KnowledgeName);
-        
+
         return fetch('/api/uploadKnowledge', {
           method: 'POST',
           body: formData
         })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json(); // 假设服务器返回 JSON
-        })
-        .then(data => {
-          // 处理服务器返回的数据
-          this.files[KnowledgeName].push(file.name);
-          console.log(this.files[KnowledgeName]);
-        });
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json(); // 假设服务器返回 JSON
+          })
+          .then(data => {
+            // 处理服务器返回的数据
+            this.files[KnowledgeName].push(file.name);
+            console.log(this.files[KnowledgeName]);
+          });
       } else {
         return Promise.reject(new Error('No file selected'));
       }

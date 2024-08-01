@@ -200,7 +200,7 @@
             <div v-if="this.selectedButtonNumber === 4">
               <h2 class="card-title">知识库配置</h2>
 
-              <div class="h-[32rem] max-h-full py-3 overflow-auto">
+              <div class="h-[34rem] max-h-full py-3 overflow-auto">
                 <div class="mx-2 my-2 align">
                   <a aria-hidden="true" tabindex="-1" href="#heading-1">
                     <span
@@ -287,34 +287,35 @@
             </div>
 
             <div v-if="this.selectedButtonNumber === 5">
-              <h2 class="card-title">历史上传文件</h2>
-              
-              <div class="overflow-x-auto">
-                <table class="table table-zebra">
-                  <!-- 表头 -->
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>文件名称</th>
-                      <th>文件类型</th>
-                      <th>提交时间</th>
-                      <th>反病毒引擎检出</th>
-                      <th>判定</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(item, index) in fileHistory" :key="index">
-                      <th>{{ index + 1 }}</th>
-                      <td>{{ item.文件名称 }}</td>
-                      <td>{{ item.文件类型 }}</td>
-                      <td>{{ item.提交时间 }}</td>
-                      <td>{{ item.反病毒引擎检出 }}</td>
-                      <td :style="{ color: item.判定 === '安全' ? 'green' : 'red',fontWeight: 'bold' }">{{ item.判定 }}</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div class="h-[40rem] max-h-full py-3 overflow-auto">
+                <h2 class="card-title">最近上传样本</h2>
+                
+                <div class="overflow-auto">
+                  <table class="table table-zebra">
+                    <!-- 表头 -->
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>文件名称</th>
+                        <th>文件类型</th>
+                        <th>提交时间</th>
+                        <th>反病毒引擎检出</th>
+                        <th>判定</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(item, index) in fileHistory" :key="index">
+                        <th>{{ index + 1 }}</th>
+                        <td>{{ item.文件名称 }}</td>
+                        <td>{{ item.文件类型 }}</td>
+                        <td>{{ item.提交时间 }}</td>
+                        <td>{{ item.反病毒引擎检出 }}</td>
+                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red',fontWeight: 'bold' }">{{ item.判定 }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              
             </div>
           </div>
         </div>

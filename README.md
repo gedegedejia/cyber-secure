@@ -1,5 +1,5 @@
 
-# 2024年网络技术挑战赛A-ST——基于Milvus矢量库的网络安全助手 :sunglasses:
+# 2024年 C4 A-ST——基于Milvus矢量库的网络安全助手 :sunglasses:
 
 ## 目录
 

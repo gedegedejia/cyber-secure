@@ -33,8 +33,6 @@
 
 ### 敬请期待 
 
-[![Star History Chart](https://api.star-history.com/svg?repos=guodongxiaren/README&type=Date)](https://star-history.com/#guodongxiaren/README&Date)
-
 2024/7/20修复抓包异步<br>
 
 2024/7/21工具选择正常<br>  

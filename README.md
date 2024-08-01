@@ -1,5 +1,5 @@
 
-# 2024年网络技术挑战赛A-ST :sunglasses:
+# 2024年网络技术挑战赛A-ST——基于Milvus矢量库的网络安全助手 :sunglasses:
 
 ## 目录
 
@@ -11,6 +11,8 @@
 ### 上手指南 :point_down:
 1. 需要在.env中自行更改tshark.exe的路径   
 2. 需要在.env中自行更改uploads_path的路径 
+3. 需要在.env中自行更改DASHSCOPE_API_KEY，通义千问的API
+4. 需要在.env中自行更改Virtus Total的API
 
 将IP地址加入白名单，运行llm_answer.py
 

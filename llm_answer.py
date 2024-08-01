@@ -36,7 +36,7 @@ app = Flask(
     template_folder='static',
     static_url_path='/assets'
 )
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['UPLOAD_FOLDER'] = os.getenv('uploads_path')
 
 @app.route('/')
 def index():
@@ -317,7 +317,7 @@ def get_suggestions(messages,tool):
 @app.route('/api/uploadKnowledge', methods=['POST'])
 def uploadKnowledge():
     knowledge_name = request.form.get('KnowledgeName')
-    data_path = 'uploads/knowledge/'+knowledge_name
+    data_path = app.config['UPLOAD_FOLDER']+'/knowledge/'+knowledge_name
     file = request.files['file']
     
     print("knowledge_name:", knowledge_name)

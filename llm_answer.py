@@ -96,14 +96,13 @@ def upload():
     
 def getAnswer(query, context,tool_message,messages,tool_call):
     if tool_call == 'get_secure_report':
-        prompt = f'''请基于```内的网络安全知识，回答我的问题。
-            ```
-            {context},
-            ```
-            我的问题是：{query},我通过工具调用得知 {tool_message}。
-            请你概括工具调用的信息，并解释文件标签，给出该文件的意图和可疑活动，并给出建议和解决方案。
+        prompt = f'''
+            请基于以下提供的网络安全知识来回答：
+            {context}
+            我的问题是：{query}。
+            我通过工具调用获取了以下信息：{tool_message}。
+            请你总结工具调用的信息，以表格的形式，解释文件标签，分析该文件的意图和可能存在的可疑活动，并提出建议和解决方案。
             '''
-    
     elif tool_call == 'get_current_time':
         prompt = f'''
             我的问题是：{query},我通过工具调用得知 {tool_message}。请根据我工具调用的内容给我回答。
@@ -111,13 +110,25 @@ def getAnswer(query, context,tool_message,messages,tool_call):
     
     elif tool_call == 'get_wireshark':
         prompt = f'''
-            我通过wireshark工具抓包得知 {tool_message}， 请你描述数据包信息，并判断是否有可疑数据包，并给出建议和解决方案。
+            请基于以下提供的网络安全知识来回答：
+            {context}
+            我使用Wireshark工具进行抓包分析，获得了以下信息：{tool_message}。
+            请你帮助我描述数据包的内容，判断是否存在可疑数据包，并分析其中可能存在的安全问题。
+            同时，请提供相应的建议和解决方案。
+            '''
+    elif tool_call == 'get_url_report':
+        prompt = f'''
+            请基于以下提供的网络安全知识来回答：
+            {context}
+            我使用virustotal平台进行网页链接安全性分析，获得了以下信息：{tool_message}。
+            请你总结网页内容，并分析其中可能存在的安全问题.
             '''
     else:
-        prompt = f'''回答我。
-            我的问题是：{query}。回答尽量精炼，但需要有礼貌。
+        prompt = f'''
+            请回答我的问题：{query}。
+            请结合网络安全的知识，尽量简洁明了地回答，但请保持礼貌。
             '''
-    
+
     rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
     
     res = ''
@@ -185,7 +196,7 @@ def convert_messages_format(messages):
     # 添加系统角色的消息
     system_message = {
         'role': 'system',
-        'content': '你是一个网络安全分析小助手，你的任务是解决用户的网络安全问题。你的功能:1.分析用户上传的文件。2.抓取并分析pcapng数据包'
+        'content': '你是一名网络安全分析助手，专注于帮助用户解决网络安全问题。你的主要职责包括：1. 分析用户上传的文件，识别潜在的安全风险。2. 分析用户上传的网址链接，识别潜在的安全风险。3. 抓取和分析pcapng数据包，检测异常流量和可疑活动。'
     }
     converted_messages.append(system_message)
 
@@ -223,7 +234,6 @@ def sse():
             print(messages)
             print("+++++++++++++++++++++++++++++++++++++")"""
         elif request_type == 'get_secure_report':
-
             context = search(question, 'web_leak')
             tool_call = tool.tool_jude(question)
             messages = update_messages
@@ -235,6 +245,7 @@ def sse():
             answer = getAnswer(question, context, str(tool_message), messages, tool_call)        
             suggestions = get_suggestions(messages,request_type)
             Response={'content':answer,'suggestions':suggestions}
+        
         elif request_type == 'get_wireshark':
             asyncio.set_event_loop(asyncio.new_event_loop())
             tool.get_wireshark()  # 执行Wireshark抓包操作
@@ -267,7 +278,17 @@ def sse():
             answer = f'{answer}\n'+llm_answer
             suggestions = get_suggestions(messages,'get_wireshark')
             Response={'content':answer,'suggestions':suggestions}
-
+        
+        elif request_type == 'get_url_report':
+            context = search(question, 'web_leak')
+            tool_call = tool.tool_jude(question)
+            x_url=tool.get_url(question)
+            messages = update_messages
+            tool_message = str(tool.get_url_report(x_url))
+            answer = getAnswer(question, context, str(tool_message), messages, tool_call)        
+            suggestions = ['你好','谢谢','是的']
+            Response={'content':answer,'suggestions':suggestions}
+                
         else:
             response_data = {'message': 'Invalid type provided', 'done': True}
             yield f'data: {json.dumps(response_data)}\n\n'
@@ -347,10 +368,15 @@ def uploadKnowledge():
 
 @app.route('/api/uploadFileHistory', methods=['POST'])
 def excel_data():
-    file_path = 'virus_detection_results.xlsx'
+    data = request.get_json()
+    print(data['tool'])
+    tool = data['tool']
+    if (tool == "get_url_report"):
+        file_path = 'url_detection_results.xlsx'
+    elif (tool == 'get_secure_report'):
+        file_path = 'virus_detection_results.xlsx'
     # 使用 pandas 读取 Excel 文件
     df = pd.read_excel(file_path, engine='openpyxl')
-    
     # 将 DataFrame 转换为字典
     data_dict = df.to_dict(orient='records')
     return jsonify(data_dict)

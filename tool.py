@@ -4,6 +4,7 @@ from datetime import datetime
 import v2_uploadFile
 from dotenv import load_dotenv
 import subprocess
+import json
 
 load_dotenv()
 
@@ -30,6 +31,25 @@ tools = [
             "required": [
                 "file_name",
                 "file_path"
+            ]
+        }
+    },
+        {
+        "type": "function",
+        "function": {
+            "name": "get_url_report",
+            "description": "当你想检验网站安全性时非常有用。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": { 
+                        "type": "string",
+                        "description": "网页链接url"
+                    },
+                }
+            },
+            "required": [
+                "url",
             ]
         }
     },
@@ -82,7 +102,6 @@ def get_secure_report(file_path):
         mat_description=''
         if 'tags' in json1['data']:
             behaviour = str('文件行为标签为'+str(json1['data']['tags']))
-
         
         if 'signature_matches' in json1['data']:
             signature_description ='signature描述为：'
@@ -111,7 +130,33 @@ def get_secure_report(file_path):
         print(f"An error occurred: {e}")
         return None
 
-def get_wireshark(interface="WLAN", duration=1):
+def get_url_report(url):
+    try:
+        #v2_uploadFile_copy
+        print(url)
+        load_dotenv()
+        apikey = os.getenv('API_KEY1')   
+        json = v2_uploadFile.getUrlReportResult(apikey,url)
+        txt = v2_uploadFile.getUrlResult(json)
+        tool_answer,virus_number,fine_number = v2_uploadFile.culuateDate_url(txt)
+        url_type = json['data']['type']
+        print(url_type)
+        categories ='网站的描述为：'
+        for match,v in json['data']['attributes']['categories'].items(): 
+            categories +=v+','
+        categories = categories.rstrip(',')
+        print(categories)
+        v2_uploadFile.url_detection_results(url,url_type,virus_number,fine_number)
+        answer=str(tool_answer)+ "\n" + categories
+        return answer
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+
+
+
+def get_wireshark(interface="WLAN", duration=5):
     try:
         print(os.getenv('tshark_path'))
         tshark_path = os.getenv('tshark_path')
@@ -163,7 +208,22 @@ def tool_jude(content):
     assistant_output = response['output']['choices'][0]['message']
     
     if 'tool_calls' not in assistant_output:
-        return ''
+        return '' 
     else:
         return assistant_output['tool_calls'][0]['function']['name'] 
-    
+
+def get_url(content):
+    messages = [
+            {
+                "content": content,  # 提问示例："现在几点了？" "一个小时后几点" "北京天气如何？"
+                "role": "user"
+            }
+    ]
+    response = get_response(messages)
+    assistant_output = response['output']['choices'][0]['message']
+    arguments=json.loads(assistant_output['tool_calls'][0]['function']['arguments'])
+    url = arguments['url']
+    return url
+
+if __name__ == '__main__':
+    get_url_report("https://www.baidu.com/")

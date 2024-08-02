@@ -51,8 +51,42 @@
               <div class="flex items-center mt-2 ml-4">
                 <button
                   :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 5, 'btn-primary-500': this.selectedButtonNumber === 5, 'text-black': this.selectedButtonNumber !== 5, 'text-white': this.selectedButtonNumber === 5 }"
-                  class="btn" @click="this.selectButton(5); getFileHistory()">
+                  class="btn" @click="this.selectButton(5); getFileHistory('get_secure_report')">
                   历史文件漏洞分析
+                </button>
+              </div>
+            </div>
+          </li>
+
+          <li class="mb-2">
+            <button
+            :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 6, 'btn-primary-500': this.selectedButtonNumber === 6, 'text-black': this.selectedButtonNumber !== 6, 'text-white': this.selectedButtonNumber === 6 }"
+            class="btn w-full" @click="this.selectButton(6)">
+              <svg t="1722582707958" class="icon" viewBox="0 0 1024 1024" version="1.1" :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'"
+                xmlns="http://www.w3.org/2000/svg" p-id="4555" width="24" height="24">
+                <path
+                  d="M240.426667 512A192 192 0 1 1 512 240.426667l67.84 67.84A42.666667 42.666667 0 0 0 640 248.106667l-67.626667-68.053334a274.56 274.56 0 0 0-91.733333-60.8 280.533333 280.533333 0 0 0-208.853333 0 277.333333 277.333333 0 0 0-152.533334 152.533334 279.253333 279.253333 0 0 0 0 208.853333 274.56 274.56 0 0 0 60.8 91.733333L248.106667 640a42.666667 42.666667 0 0 0 60.16-60.373333zM904.746667 543.36a274.56 274.56 0 0 0-60.8-91.733333L775.893333 384a42.666667 42.666667 0 1 0-60.16 60.373333L783.573333 512A192 192 0 1 1 512 783.573333l-67.84-67.84A42.666667 42.666667 0 1 0 384 775.893333l67.84 68.053334a274.56 274.56 0 0 0 91.733333 60.8 279.253333 279.253333 0 0 0 208.853334 0 277.333333 277.333333 0 0 0 152.533333-152.533334 279.253333 279.253333 0 0 0 0-208.853333z"
+                  :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" p-id="4556"></path>
+                <path
+                  d="M647.68 690.346667A42.666667 42.666667 0 0 0 677.973333 618.666667L406.4 346.026667a42.666667 42.666667 0 1 0-60.373333 60.373333L618.666667 677.973333a42.666667 42.666667 0 0 0 29.013333 12.373334z"
+                  :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" p-id="4557"></path>
+              </svg>
+              网页链接分析
+            </button>
+            <div v-if="this.selectedButtonNumber === 7 || this.selectedButtonNumber === 6" class="flex items-center">
+              <div class="flex items-center mt-2">
+                <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                  xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
+                  <path
+                    d="M477.8 816.4l304.1-304.6-303.8-303.2c-18.5-18.5-18.5-48.5 0-67.1 18.5-18.6 48.6-18.6 67.1-0.1l337.3 336.7c18.5 18.5 18.5 48.5 0 67.1L544.9 883.4c-18.5 18.6-48.6 18.6-67.1 0.1-18.5-18.5-18.5-48.5 0-67.1z"
+                    fill="#515151" p-id="2643"></path>
+                </svg>
+              </div>
+              <div class="flex items-center mt-2 ml-4">
+                <button
+                  :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 7, 'btn-primary-500': this.selectedButtonNumber === 7, 'text-black': this.selectedButtonNumber !== 7, 'text-white': this.selectedButtonNumber === 7 }"
+                  class="btn" @click="this.selectButton(7); getFileHistory('get_url_report')">
+                  历史网页链接分析
                 </button>
               </div>
             </div>
@@ -72,7 +106,7 @@
             </button>
           </li>
 
-          <li class="mb-4">
+          <li class="mb-2">
             <button
               :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 4, 'btn-primary-500': this.selectedButtonNumber === 4, 'text-black': this.selectedButtonNumber !== 4, 'text-white': this.selectedButtonNumber === 4 }"
               class="btn w-full" @click="this.selectButton(4)">
@@ -135,7 +169,7 @@
       <div class="hero-content w-4/5 overflow-hidden" style="margin-left: 20%;">
         <div class="card w-auto shadow-2xl bg-base-100 md:w-4/5">
           <div class="card-body p-5">
-            <div v-if="selectedButtonNumber !== 4 && selectedButtonNumber !== 5">
+            <div v-if="selectedButtonNumber !== 4 && selectedButtonNumber !== 5 && selectedButtonNumber !== 7">
               <h2 class="card-title">Cyber Secure</h2>
               <div id="chat-panel" class="h-[32rem] max-h-full py-3 overflow-auto">
                 <div v-for="msg in messages" :key="msg.id">
@@ -204,7 +238,7 @@
             <div v-if="this.selectedButtonNumber === 4">
               <h2 class="card-title">知识库配置</h2>
 
-              <div class="h-[34rem] max-h-full py-3 overflow-auto">
+              <div class="h-[32rem] max-h-full py-3 overflow-auto">
                 <div class="mx-2 my-2 align">
                   <a aria-hidden="true" tabindex="-1" href="#heading-1">
                     <span
@@ -315,7 +349,41 @@
                         <td>{{ item.文件类型 }}</td>
                         <td>{{ item.提交时间 }}</td>
                         <td>{{ item.反病毒引擎检出 }}</td>
-                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red', fontWeight: 'bold' }">{{ item.判定 }}</td>
+                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red', fontWeight: 'bold' }">{{ item.判定 }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="this.selectedButtonNumber === 7">
+              <div class="h-[40rem] max-h-full py-3 overflow-auto">
+                <h2 class="card-title">最近上传样本</h2>
+
+                <div class="overflow-auto">
+                  <table class="table table-zebra">
+                    <!-- 表头 -->
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>网站</th>
+                        <th>网站类型</th>
+                        <th>提交时间</th>
+                        <th>反病毒引擎检出</th>
+                        <th>判定</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(item, index) in fileHistory" :key="index">
+                        <th>{{ index + 1 }}</th>
+                        <td>{{ item.网站 }}</td>
+                        <td>{{ item.网站类型 }}</td>
+                        <td>{{ item.提交时间 }}</td>
+                        <td>{{ item.反病毒引擎检出 }}</td>
+                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red', fontWeight: 'bold' }">{{ item.判定 }}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -394,14 +462,15 @@ export default {
     }
   },
   methods: {
-    async getFileHistory() {
+    async getFileHistory(tool) {
       console.log('getFileHistory called');
       try {
         const response = await fetch('/api/uploadFileHistory', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
-          }
+          },
+          body: JSON.stringify({ tool })
         });
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -499,6 +568,8 @@ export default {
         this.tool = 'get_secure_report';
       } else if (this.selectedButtonNumber === 3) {
         this.tool = 'get_wireshark';
+      } else if (this.selectedButtonNumber === 6) {
+        this.tool = 'get_url_report'
       }
       if (msg) {
         this.textMessage = '';

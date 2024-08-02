@@ -6,7 +6,7 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-from openpyxl import load_workbook
+import base64
 
 def getFile_md5(url,apikey,a,b):
     params = {'apikey': apikey}
@@ -27,10 +27,6 @@ def getFieReportResult(url,apikey,my_scan_id):
     response2 = requests.get(url, params=get_params)
     jsondata = json.loads(response2.text)
     #print(jsondata)
-    '''
-    with open("jsonResult.json","w") as f:
-        json.dump(jsondata, f, indent=4)
-    '''
     return jsondata
 
 def getFieReportResult_behaviour(apikey,md5):
@@ -38,12 +34,25 @@ def getFieReportResult_behaviour(apikey,md5):
     headers = {"accept": "application/json","X-Apikey": apikey}
     response = requests.get(url, headers=headers)
     jsondata = json.loads(response.text)
-    '''
-    with open("jsonResult1.json","w") as f:
-        json.dump(jsondata, f, indent=4)
-    '''
     return jsondata
 
+def getUrlReportResult(apikey,url):
+    url_id = base64.urlsafe_b64encode(url.encode()).decode().strip("=")
+    url = f"https://www.virustotal.com/api/v3/urls/{url_id}"
+    headers = {"accept": "application/json","X-Apikey": apikey}
+    response = requests.get(url, headers=headers)
+    jsondata = json.loads(response.text)
+
+    return jsondata
+
+def getUrlResult(json):
+    result = {}
+    print("网页：",'https://www.virustotal.com/gui/url/'+json['data']['id'])
+    for k,v in json['data']['attributes']['last_analysis_results'].items():
+        result[k] = v['result']
+
+    print("一共有{0}条杀毒数据。".format(len(result)))
+    return result
 def getResult(json):
     result = {}
     #print(json)
@@ -52,12 +61,9 @@ def getResult(json):
         result[k] = v['result']
     #print(result)
     print("一共有{0}条杀毒数据。".format(len(result)))
-    ''''
-    with open("result.txt","w") as g:
-        g.write(str(result))
-    '''
-    return result
 
+
+    return result
 def culuateDate(txt):
     #print(txt)
     a=[]
@@ -79,9 +85,32 @@ def culuateDate(txt):
         answer = '经过virus total(专业病毒检测软件)的检测,此文件未发现病毒'
 
     return answer,virus_number,fine_number
+
+def culuateDate_url(txt):
+    #print(txt)
+    a=[]
+    virus_number=0
+    fine_number=0
+    prompt = ""
+    for i in txt:
+        if txt[i] == 'malicious':
+            virus_number+=1
+            a.append(i)
+            prompt=f'{str(i)}引擎认为该文件具有{txt[i]}的问题，'+prompt
+        elif txt[i] == 'clean':
+            fine_number+=1
+    #print(prompt)
+    
+    if virus_number > 0:
+        answer=f"经过virus total(专业病毒检测软件)的检测，有{str(virus_number)}个不同的著名引擎认为该网站是恶意的，{str(fine_number)}个不同的著名引擎认为安全。分别是{prompt}"
+    else:
+        answer = '经过virus total(专业病毒检测软件)的检测,此网站安全'
+
+    return answer,virus_number,fine_number
+
 def save_virus_detection_results(file_name, virus_type, virus_number, fine_number):
     # 创建DataFrame
-    timestamp = datetime.now().strftime('%Y-%m-%d')
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     df = pd.DataFrame({
         '文件名称': [file_name],
         '文件类型': [virus_type],
@@ -95,7 +124,33 @@ def save_virus_detection_results(file_name, virus_type, virus_number, fine_numbe
     
     try:
         # 如果文件存在，加载文件并追加数据
-        book = load_workbook(file_path)
+        with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+            # Find the last row in the existing sheet
+            startrow = writer.sheets['Sheet1'].max_row
+            
+            # Append the new data without the header
+            df.to_excel(writer, index=False, header=False, startrow=startrow)
+    except FileNotFoundError:
+        # 如果文件不存在，创建新的文件
+        with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False)
+
+def url_detection_results(url,url_type,virus_number, fine_number):
+    # 创建DataFrame
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    df = pd.DataFrame({
+        '网站': [url],
+        '网站类型': [url_type],
+        '提交时间': [timestamp],
+        '反病毒引擎检出': [f'{virus_number}/{virus_number + fine_number}'],
+        '判定': ['高危' if float(virus_number) / (virus_number + fine_number) > 0.3 else '安全']
+    })
+
+    # 设置Excel文件的路径
+    file_path = 'url_detection_results.xlsx'
+    
+    try:
+        # 如果文件存在，加载文件并追加数据
         with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
             # Find the last row in the existing sheet
             startrow = writer.sheets['Sheet1'].max_row
@@ -108,7 +163,8 @@ def save_virus_detection_results(file_name, virus_type, virus_number, fine_numbe
             df.to_excel(writer, index=False)
 
 def main():
-    #file_name = input("请输入文件名:")
+
+    '''    #file_name = input("请输入文件名:")
     a = 'test.txt'
     #file_src  = input("请输入文件路径:")
     b = 'D://test.txt'
@@ -134,8 +190,12 @@ def main():
     answer=file_info+str(tool_answer)
     virus_type = json['type']
     save_virus_detection_results(a,virus_type,virus_number,fine_number)
-    print(answer)
-
-
+    print(answer)'''
+    a = "3721.com"
+    load_dotenv()
+    apikey = os.getenv('API_KEY1')    
+    json = getUrlReportResult(apikey,a)
+    txt = getUrlResult(json)
+    culuateDate_url(txt)
 if __name__ == '__main__':
    main()

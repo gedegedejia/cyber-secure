@@ -383,11 +383,14 @@ def excel_data():
     print(data['tool'])
     tool = data['tool']
     if (tool == "get_url_report"):
-        file_path = 'url_detection_results.xlsx'
+        file_path = 'table/url_detection_results.xlsx'
+    
     elif (tool == 'get_secure_report'):
-        file_path = 'virus_detection_results.xlsx'
+        file_path = 'table/virus_detection_results.xlsx'
+    
     elif (tool == 'get_ip_report'):
-        file_path = 'ip_detection_results.xlsx'
+        file_path = 'table/ip_detection_results.xlsx'
+
     # 使用 pandas 读取 Excel 文件
     df = pd.read_excel(file_path, engine='openpyxl')
     # 将 DataFrame 转换为字典

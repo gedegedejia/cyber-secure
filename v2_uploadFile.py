@@ -137,7 +137,7 @@ def save_virus_detection_results(file_name, virus_type, virus_number, fine_numbe
     })
 
     # 设置Excel文件的路径
-    file_path = 'virus_detection_results.xlsx'
+    file_path = 'table/virus_detection_results.xlsx'
     
     try:
         # 如果文件存在，加载文件并追加数据
@@ -164,7 +164,7 @@ def url_detection_results(url,url_type,virus_number, fine_number):
     })
 
     # 设置Excel文件的路径
-    file_path = 'url_detection_results.xlsx'
+    file_path = 'table/url_detection_results.xlsx'
     
     try:
         # 如果文件存在，加载文件并追加数据
@@ -193,7 +193,7 @@ def ip_detection_results(ip,url_type,virus_number, fine_number,as_owner,country)
     })
 
     # 设置Excel文件的路径
-    file_path = 'ip_detection_results.xlsx'
+    file_path = 'table/ip_detection_results.xlsx'
     
     try:
         # 如果文件存在，加载文件并追加数据

@@ -123,6 +123,13 @@ def getAnswer(query, context,tool_message,messages,tool_call):
             我使用virustotal平台进行网页链接安全性分析，获得了以下信息：{tool_message}。
             请你总结网页内容，并分析其中可能存在的安全问题.
             '''
+    elif tool_call == 'get_ip_report':
+        prompt = f'''
+            请基于以下提供的网络安全知识来回答：
+            {context}
+            我使用virustotal平台进行ip地址安全性分析，获得了以下信息：{tool_message}。
+            请你总结信息，并分析其中可能存在的安全问题.
+            '''
     else:
         prompt = f'''
             请回答我的问题：{query}。
@@ -279,16 +286,20 @@ def sse():
             suggestions = get_suggestions(messages,'get_wireshark')
             Response={'content':answer,'suggestions':suggestions}
         
-        elif request_type == 'get_url_report':
+        elif request_type == 'get_url_report' or request_type == 'get_ip_report':
             context = search(question, 'web_leak')
             tool_call = tool.tool_jude(question)
-            x_url=tool.get_url(question)
+            print(tool_call)
+            if tool_call == 'get_url_report':
+                x_url=tool.get_url(question)
+                tool_message = str(tool.get_url_report(x_url))
+            elif tool_call == 'get_ip_report':
+                ip=tool.get_ip(question)
+                tool_message = str(tool.get_ip_report(ip))
             messages = update_messages
-            tool_message = str(tool.get_url_report(x_url))
             answer = getAnswer(question, context, str(tool_message), messages, tool_call)        
             suggestions = ['你好','谢谢','是的']
-            Response={'content':answer,'suggestions':suggestions}
-                
+            Response={'content':answer,'suggestions':suggestions}    
         else:
             response_data = {'message': 'Invalid type provided', 'done': True}
             yield f'data: {json.dumps(response_data)}\n\n'
@@ -375,6 +386,8 @@ def excel_data():
         file_path = 'url_detection_results.xlsx'
     elif (tool == 'get_secure_report'):
         file_path = 'virus_detection_results.xlsx'
+    elif (tool == 'get_ip_report'):
+        file_path = 'ip_detection_results.xlsx'
     # 使用 pandas 读取 Excel 文件
     df = pd.read_excel(file_path, engine='openpyxl')
     # 将 DataFrame 转换为字典

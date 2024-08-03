@@ -34,7 +34,26 @@ tools = [
             ]
         }
     },
-        {
+    {
+        "type": "function",
+        "function": {
+            "name": "get_ip_report",
+            "description": "当你想判断ip地址是否安全性时非常有用。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "ip": { 
+                        "type": "string",
+                        "description": "ip地址"
+                    },
+                }
+            },
+            "required": [
+                "ip",
+            ]
+        }
+    },
+    {
         "type": "function",
         "function": {
             "name": "get_url_report",
@@ -154,7 +173,32 @@ def get_url_report(url):
         print(f"An error occurred: {e}")
         return None
 
-
+def get_ip_report(ip):
+    try:
+        #v2_uploadFile_copy
+        print(ip)
+        load_dotenv()
+        apikey = os.getenv('API_KEY1')   
+        json = v2_uploadFile.getIPReportResult(apikey,ip)
+        txt = v2_uploadFile.getIPResult(json)
+        tool_answer,virus_number,fine_number = v2_uploadFile.culuateDate_url(txt)
+        url_type = json['data']['type']
+        print(url_type)
+        as_owner = json['data']['attributes']['as_owner']
+        continent = json['data']['attributes']['continent']
+        country = json['data']['attributes']['country']
+        regional_internet_registry  = 'IP地址范围是由'+ json['data']['attributes']['regional_internet_registry'] + '分配的。'
+        v2_uploadFile.ip_detection_results(ip,url_type,virus_number,fine_number,as_owner,country)
+        as_owner = 'IP地址范围的拥有者是:'+ json['data']['attributes']['as_owner']
+        continent = 'IP地址范围所在的大陆是:'+ json['data']['attributes']['continent']
+        country = 'IP地址范围所在的国家是:'+ json['data']['attributes']['country']
+        answer=str(tool_answer)+ "\n" + as_owner + "\n" +continent +"\n" +country +"\n" + regional_internet_registry
+        print(answer)
+        return answer
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 def get_wireshark(interface="WLAN", duration=5):
     try:
@@ -225,5 +269,15 @@ def get_url(content):
     url = arguments['url']
     return url
 
-if __name__ == '__main__':
-    get_url_report("https://www.baidu.com/")
+def get_ip(content):
+    messages = [
+            {
+                "content": content,  # 提问示例："现在几点了？" "一个小时后几点" "北京天气如何？"
+                "role": "user"
+            }
+    ]
+    response = get_response(messages)
+    assistant_output = response['output']['choices'][0]['message']
+    arguments=json.loads(assistant_output['tool_calls'][0]['function']['arguments'])
+    ip = arguments['ip']
+    return ip

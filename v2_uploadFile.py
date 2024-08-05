@@ -57,18 +57,19 @@ def getUrlResult(json):
     print("网页：",'https://www.virustotal.com/gui/url/'+json['data']['id'])
     for k,v in json['data']['attributes']['last_analysis_results'].items():
         result[k] = v['result']
-
+    perlink = 'https://www.virustotal.com/gui/url/'+json['data']['id']
     print("一共有{0}条杀毒数据。".format(len(result)))
-    return result
+    return result,perlink
 
 def getIPResult(json):
     result = {}
     print("网页：",'https://www.virustotal.com/gui/ip-address/'+json['data']['id'])
+    perlink = 'https://www.virustotal.com/gui/ip-address/'+json['data']['id']
     for k,v in json['data']['attributes']['last_analysis_results'].items():
         result[k] = v['result']
 
     print("一共有{0}条杀毒数据。".format(len(result)))
-    return result
+    return result,perlink
 
 def getResult(json):
     result = {}
@@ -78,9 +79,9 @@ def getResult(json):
         result[k] = v['result']
     #print(result)
     print("一共有{0}条杀毒数据。".format(len(result)))
+    perlink = json["permalink"]
 
-
-    return result
+    return result,perlink
 def culuateDate(txt):
     #print(txt)
     a=[]
@@ -125,7 +126,7 @@ def culuateDate_url(txt):
 
     return answer,virus_number,fine_number
 
-def save_virus_detection_results(file_name, virus_type, virus_number, fine_number):
+def save_virus_detection_results(file_name, virus_type, virus_number, fine_number,perlink):
     # 创建DataFrame
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     df = pd.DataFrame({
@@ -133,7 +134,8 @@ def save_virus_detection_results(file_name, virus_type, virus_number, fine_numbe
         '文件类型': [virus_type],
         '提交时间': [timestamp],
         '反病毒引擎检出': [f'{virus_number}/{virus_number + fine_number}'],
-        '判定': ['高危' if float(virus_number) / (virus_number + fine_number) > 0.3 else '安全']
+        '判定': ['高危' if float(virus_number) / (virus_number + fine_number) > 0.3 else '安全'],
+        '报告链接': [perlink]
     })
 
     # 设置Excel文件的路径
@@ -152,7 +154,7 @@ def save_virus_detection_results(file_name, virus_type, virus_number, fine_numbe
         with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
             df.to_excel(writer, index=False)
 
-def url_detection_results(url,url_type,virus_number, fine_number):
+def url_detection_results(url,url_type,virus_number, fine_number,perlink):
     # 创建DataFrame
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     df = pd.DataFrame({
@@ -160,7 +162,8 @@ def url_detection_results(url,url_type,virus_number, fine_number):
         '网站类型': [url_type],
         '提交时间': [timestamp],
         '反病毒引擎检出': [f'{virus_number}/{virus_number + fine_number}'],
-        '判定': ['高危' if float(virus_number) / (virus_number + fine_number) > 0.3 else '安全']
+        '判定': ['高危' if float(virus_number) / (virus_number + fine_number) > 0.3 else '安全'],
+        '报告链接': [perlink]
     })
 
     # 设置Excel文件的路径
@@ -179,7 +182,7 @@ def url_detection_results(url,url_type,virus_number, fine_number):
         with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
             df.to_excel(writer, index=False)
 
-def ip_detection_results(ip,url_type,virus_number, fine_number,as_owner,country):
+def ip_detection_results(ip,url_type,virus_number, fine_number,as_owner,country,perlink):
     # 创建DataFrame
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     df = pd.DataFrame({
@@ -189,7 +192,8 @@ def ip_detection_results(ip,url_type,virus_number, fine_number,as_owner,country)
         '所属':[as_owner],
         '提交时间': [timestamp],
         '反病毒引擎检出': [f'{virus_number}/{virus_number + fine_number}'],
-        '判定': ['高危' if float(virus_number) / (virus_number + fine_number) > 0.3 else '安全']
+        '判定': ['高危' if float(virus_number) / (virus_number + fine_number) > 0.3 else '安全'],
+        '报告链接': [perlink]
     })
 
     # 设置Excel文件的路径

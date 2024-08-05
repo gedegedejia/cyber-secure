@@ -356,6 +356,7 @@
                         <th>提交时间</th>
                         <th>反病毒引擎检出</th>
                         <th>判定</th>
+                        <th>报告链接</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -365,8 +366,8 @@
                         <td>{{ item.文件类型 }}</td>
                         <td>{{ item.提交时间 }}</td>
                         <td>{{ item.反病毒引擎检出 }}</td>
-                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red', fontWeight: 'bold' }">{{ item.判定 }}
-                        </td>
+                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red', fontWeight: 'bold' }">{{ item.判定 }}</td>
+                        <td><a :href="item.报告链接" target="_blank" class="underline">点击查看报告</a></td>
                       </tr>
                     </tbody>
                   </table>

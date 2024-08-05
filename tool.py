@@ -114,7 +114,7 @@ def get_secure_report(file_path):
         print(json)
         virus_type = json['type']
         file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(virus_type+'文件'))
-        txt=v2_uploadFile.getResult(json)
+        txt,perlink=v2_uploadFile.getResult(json)
         tool_answer,virus_number,fine_number = v2_uploadFile.culuateDate(txt)
         behaviour=''
         signature_description=''
@@ -141,7 +141,7 @@ def get_secure_report(file_path):
                     mat_description=''
             mat_description = mat_description.rstrip(',')
 
-        v2_uploadFile.save_virus_detection_results(file_name,virus_type,virus_number,fine_number)
+        v2_uploadFile.save_virus_detection_results(file_name,virus_type,virus_number,fine_number,perlink)
         answer=file_info+"\n"+str(tool_answer)+ "\n" +behaviour+ "\n" +signature_description+ "\n" +mat_description
     
         return answer
@@ -156,7 +156,7 @@ def get_url_report(url):
         load_dotenv()
         apikey = os.getenv('API_KEY1')   
         json = v2_uploadFile.getUrlReportResult(apikey,url)
-        txt = v2_uploadFile.getUrlResult(json)
+        txt,perlink = v2_uploadFile.getUrlResult(json)
         tool_answer,virus_number,fine_number = v2_uploadFile.culuateDate_url(txt)
         url_type = json['data']['type']
         print(url_type)
@@ -165,7 +165,7 @@ def get_url_report(url):
             categories +=v+','
         categories = categories.rstrip(',')
         print(categories)
-        v2_uploadFile.url_detection_results(url,url_type,virus_number,fine_number)
+        v2_uploadFile.url_detection_results(url,url_type,virus_number,fine_number,perlink)
         answer=str(tool_answer)+ "\n" + categories
         return answer
     
@@ -180,7 +180,7 @@ def get_ip_report(ip):
         load_dotenv()
         apikey = os.getenv('API_KEY1')   
         json = v2_uploadFile.getIPReportResult(apikey,ip)
-        txt = v2_uploadFile.getIPResult(json)
+        txt,perlink = v2_uploadFile.getIPResult(json)
         tool_answer,virus_number,fine_number = v2_uploadFile.culuateDate_url(txt)
         url_type = json['data']['type']
         print(url_type)
@@ -188,7 +188,7 @@ def get_ip_report(ip):
         continent = json['data']['attributes']['continent']
         country = json['data']['attributes']['country']
         regional_internet_registry  = 'IP地址范围是由'+ json['data']['attributes']['regional_internet_registry'] + '分配的。'
-        v2_uploadFile.ip_detection_results(ip,url_type,virus_number,fine_number,as_owner,country)
+        v2_uploadFile.ip_detection_results(ip,url_type,virus_number,fine_number,as_owner,country,perlink)
         as_owner = 'IP地址范围的拥有者是:'+ json['data']['attributes']['as_owner']
         continent = 'IP地址范围所在的大陆是:'+ json['data']['attributes']['continent']
         country = 'IP地址范围所在的国家是:'+ json['data']['attributes']['country']

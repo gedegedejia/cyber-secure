@@ -526,7 +526,7 @@ export default {
         'web_leak': [],
         'cve': []
       },
-      tshark_path:'D:\Wireshark\wireshark\Wireshark\\tshark.exe',
+      tshark_path:'D:\\Wireshark\\wireshark\\Wireshark\\tshark.exe',
       instructions: [
         '作为网络安全专家，在公司最近经历了一次数据泄露事件的背景下，为了增强公司整体的网络安全防护能力，你如何制定一套全面的网络安全策略？',
         '你作为企业的网络安全顾问，面对公司网络基础设施近期频繁遭受DDoS攻击的情况，为了增强网络的抗攻击能力，你会推荐并实施哪些具体的防御措施？',
@@ -550,13 +550,30 @@ export default {
     }
   },
   methods: {
-    setPath(newTsharkPath) {
-      if(newTsharkPath){
-        this.tshark_path = newTsharkPath
-      }else{
+    async setPath(newTsharkPath) {
+      if (!newTsharkPath) {
         alert('路径不能为空，请输入有效的tshark路径。');
+        return;
       }
-      console.log(this.tshark_path)
+      try {
+        const response = await fetch('/api/set_tshark_path', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ newTsharkPath })
+        });
+        console.log(response);
+        
+        if (response.ok) {
+          this.tshark_path = newTsharkPath; // 更新显示的 tshark 路径
+          this.newTsharkPath = ''; // 清空输入框
+          alert('tshark 路径已成功更新。');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('更新 tshark 路径失败，请稍后重试。');
+      }
     },
     async getFileHistory(tool) {
       console.log('getFileHistory called');

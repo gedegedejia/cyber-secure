@@ -15,6 +15,7 @@ from datetime import datetime
 import time
 import embedding
 import pandas as pd
+from update_path import update_tshark_path
 
 load_dotenv()
 api_key = os.getenv("DASHSCOPE_API_KEY")
@@ -41,37 +42,6 @@ app.config['UPLOAD_FOLDER'] = os.getenv('uploads_path')
 @app.route('/')
 def index():
     return render_template('index.html')
-
-    asyncio.set_event_loop(asyncio.new_event_loop())
-    tool.get_wireshark()  # 执行Wireshark抓包操作
-    answer = None  # 初始化 answer
-    image_url = None  # 初始化 image_url
-    file_url = None     # 初始化 file_url
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    pcap_dir = 'static/assets/packet_capture'
-    if not os.path.exists(pcap_dir):
-        os.makedirs(pcap_dir, exist_ok=True)  # 确保目录存在
-    pcapng_file = f'{pcap_dir}/my.pcapng'
-    excel_file = f'{pcap_dir}/output.xlsx'
-    xlsx_file = f'{pcap_dir}/packet_data_{timestamp}.xlsx'
-    packet_capture.pcapng_analyse.pcapng_to_excel(pcapng_file, excel_file)
-    packet_capture.pcapng_analyse.pcapng_to_xlsx(pcapng_file, xlsx_file)
-    unique_chart_filename = f'protocol_count_pie_{timestamp}.png'
-    unique_chart_filepath = os.path.join('static', 'assets', 'pictures', unique_chart_filename)
-    packet_capture.draw.plot_from_excel(excel_file, unique_chart_filepath)
-    
-    answer = "抓包分析已完成"
-    image_url = f'/assets/pictures/{unique_chart_filename}'
-    file_url = xlsx_file.strip('static')
-    if image_url:
-        answer = f'{answer}\n![图片]({image_url})'
-    if file_url:
-        answer = f'{answer}\n[点击下载文件]({file_url})'
-    print(messages)
-    suggestions = get_suggestions(messages,'get_wireshark')
-    
-    response_data = {'response': answer,'suggestions':suggestions}
-    return jsonify(response_data)
 
 @app.route('/api/upload', methods=['POST'])
 def upload():
@@ -237,9 +207,7 @@ def sse():
             suggestions = get_suggestions(messages,request_type)
 
             Response={'content':answer,'suggestions':suggestions}
-            """print("+++++++++++++++++++++++++++++++++++++")
-            print(messages)
-            print("+++++++++++++++++++++++++++++++++++++")"""
+
         elif request_type == 'get_secure_report':
             context = search(question, 'web_leak')
             tool_call = tool.tool_jude(question)
@@ -396,6 +364,14 @@ def excel_data():
     # 将 DataFrame 转换为字典
     data_dict = df.to_dict(orient='records')
     return jsonify(data_dict)
+
+@app.route('/api/set_tshark_path', methods=['POST'])
+def set_tshark_path():
+    new_path = request.get_json()['newTsharkPath']
+    print(new_path)
+    update_tshark_path(new_path)
+    return jsonify('TShark path updated.')
+    
 
 if __name__ == '__main__':
     # 配置Dashscope API KEY

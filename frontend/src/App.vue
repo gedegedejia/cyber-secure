@@ -228,10 +228,21 @@
                         <img :src="'https://api.multiavatar.com/' + msg.name + '.png'" />
                       </div>
                     </div>
-                    <div class="chat-bubble" v-html="md2html(msg.content)">
+                    <div class="chat-bubble mt-4 leading-loose" v-html="md2html(msg.content)">
                     </div>
                   </div>
                 </div>
+                  
+
+              <!-- 加载动画 -->
+              <div v-if="loading" class="flex items-center  mt-2">
+                <div class="w-10 rounded-full">
+                  <img :src="'https://api.multiavatar.com/CyberSecure.png'" />
+                </div>
+                <span class="loading loading-dots loading-md ml-4"></span>
+              </div>
+
+
               </div>
               <div class="flex justify-between mr-2">
                 <button class="btn btn-primary w-1/3 mb-4 " @click="setTextMessage(suggestions[0])">{{
@@ -283,7 +294,6 @@
                 </div>
               </div>
             </div>
-
             <div v-if="this.selectedButtonNumber === 4">
               <h2 class="card-title">知识库配置</h2>
 
@@ -498,7 +508,6 @@
 <script>
 import { marked } from "marked";
 import { Text } from "vue";
-
 export default {
   setup() {
   },
@@ -537,7 +546,8 @@ export default {
       ],
       isUploading: false,
       fileHistory: [],
-      isUploading: false
+      isUploading: false,
+      loading: false,  // 加载状态
     }
   },
   mounted() {
@@ -740,55 +750,64 @@ export default {
       }
     },
     initSSE: function (msg) {
-      // 初始化 SSE 连接
-      try {
-        const eventSource = new EventSource(`/api/sse?message=${encodeURIComponent(msg)}&type=${this.tool}`);
-        let fullMessage = '';
-
-        // 处理从服务器接收到的消息
-        eventSource.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-
-            if (data.done) {
-              this.scrollToBottom();
-              eventSource.close();
-              this.ready = true;
-              this.suggestions = data.suggestions
-            } else {
-              // 累积完整消息
-              fullMessage += data.message;
-              if (this.messages.length > 0 && !this.messages[this.messages.length - 1].user) {
-                this.messages[this.messages.length - 1].content = fullMessage;
+        // 设置加载状态为 true
+        this.loading = true;
+  
+        try {
+          const eventSource = new EventSource(`/api/sse?message=${encodeURIComponent(msg)}&type=${this.tool}`);
+          let fullMessage = '';
+  
+          // 处理从服务器接收到的消息
+          eventSource.onmessage = (event) => {
+            try {
+              const data = JSON.parse(event.data);
+              this.loading = false;  // 加载完成，隐藏转圈
+              if (data.done) {
+                this.scrollToBottom();
+                eventSource.close();
+                this.ready = true;
+                this.suggestions = data.suggestions;
               } else {
-                this.messages.push({
-                  user: false,
-                  name: this.botName,
-                  content: fullMessage
-                });
+                // 累积完整消息
+                fullMessage += data.message;
+                if (this.messages.length > 0 && !this.messages[this.messages.length - 1].user) {
+                  this.messages[this.messages.length - 1].content = fullMessage;
+                } else {
+                  this.messages.push({
+                    user: false,
+                    name: this.botName,
+                    content: fullMessage
+                  });
+                }
               }
+            } catch (e) {
+              console.error('Error parsing JSON:', e);
+              this.showErr('数据解析错误');
+              this.loading = false;  // 数据解析错误，隐藏转圈
             }
-          } catch (e) {
-            console.error('Error parsing JSON:', e);
-            this.showErr('数据解析错误');
-          }
-        };
-
-        // 处理连接错误
-        eventSource.onerror = (error) => {
-          console.error('SSE error:', error);
-          this.showErr('SSE 连接出错');
-          eventSource.close();
-          this.ready = true;  // 恢复用户操作
-        };
-      } catch (e) {
-        console.error('SSE 初始化错误:', e);
-        this.showErr('SSE 初始化错误');
-        this.ready = true;  // 恢复用户操作
-      }
+          };
+  
+          // 处理连接错误
+          eventSource.onerror = (error) => {
+            console.error('SSE error:', error);
+            this.showErr('SSE 连接出错');
+            eventSource.close();
+            this.ready = true;
+            this.loading = false;  // 连接出错，隐藏转圈
+          };
+        } catch (e) {
+          console.error('SSE 初始化错误:', e);
+          this.showErr('SSE 初始化错误');
+          this.ready = true;
+          this.loading = false;  // 初始化错误，隐藏转圈
+        }
     },
+  
     md2html: function (md) {
-      return marked.parse(md);
+      console.log('Original Markdown:', md);
+      const html = marked.parse(md);
+      console.log('Converted HTML:', html);
+      return html;
     },
     loadChat(index) {
       console.log(index)
@@ -882,4 +901,5 @@ export default {
 ::-webkit-scrollbar {
   display: none;
 }
+
 </style>

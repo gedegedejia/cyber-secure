@@ -103,6 +103,7 @@ def getAnswer(query, context,tool_message,messages,tool_call):
     else:
         prompt = f'''
             请回答我的问题：{query}。
+            {context}
             请结合网络安全的知识，尽量简洁明了地回答，但请保持礼貌。
             '''
 
@@ -202,7 +203,8 @@ def sse():
     def stream():
         if request_type == 'chat':
             messages = update_messages
-            context = search(question, 'web_leak')
+            context = search(question, 'ccc')
+            print(context)
             answer = getAnswer(question, context, '', messages, '')
             suggestions = get_suggestions(messages,request_type)
 
@@ -212,11 +214,12 @@ def sse():
             context = search(question, 'web_leak')
             tool_call = tool.tool_jude(question)
             messages = update_messages
-            if uploaded_file_paths:
-                tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))
-            else:
-                tool_message = ''
-
+            tool_message = ''
+            if(tool_call == 'get_secure_report'):
+                if uploaded_file_paths:
+                    tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))
+                else:
+                    tool_message = ''
             answer = getAnswer(question, context, str(tool_message), messages, tool_call)        
             suggestions = get_suggestions(messages,request_type)
             Response={'content':answer,'suggestions':suggestions}

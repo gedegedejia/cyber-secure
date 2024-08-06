@@ -4,12 +4,12 @@ from tqdm import tqdm
 import dashscope
 from dashscope import TextEmbedding
 from pymilvus import connections, FieldSchema, CollectionSchema, DataType, Collection, utility
-
+import pandas as pd
 
 def prepareData(path, batch_size=25):
     batch_docs = []
     for file in os.listdir(path):
-        with open(path + '/' + file, 'r', encoding='utf-8') as f:
+        with open(os.path.join(path, file), 'r', encoding='utf-8') as f:
             batch_docs.append(f.read())
             if len(batch_docs) == batch_size:
                 yield batch_docs
@@ -19,15 +19,15 @@ def prepareData(path, batch_size=25):
         yield batch_docs
 
 
-def getEmbedding(news):
+def getEmbedding(texts):
     model = TextEmbedding.call(
         model=TextEmbedding.Models.text_embedding_v1,
-        input=news
+        input=texts
     )
     embeddings = [record['embedding'] for record in model.output['embeddings']]
-    return embeddings if isinstance(news, list) else embeddings[0]
+    return embeddings if isinstance(texts, list) else embeddings[0]
 
-def uploadKnowledge(COLLECTION_NAME,data_path):
+def uploadKnowledge(COLLECTION_NAME, data_path):
     dashscope.api_key = os.getenv('DASHSCOPE_API_KEY')
 
     # 配置Milvus参数
@@ -39,87 +39,68 @@ def uploadKnowledge(COLLECTION_NAME,data_path):
 
     connections.connect(host=MILVUS_HOST, port=MILVUS_PORT, user=USER, password=PASSWORD)
 
-    # Remove collection if it already exists
-    if utility.has_collection(COLLECTION_NAME):
-        utility.drop_collection(COLLECTION_NAME)
-
-    # Create collection which includes the id, title, and embedding.
-    fields = [
-        FieldSchema(name='id', dtype=DataType.INT64, description='Ids', is_primary=True, auto_id=False),
-        FieldSchema(name='text', dtype=DataType.VARCHAR, description='Text', max_length=4096),
-        FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, description='Embedding vectors', dim=DIMENSION)
-    ]
-    schema = CollectionSchema(fields=fields, description='CEC Corpus Collection')
-    collection = Collection(name=COLLECTION_NAME, schema=schema)
+    # 检查集合是否存在
+    if not utility.has_collection(COLLECTION_NAME):
+        # Create collection which includes the id, question, answer, and embedding.
+        fields = [
+            FieldSchema(name='id', dtype=DataType.INT64, description='Ids', is_primary=True, auto_id=False),
+            FieldSchema(name='question', dtype=DataType.VARCHAR, description='Question', max_length=4096),
+            FieldSchema(name='answer', dtype=DataType.VARCHAR, description='Answer', max_length=4096),
+            FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, description='Embedding vectors', dim=DIMENSION)
+        ]
+        schema = CollectionSchema(fields=fields, description='CEC Corpus Collection')
+        collection = Collection(name=COLLECTION_NAME, schema=schema)
+        
+        # Create an index for the collection.
+        index_params = {
+            'index_type': 'IVF_FLAT',
+            'metric_type': 'L2',
+            'params': {'nlist': 1024}
+        }
+        collection.create_index(field_name="embedding", index_params=index_params)
+    else:
+        collection = Collection(name=COLLECTION_NAME)
     
-    # Create an index for the collection.
-    index_params = {
-        'index_type': 'IVF_FLAT',
-        'metric_type': 'L2',
-        'params': {'nlist': 1024}
-    }
-    collection.create_index(field_name="embedding", index_params=index_params)
+    collection.load()
 
-    id = 1
-    for news in tqdm(list(prepareData(data_path))):
-        ids = [id + i for i, _ in enumerate(news)]
-        id += len(news)
+    # 获取当前集合中的最大ID
+    max_id = 0
+    results = collection.query(expr="id >= 0", output_fields=['id'])
+    if len(results) > 0:
+        max_id=len(results)
+        print(max_id)
+    
+    id = max_id + 1
+    print("id:",id)
+    # 列出指定目录中的所有文件
+    for filename in os.listdir(data_path):
+        if filename.endswith('.csv'):
+            file_path = os.path.join(data_path, filename)
+            data = pd.read_csv(file_path, encoding='utf-8')
 
-        vectors = getEmbedding(news)
-        # insert Milvus Collection
-        for id, vector, doc in zip(ids, vectors, news):
-            insert_doc = (doc[:2000] + '..') if len(doc) > 2002 else doc
-            ins = [[id], [insert_doc], [vector]]  # Insert the title id, the text, and the text embedding vector
-            collection.insert(ins)
-            time.sleep(2)
+            for i, row in data.iterrows():
+                question = row['question']
+                answer = row['answer']
+                
+                # 检查数据是否已经存在
+                exists_query = f'question == "{question}" and answer == "{answer}"'
+                exists = collection.query(expr=exists_query, output_fields=['id'])
+                
+                if not exists:
+                    print(exists_query,"插入")
+                    texts = [question, answer]
+                    vectors = getEmbedding(texts)
+
+                    ins = [[id], [question], [answer], [vectors[0]]]  # 使用第一个向量作为嵌入向量
+                    collection.insert(ins)
+                    collection.load()  # 刷新集合数据
+                    id += 1
+                    time.sleep(2)
+                else:
+                    print(exists_query,"重复")
 
 if __name__ == '__main__':
-
-    data_path = f'D:/CEC-Corpus/raw corpus/1'  # 数据下载git clone https://github.com/shijiebei2009/CEC-Corpus.git
-
-    # 配置Dashscope API KEY
-    dashscope.api_key = os.getenv('DASHSCOPE_API_KEY')
-
-    # 配置Milvus参数
-    COLLECTION_NAME = 'web_leak'
-    DIMENSION = 1536
-    MILVUS_HOST = 'c-e920f955ee756dbc.milvus.aliyuncs.com'
-    MILVUS_PORT = '19530'
-    USER = 'root'
-    PASSWORD = '200413Cwj@'
-
-    connections.connect(host=MILVUS_HOST, port=MILVUS_PORT, user=USER, password=PASSWORD)
-
-    # Remove collection if it already exists
-    if utility.has_collection(COLLECTION_NAME):
-        utility.drop_collection(COLLECTION_NAME)
-
-    # Create collection which includes the id, title, and embedding.
-    fields = [
-        FieldSchema(name='id', dtype=DataType.INT64, description='Ids', is_primary=True, auto_id=False),
-        FieldSchema(name='text', dtype=DataType.VARCHAR, description='Text', max_length=4096),
-        FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, description='Embedding vectors', dim=DIMENSION)
-    ]
-    schema = CollectionSchema(fields=fields, description='CEC Corpus Collection')
-    collection = Collection(name=COLLECTION_NAME, schema=schema)
-
-    # Create an index for the collection.
-    index_params = {
-        'index_type': 'IVF_FLAT',
-        'metric_type': 'L2',
-        'params': {'nlist': 1024}
-    }
-    collection.create_index(field_name="embedding", index_params=index_params)
-
-    id = 1
-    for news in tqdm(list(prepareData(data_path))):
-        ids = [id + i for i, _ in enumerate(news)]
-        id += len(news)
-
-        vectors = getEmbedding(news)
-        # insert Milvus Collection
-        for id, vector, doc in zip(ids, vectors, news):
-            insert_doc = (doc[:2000] + '..') if len(doc) > 2002 else doc
-            ins = [[id], [insert_doc], [vector]]  # Insert the title id, the text, and the text embedding vector
-            collection.insert(ins)
-            time.sleep(2)
+    data_path = 'E:\\C4 A-ST\\uploads\\knowledge\\ccc'  # 数据下载git clone https://github.com/shijiebei2009/CEC-Corpus.git
+    COLLECTION_NAME = 'ysx'
+    
+    uploadKnowledge(COLLECTION_NAME, data_path)

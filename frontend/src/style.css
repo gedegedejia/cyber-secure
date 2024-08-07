@@ -2,3 +2,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: initial;
+    font-weight: initial;
+}
+h1 {
+    font-size: 2.5em;
+    font-weight: bold;
+  }
+  
+  h2 {
+    font-size: 2em;
+    font-weight: bold;
+  }
+  
+  h3 {
+    font-size: 1.75em;
+    font-weight: bold;
+  }
+  
+  h4 {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+  
+  h5 {
+    font-size: 1.25em;
+    font-weight: normal;
+  }
+  
+  h6 {
+    font-size: 1em;
+    font-weight: normal;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse; /* 确保表格边框合并 */
+    border: 1px solid rgb(242, 227, 227); /* 设置表格的外边框 */
+  }
+  
+  th, td {
+    border: 1px solid rgb(241, 227, 227); /* 为表头和单元格设置边框 */
+    padding: 8px; /* 添加一些内边距 */
+    text-align: left; /* 左对齐文本 */
+  }
+  

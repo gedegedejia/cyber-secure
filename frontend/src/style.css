@@ -42,3 +42,15 @@ h1 {
     font-weight: normal;
   }
   
+  table {
+    width: 100%;
+    border-collapse: collapse; /* 确保表格边框合并 */
+    border: 1px solid rgb(242, 227, 227); /* 设置表格的外边框 */
+  }
+  
+  th, td {
+    border: 1px solid rgb(241, 227, 227); /* 为表头和单元格设置边框 */
+    padding: 8px; /* 添加一些内边距 */
+    text-align: left; /* 左对齐文本 */
+  }
+  

@@ -228,7 +228,7 @@
                         <img :src="'https://api.multiavatar.com/' + msg.name + '.png'" />
                       </div>
                     </div>
-                    <div class="chat-bubble mt-4 leading-loose" v-html="md2html(msg.content)">
+                    <div class="chat-bubble mt-4 leading-loose" v-html="md2html(msg.content)" style="font-size: 0.9rem;">
                     </div>
                   </div>
                 </div>

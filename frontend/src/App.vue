@@ -1,17 +1,16 @@
 <template>
   <div class="hero min-h-screen max-h-full" style="background-image: url(https://cover.sli.dev)">
     <div class="flex w-full h-full">
-      <div class="sidebar fixed top-0 left-0 w-1/5 h-full glass p-4 overflow-y-auto "
-        style="opacity: 0.9; z-index: 10">
-  
+      <div class="sidebar fixed top-0 left-0 w-1/5 h-full glass p-4 overflow-y-auto " style="opacity: 0.9; z-index: 10">
+
         <div class="flex justify-between items-center mb-4">
           <div>
             <h2 class="text-xl font-bold text-gray-900">网络安全助手</h2>
           </div>
-          <div >
+          <div>
             <button class="btn glass text-gray-800" onclick="my_modal_2.showModal()">
-              <svg t="1722842797261" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                p-id="4321" width="24" height="24">
+              <svg t="1722842797261" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                xmlns="http://www.w3.org/2000/svg" p-id="4321" width="24" height="24">
                 <path
                   d="M510.37806 337.803609c-98.010221 0-177.748287 78.842673-177.748287 175.75284 0 96.91426 79.738066 175.763073 177.748287 175.763073 9.537214 0 19.620873-0.978281 31.797194-3.088338 18.196431-3.281743 30.290887-20.538779 26.963095-38.471197-2.924609-15.732309-16.693194-27.152407-32.747845-27.152407-2.071172 0-4.15974 0.196475-6.123464 0.563842-7.937786 1.402953-14.233166 2.056845-19.807115 2.056845-61.159942 0-110.915136-49.201585-110.915136-109.671819 0-60.467163 49.679469-109.661585 110.747313-109.661585 61.116963 0 110.832248 49.194422 110.832248 109.661585 0 5.892197-0.656963 12.0832-2.088568 19.531845-3.327792 17.928325 8.769734 35.189454 26.959002 38.464033 2.006703 0.360204 4.045129 0.546446 6.070252 0.546446 16.204054 0 30.019711-11.43033 32.832779-27.116591 2.13871-11.45182 3.13848-21.435195 3.13848-31.41857 0.042979-46.873564-18.435884-90.990341-52.033074-124.223233C602.407056 356.106464 557.790906 337.803609 510.37806 337.803609z"
                   fill="#000000" p-id="4322"></path>
@@ -26,7 +25,8 @@
             <div class="modal-box">
               <h3 class="text-lg font-bold">修改配置</h3>
               <p class="py-4 text-base font-bold">tshark路径：{{ tshark_path }}</p>
-              <input type="text" v-model="newTsharkPath" placeholder="请输入您的tshark路径" class="input input-bordered input-primary w-full" />
+              <input type="text" v-model="newTsharkPath" placeholder="请输入您的tshark路径"
+                class="input input-bordered input-primary w-full" />
               <div class="grid place-items-end">
                 <button class="btn btn-primary mt-4" @click="setPath(newTsharkPath)">确定</button>
               </div>
@@ -36,7 +36,7 @@
             </form>
           </dialog>
         </div>
-        
+
         <ul>
           <li class="mb-2">
             <button
@@ -107,7 +107,8 @@
               </svg>
               URL / IP 分析
             </button>
-            <div v-if="this.selectedButtonNumber === 7 || this.selectedButtonNumber === 6 || this.selectedButtonNumber === 8">
+            <div
+              v-if="this.selectedButtonNumber === 7 || this.selectedButtonNumber === 6 || this.selectedButtonNumber === 8">
               <div class="flex items-center mt-2">
                 <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
                   xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
@@ -218,9 +219,22 @@
       <div class="hero-content w-4/5 overflow-hidden" style="margin-left: 20%;">
         <div class="card w-auto shadow-2xl bg-base-100 md:w-4/5">
           <div class="card-body p-5">
-            <div v-if="selectedButtonNumber !== 4 && selectedButtonNumber !== 5 && selectedButtonNumber !== 7 && selectedButtonNumber !== 8">
+            <div
+              v-if="selectedButtonNumber !== 4 && selectedButtonNumber !== 5 && selectedButtonNumber !== 7 && selectedButtonNumber !== 8">
               <h2 class="card-title">Cyber Secure</h2>
-              <div id="chat-panel" class="h-[32rem] max-h-full py-3 overflow-auto">
+              <div id="chat-panel" ref="chatPanel" class="h-[32rem] max-h-full py-3 overflow-auto">
+                <div v-if="messages.length === 0 " class="grid justify-items-center">
+                  <div class="card bg-base-100 w-2/3 shadow-xl">
+                    <div class="card-body">
+                      <h2 class="card-title">你好~我是一名网络安全专家能为你解答一切安全相关的问题</h2>
+                      <div class="w-full">
+                        <button v-for="(item, index) in suggestions" :key="index" class="btn w-full my-1 " @click="setTextMessage(item)">
+                          {{ item }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div v-for="msg in messages" :key="msg.id">
                   <div :class="msg.user ? 'chat chat-end' : 'chat chat-start'">
                     <div class="chat-image avatar">
@@ -228,18 +242,17 @@
                         <img :src="'https://api.multiavatar.com/' + msg.name + '.png'" />
                       </div>
                     </div>
-                    <div class="chat-bubble" v-html="md2html(msg.content)">
+                    <div class="chat-bubble leading-loose" v-html="md2html(msg.content)" style="font-size: 0.9rem;">
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="flex justify-between mr-2">
-                <button class="btn btn-primary w-1/3 mb-4 " @click="setTextMessage(suggestions[0])">{{
-                  suggestions[0] }}</button>
-                <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[1])">{{
-                  suggestions[1] }}</button>
-                <button class="btn btn-primary w-1/3 mb-4 ml-2" @click="setTextMessage(suggestions[2])">{{
-                  suggestions[2] }}</button>
+                <!-- 加载动画 -->
+                <div v-if="loading" class="flex items-center mt-2">
+                  <div class="w-10 rounded-full">
+                    <img :src="'https://api.multiavatar.com/CyberSecure.png'" />
+                  </div>
+                  <span class="loading loading-dots loading-md ml-4"></span>
+                </div>
               </div>
               <div class="card-actions justify-end flex-nowrap">
                 <button class="btn btn-primary btn-circle btn-md" @click="selectUpload" :disabled="!ready">
@@ -399,7 +412,8 @@
                         <td>{{ item.文件类型 }}</td>
                         <td>{{ item.提交时间 }}</td>
                         <td>{{ item.反病毒引擎检出 }}</td>
-                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red', fontWeight: 'bold' }">{{ item.判定 }}</td>
+                        <td :style="{ color: item.判定 === '安全' ? 'green' : 'red', fontWeight: 'bold' }">{{ item.判定 }}
+                        </td>
                         <td><a :href="item.报告链接" target="_blank" class="underline">点击查看报告</a></td>
                       </tr>
                     </tbody>
@@ -463,8 +477,8 @@
                     <tbody>
                       <tr v-for="(item, index) in fileHistory" :key="index">
                         <th>{{ index + 1 }}</th>
-                        <td>{{ item.ip地址}}</td>
-                        <td>{{ item.类型}}</td>
+                        <td>{{ item.ip地址 }}</td>
+                        <td>{{ item.类型 }}</td>
                         <td>{{ item.国家 }}</td>
                         <td>{{ item.所属 }}</td>
                         <td>{{ item.提交时间 }}</td>
@@ -517,7 +531,7 @@ export default {
       messages: [],
       selectedButtonNumber: 1,
       tool: 'chat',
-      suggestions: ['向我提问网络安全知识', '侧边栏点击抓包流量分析', '侧边栏点击文件漏洞分析'],
+      suggestions: ['云计算环境中的数据加密有哪些主要方法？', '如何检测和防止SQL注入攻击？', '防火墙在现代网络安全策略中扮演什么角色？'],
       databases: ['ccc', 'web_leak', 'cve'],
       selectedDatabase: null,
       dropdownVisible: false,
@@ -526,7 +540,7 @@ export default {
         'web_leak': [],
         'cve': []
       },
-      tshark_path:'D:\\Wireshark\\wireshark\\Wireshark\\tshark.exe',
+      tshark_path: 'D:\\Wireshark\\wireshark\\Wireshark\\tshark.exe',
       instructions: [
         '作为网络安全专家，在公司最近经历了一次数据泄露事件的背景下，为了增强公司整体的网络安全防护能力，你如何制定一套全面的网络安全策略？',
         '你作为企业的网络安全顾问，面对公司网络基础设施近期频繁遭受DDoS攻击的情况，为了增强网络的抗攻击能力，你会推荐并实施哪些具体的防御措施？',
@@ -537,7 +551,7 @@ export default {
       ],
       isUploading: false,
       fileHistory: [],
-      isUploading: false
+      loading: false, // 加载状态
     }
   },
   mounted() {
@@ -564,7 +578,7 @@ export default {
           body: JSON.stringify({ newTsharkPath })
         });
         console.log(response);
-        
+
         if (response.ok) {
           this.tshark_path = newTsharkPath; // 更新显示的 tshark 路径
           this.newTsharkPath = ''; // 清空输入框
@@ -623,11 +637,25 @@ export default {
       this.dropdownVisible = false;
       console.log(db)
     },
-    scrollToBottom: function () {
-      setTimeout(() => {
-        const chatPanel = document.getElementById('chat-panel');
-        chatPanel.scrollTop = chatPanel.scrollHeight;
-      }, 0);
+    scrollToBottom() {
+      const chatPanel = this.$refs.chatPanel;
+      if (chatPanel) {
+        const scrollHeight = chatPanel.scrollHeight;
+        console.log(scrollHeight)
+        const scrollStep = (scrollHeight - chatPanel.scrollTop) / 30; // 滑动的步长
+
+        function scrollDown() {
+          // 检查是否已经在底部，如果是则停止滚动
+          console.log(chatPanel.scrollTop + chatPanel.clientHeight)
+          if (chatPanel.scrollTop + chatPanel.clientHeight < scrollHeight - 1) {
+            chatPanel.scrollTop += scrollStep;
+            window.requestAnimationFrame(scrollDown);
+          }
+        }
+
+        // 启动滚动前的一个微小延迟，确保DOM更新
+        setTimeout(scrollDown, 100);
+      }
     },
     showErr: function (e) {
       this.modal.title = '出错了';
@@ -654,9 +682,6 @@ export default {
       this.messages = [];
       this.saveChatHistoryToLocalStorage();
       this.ready = true;  // 设置 ready 为 true 表示操作完成
-    },
-    setTextMessage(suggestion) {
-      this.textMessage = suggestion;
     },
     saveChatHistoryToLocalStorage: function () {
       localStorage.setItem('chatHistory', JSON.stringify(this.chatHistory));
@@ -740,7 +765,9 @@ export default {
       }
     },
     initSSE: function (msg) {
-      // 初始化 SSE 连接
+      // 设置加载状态为 true
+      this.loading = true;
+
       try {
         const eventSource = new EventSource(`/api/sse?message=${encodeURIComponent(msg)}&type=${this.tool}`);
         let fullMessage = '';
@@ -749,12 +776,11 @@ export default {
         eventSource.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-
+            this.loading = false;  // 加载完成，隐藏转圈
             if (data.done) {
               this.scrollToBottom();
               eventSource.close();
               this.ready = true;
-              this.suggestions = data.suggestions
             } else {
               // 累积完整消息
               fullMessage += data.message;
@@ -771,6 +797,7 @@ export default {
           } catch (e) {
             console.error('Error parsing JSON:', e);
             this.showErr('数据解析错误');
+            this.loading = false;  // 数据解析错误，隐藏转圈
           }
         };
 
@@ -779,23 +806,28 @@ export default {
           console.error('SSE error:', error);
           this.showErr('SSE 连接出错');
           eventSource.close();
-          this.ready = true;  // 恢复用户操作
+          this.ready = true;
+          this.loading = false;  // 连接出错，隐藏转圈
         };
       } catch (e) {
         console.error('SSE 初始化错误:', e);
         this.showErr('SSE 初始化错误');
-        this.ready = true;  // 恢复用户操作
+        this.ready = true;
+        this.loading = false;  // 初始化错误，隐藏转圈
       }
     },
     md2html: function (md) {
       return marked.parse(md);
     },
     loadChat(index) {
-      console.log(index)
+      console.log(index);
       this.currentChatIndex = index;
       this.messages = this.chatHistory[index];
-      console.log(this.chatHistory[index][0])
-      this.sendMessagesToBackend();
+      console.log(this.chatHistory[index][0]);
+
+      this.$nextTick(() => {
+        this.scrollToBottom();
+      });
     },
     async sendMessagesToBackend() {
       try {

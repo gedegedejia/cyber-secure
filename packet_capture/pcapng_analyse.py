@@ -75,7 +75,3 @@ def read_packet_info_from_excel(file_path):
         return tool_message
     else:
         return "Required columns not found in the Excel file."
-
-pcapng_file = 'packet_capture\\my.pcapng'
-excel_file = 'packet_capture\\output.xlsx'
-pcapng_to_xlsx(pcapng_file, excel_file)

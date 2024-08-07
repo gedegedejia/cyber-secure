@@ -61,8 +61,7 @@ def upload():
     file.save(file_path)
     uploaded_file_paths.append(file_path)
     print(f"Uploaded file paths: {uploaded_file_paths}")  # 添加日志
-    suggestions = ['分析文件安全性','分析文件安全性','分析文件安全性']
-    return jsonify({'fileName': file.filename, 'filePath': file_path,'suggestions':suggestions})
+    return jsonify({'fileName': file.filename, 'filePath': file_path})
     
 def getAnswer(query, context,tool_message,messages,tool_call):
     if tool_call == 'get_secure_report':
@@ -207,9 +206,8 @@ def sse():
             context = search(question, 'ccc')
             print(context)
             answer = getAnswer(question, context, '', messages, '')
-            suggestions = get_suggestions(messages,request_type)
 
-            Response={'content':answer,'suggestions':suggestions}
+            Response={'content':answer}
 
         elif request_type == 'get_secure_report':
             context = search(question, 'web_leak')
@@ -222,8 +220,7 @@ def sse():
                 else:
                     tool_message = ''
             answer = getAnswer(question, context, str(tool_message), messages, tool_call)        
-            suggestions = get_suggestions(messages,request_type)
-            Response={'content':answer,'suggestions':suggestions}
+            Response={'content':answer}
         
         elif request_type == 'get_wireshark':
             asyncio.set_event_loop(asyncio.new_event_loop())
@@ -255,8 +252,8 @@ def sse():
             messages = update_messages
             llm_answer = getAnswer(question, context, str(tool_message), messages, tool_call)
             answer = f'{answer}\n'+llm_answer
-            suggestions = get_suggestions(messages,'get_wireshark')
-            Response={'content':answer,'suggestions':suggestions}
+            
+            Response={'content':answer}
         
         elif request_type == 'get_url_report' or request_type == 'get_ip_report':
             context = search(question, 'web_leak')
@@ -270,9 +267,8 @@ def sse():
                 ip=tool.get_ip(question)
                 tool_message = str(tool.get_ip_report(ip))
             messages = update_messages
-            answer = getAnswer(question, context, str(tool_message), messages, tool_call)        
-            suggestions = ['你好','谢谢','是的']
-            Response={'content':answer,'suggestions':suggestions}    
+            answer = getAnswer(question, context, str(tool_message), messages, tool_call)  
+            Response={'content':answer}    
         else:
             response_data = {'message': 'Invalid type provided', 'done': True}
             yield f'data: {json.dumps(response_data)}\n\n'
@@ -283,41 +279,10 @@ def sse():
             yield f'data: {json.dumps(response_data)}\n\n'
             time.sleep(0.05)  # 控制发送速度
 
-        response_data = {'message': '', 'suggestions' : suggestions, 'done': True}
+        response_data = {'message': '', 'done': True}
         yield f'data: {json.dumps(response_data)}\n\n'
 
     return Response(stream(), content_type='text/event-stream')
-
-def get_suggestions(messages,tool):
-    suggestions = []
-    if tool == 'get_secure_report':
-        function = '文件漏洞分析功能,可以上传文件,给出对文件的安全性分析报告和建议'
-    if tool == 'get_wireshark':
-        function = '抓包流量分析功能,可以自动抓包,对流量进行分析'
-    if tool == 'chat':
-        function = '网安知识问答功能,可以进行网络安全知识的问答'
-    
-    for i in range(3):
-        prompt = f'''
-            用户正在使用{function}，请根据用户的历史记录，给用户第{i}个可能的提示词来引导用户进行操作。
-            以下是我的历史记录
-            ```{messages}```
-            输出严格在10-12字
-        '''
-        rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
-        res=''
-        for response in rsp:
-            if response.status_code == HTTPStatus.OK:
-                print(response.output.choices[0]['message']['content'], end='')
-                res += response.output.choices[0]['message']['content']
-            else:
-                print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
-                    response.request_id, response.status_code,
-                    response.code, response.message
-                ))
-        suggestions.append(res.strip('"').rstrip('。'))
-    print(suggestions)
-    return suggestions
 
 @app.route('/api/uploadKnowledge', methods=['POST'])
 def uploadKnowledge():

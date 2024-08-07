@@ -137,7 +137,8 @@ def search(text,DashVector_name):
     connections.connect(host=MILVUS_HOST, port=MILVUS_PORT, user=USER, password=PASSWORD)
     fields = [
         FieldSchema(name='id', dtype=DataType.INT64, description='Ids', is_primary=True, auto_id=False),
-        FieldSchema(name='text', dtype=DataType.VARCHAR, description='Text', max_length=4096),
+        FieldSchema(name='question', dtype=DataType.VARCHAR, description='Question', max_length=4096),
+        FieldSchema(name='answer', dtype=DataType.VARCHAR, description='Answer', max_length=4096),
         FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, description='Embedding vectors', dim=DIMENSION)
     ]
     schema = CollectionSchema(fields=fields, description='CEC Corpus Collection')
@@ -148,12 +149,12 @@ def search(text,DashVector_name):
         anns_field="embedding",  # Search across embeddings
         param=search_params,
         limit=1,  # Limit to five results per search
-        output_fields=['text']  # Include title field in result
+        output_fields=['answer']  # Include title field in result
     )
 
     ret = []
     for hit in results[0]:
-        ret.append(hit.entity.get('text'))
+        ret.append(hit.entity.get('answer'))
     return ret
 
 @app.route('/api/update-chat', methods=['POST'])
@@ -261,6 +262,7 @@ def sse():
             context = search(question, 'web_leak')
             tool_call = tool.tool_jude(question)
             print(tool_call)
+            tool_message = ''
             if tool_call == 'get_url_report':
                 x_url=tool.get_url(question)
                 tool_message = str(tool.get_url_report(x_url))

@@ -214,6 +214,9 @@ def sse():
             tool_call = tool.tool_jude(question)
             messages = update_messages
             tool_message = ''
+            print("++++++++++++++++++++++++++")
+            print(tool_call)
+            print("++++++++++++++++++++++++++")
             if(tool_call == 'get_secure_report'):
                 if uploaded_file_paths:
                     tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))

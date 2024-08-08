@@ -42,7 +42,6 @@ def getUrlReportResult(apikey,url):
     headers = {"accept": "application/json","X-Apikey": apikey}
     response = requests.get(url, headers=headers)
     jsondata = json.loads(response.text)
-
     return jsondata
 
 def getIPReportResult(apikey,ip):
@@ -106,6 +105,7 @@ def culuateDate(txt):
 
 def culuateDate_url(txt):
     #print(txt)
+
     a=[]
     virus_number=0
     fine_number=0
@@ -139,7 +139,7 @@ def save_virus_detection_results(file_name, virus_type, virus_number, fine_numbe
     })
 
     # 设置Excel文件的路径
-    file_path = 'table/virus_detection_results.xlsx'
+    file_path = 'table//virus_detection_results.xlsx'
     
     try:
         # 如果文件存在，加载文件并追加数据
@@ -167,7 +167,7 @@ def url_detection_results(url,url_type,virus_number, fine_number,perlink):
     })
 
     # 设置Excel文件的路径
-    file_path = 'table/url_detection_results.xlsx'
+    file_path = 'table//url_detection_results.xlsx'
     
     try:
         # 如果文件存在，加载文件并追加数据
@@ -197,7 +197,7 @@ def ip_detection_results(ip,url_type,virus_number, fine_number,as_owner,country,
     })
 
     # 设置Excel文件的路径
-    file_path = 'table/ip_detection_results.xlsx'
+    file_path = 'table//ip_detection_results.xlsx'
     
     try:
         # 如果文件存在，加载文件并追加数据
@@ -215,7 +215,7 @@ def ip_detection_results(ip,url_type,virus_number, fine_number,as_owner,country,
 
 def main():
 
-    '''    #file_name = input("请输入文件名:")
+    #file_name = input("请输入文件名:")
     a = 'test.txt'
     #file_src  = input("请输入文件路径:")
     b = 'D://test.txt'
@@ -231,30 +231,34 @@ def main():
     #获得返回的json结果并写入result文件
     #getFieReportResult(url2, apikey, scan_id)
     json = getFieReportResult(url2,apikey,my_md5)
-    getFieReportResult_behaviour(apikey,my_md5)
+    json1 = getFieReportResult_behaviour(apikey,my_md5)
+    print(json1)
     #getFieReportResult1(url2,apikey,scan_id)
     file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(json['type']+'文件'))
     #print(json)
-    txt=getResult(json)
+    txt,perlink=getResult(json)
     print(txt)
     tool_answer,virus_number,fine_number = culuateDate(txt)
     answer=file_info+str(tool_answer)
     virus_type = json['type']
-    save_virus_detection_results(a,virus_type,virus_number,fine_number)
-    print(answer)'''
-    '''a = "3721.com"
+    save_virus_detection_results(a,virus_type,virus_number,fine_number,perlink)
+    print(answer)
+    '''
+    a = "3721.com"
   
     json = getUrlReportResult(apikey,a)
     txt = getUrlResult(json)
-    culuateDate_url(txt)'''
-    load_dotenv()
+    culuateDate_url(txt)
+    '''
+    '''load_dotenv()
     ip = '108.61.209.12'
     apikey = os.getenv('API_KEY1')  
     json = getIPReportResult(apikey,ip)
-    txt = getIPResult(json)
+    txt,perlink = getIPResult(json)
+    print(txt,perlink)
     tool_answer,virus_number,fine_number = culuateDate_url(txt)
     virus_type = json['data']['type']    
-    url_detection_results(ip,virus_type,virus_number,fine_number)
-    print(txt)
+    url_detection_results(ip,virus_type,virus_number,fine_number,perlink)'''
+
 if __name__ == '__main__':
    main()

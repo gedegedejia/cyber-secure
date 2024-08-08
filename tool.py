@@ -111,7 +111,6 @@ def get_secure_report(file_path):
         json = v2_uploadFile.getFieReportResult(url2,apikey,md5)
         
         json1 = v2_uploadFile.getFieReportResult_behaviour(apikey,md5)
-        print(json)
         virus_type = json['type']
         file_info=str('这是一份名为'+str(json['submission_names'])+'的'+str(virus_type+'文件'))
         txt,perlink=v2_uploadFile.getResult(json)
@@ -143,7 +142,7 @@ def get_secure_report(file_path):
 
         v2_uploadFile.save_virus_detection_results(file_name,virus_type,virus_number,fine_number,perlink)
         answer=file_info+"\n"+str(tool_answer)+ "\n" +behaviour+ "\n" +signature_description+ "\n" +mat_description
-    
+        print(answer)
         return answer
     except Exception as e:
         print(f"An error occurred: {e}")

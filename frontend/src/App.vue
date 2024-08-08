@@ -72,80 +72,30 @@
               </svg>
               文件漏洞分析
             </button>
-            <div v-if="this.selectedButtonNumber === 2 || this.selectedButtonNumber === 5" class="flex items-center">
-              <div class="flex items-center mt-2">
-                <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                  xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
-                  <path
-                    d="M477.8 816.4l304.1-304.6-303.8-303.2c-18.5-18.5-18.5-48.5 0-67.1 18.5-18.6 48.6-18.6 67.1-0.1l337.3 336.7c18.5 18.5 18.5 48.5 0 67.1L544.9 883.4c-18.5 18.6-48.6 18.6-67.1 0.1-18.5-18.5-18.5-48.5 0-67.1z"
-                    fill="#515151" p-id="2643"></path>
-                </svg>
-              </div>
-              <div class="flex items-center mt-2 ml-4">
-                <button
-                  :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 5, 'btn-primary-500': this.selectedButtonNumber === 5, 'text-black': this.selectedButtonNumber !== 5, 'text-white': this.selectedButtonNumber === 5 }"
-                  class="btn" @click="this.selectButton(5); getFileHistory('get_secure_report')">
-                  历史文件漏洞分析
-                </button>
-              </div>
-            </div>
-          </li>
-
-          <li class="mb-2">
-            <button
-              :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 6, 'btn-primary-500': this.selectedButtonNumber === 6, 'text-black': this.selectedButtonNumber !== 6, 'text-white': this.selectedButtonNumber === 6 }"
-              class="btn w-full" @click="this.selectButton(6)">
-              <svg t="1722582707958" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" xmlns="http://www.w3.org/2000/svg"
-                p-id="4555" width="24" height="24">
-                <path
-                  d="M240.426667 512A192 192 0 1 1 512 240.426667l67.84 67.84A42.666667 42.666667 0 0 0 640 248.106667l-67.626667-68.053334a274.56 274.56 0 0 0-91.733333-60.8 280.533333 280.533333 0 0 0-208.853333 0 277.333333 277.333333 0 0 0-152.533334 152.533334 279.253333 279.253333 0 0 0 0 208.853333 274.56 274.56 0 0 0 60.8 91.733333L248.106667 640a42.666667 42.666667 0 0 0 60.16-60.373333zM904.746667 543.36a274.56 274.56 0 0 0-60.8-91.733333L775.893333 384a42.666667 42.666667 0 1 0-60.16 60.373333L783.573333 512A192 192 0 1 1 512 783.573333l-67.84-67.84A42.666667 42.666667 0 1 0 384 775.893333l67.84 68.053334a274.56 274.56 0 0 0 91.733333 60.8 279.253333 279.253333 0 0 0 208.853334 0 277.333333 277.333333 0 0 0 152.533333-152.533334 279.253333 279.253333 0 0 0 0-208.853333z"
-                  :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" p-id="4556"></path>
-                <path
-                  d="M647.68 690.346667A42.666667 42.666667 0 0 0 677.973333 618.666667L406.4 346.026667a42.666667 42.666667 0 1 0-60.373333 60.373333L618.666667 677.973333a42.666667 42.666667 0 0 0 29.013333 12.373334z"
-                  :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" p-id="4557"></path>
-              </svg>
-              URL / IP 分析
-            </button>
-            <div
-              v-if="this.selectedButtonNumber === 7 || this.selectedButtonNumber === 6 || this.selectedButtonNumber === 8">
-              <div class="flex items-center mt-2">
-                <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                  xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
-                  <path
-                    d="M477.8 816.4l304.1-304.6-303.8-303.2c-18.5-18.5-18.5-48.5 0-67.1 18.5-18.6 48.6-18.6 67.1-0.1l337.3 336.7c18.5 18.5 18.5 48.5 0 67.1L544.9 883.4c-18.5 18.6-48.6 18.6-67.1 0.1-18.5-18.5-18.5-48.5 0-67.1z"
-                    fill="#515151" p-id="2643"></path>
-                </svg>
-                <div class="flex items-center mt-2 ml-4">
-                  <button
-                    :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 7, 'btn-primary-500': this.selectedButtonNumber === 7, 'text-black': this.selectedButtonNumber !== 7, 'text-white': this.selectedButtonNumber === 7 }"
-                    class="btn" @click="this.selectButton(7); getFileHistory('get_url_report')">
-                    历史网页链接分析
-                  </button>
-                </div>
-              </div>
-              <div class="flex items-center mt-2">
-                <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                  xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
-                  <path
-                    d="M477.8 816.4l304.1-304.6-303.8-303.2c-18.5-18.5-18.5-48.5 0-67.1 18.5-18.6 48.6-18.6 67.1-0.1l337.3 336.7c18.5 18.5 18.5 48.5 0 67.1L544.9 883.4c-18.5 18.6-48.6 18.6-67.1 0.1-18.5-18.5-18.5-48.5 0-67.1z"
-                    fill="#515151" p-id="2643"></path>
-                </svg>
-                <div class="flex items-center mt-2 ml-4">
-                  <button
-                    :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 8, 'btn-primary-500': this.selectedButtonNumber === 8, 'text-black': this.selectedButtonNumber !== 8, 'text-white': this.selectedButtonNumber === 8 }"
-                    class="btn" @click="this.selectButton(8); getFileHistory('get_ip_report')">
-                    历史IP地址分析
-                  </button>
-                </div>
-              </div>
-            </div>
           </li>
 
           <li class="mb-2">
             <button
               :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 3, 'btn-primary-500': this.selectedButtonNumber === 3, 'text-black': this.selectedButtonNumber !== 3, 'text-white': this.selectedButtonNumber === 3 }"
               class="btn w-full" @click="this.selectButton(3)">
+              <svg t="1722582707958" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                :fill="this.selectedButtonNumber === 3 ? 'white' : 'black'" xmlns="http://www.w3.org/2000/svg"
+                p-id="4555" width="24" height="24">
+                <path
+                  d="M240.426667 512A192 192 0 1 1 512 240.426667l67.84 67.84A42.666667 42.666667 0 0 0 640 248.106667l-67.626667-68.053334a274.56 274.56 0 0 0-91.733333-60.8 280.533333 280.533333 0 0 0-208.853333 0 277.333333 277.333333 0 0 0-152.533334 152.533334 279.253333 279.253333 0 0 0 0 208.853333 274.56 274.56 0 0 0 60.8 91.733333L248.106667 640a42.666667 42.666667 0 0 0 60.16-60.373333zM904.746667 543.36a274.56 274.56 0 0 0-60.8-91.733333L775.893333 384a42.666667 42.666667 0 1 0-60.16 60.373333L783.573333 512A192 192 0 1 1 512 783.573333l-67.84-67.84A42.666667 42.666667 0 1 0 384 775.893333l67.84 68.053334a274.56 274.56 0 0 0 91.733333 60.8 279.253333 279.253333 0 0 0 208.853334 0 277.333333 277.333333 0 0 0 152.533333-152.533334 279.253333 279.253333 0 0 0 0-208.853333z"
+                  :fill="this.selectedButtonNumber === 3 ? 'white' : 'black'" p-id="4556"></path>
+                <path
+                  d="M647.68 690.346667A42.666667 42.666667 0 0 0 677.973333 618.666667L406.4 346.026667a42.666667 42.666667 0 1 0-60.373333 60.373333L618.666667 677.973333a42.666667 42.666667 0 0 0 29.013333 12.373334z"
+                  :fill="this.selectedButtonNumber === 3 ? 'white' : 'black'" p-id="4557"></path>
+              </svg>
+              URL / IP 分析
+            </button>
+          </li>
+
+          <li class="mb-2">
+            <button
+              :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 4, 'btn-primary-500': this.selectedButtonNumber === 4, 'text-black': this.selectedButtonNumber !== 4, 'text-white': this.selectedButtonNumber === 4 }"
+              class="btn w-full" @click="this.selectButton(4)">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor" stroke-width="2">
                 <polygon points="2 12 2 21 6 21 6 12" />
@@ -158,23 +108,83 @@
 
           <li class="mb-2">
             <button
-              :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 4, 'btn-primary-500': this.selectedButtonNumber === 4, 'text-black': this.selectedButtonNumber !== 4, 'text-white': this.selectedButtonNumber === 4 }"
-              class="btn w-full" @click="this.selectButton(4)">
+              :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 5, 'btn-primary-500': this.selectedButtonNumber === 5, 'text-black': this.selectedButtonNumber !== 5, 'text-white': this.selectedButtonNumber === 5 }"
+              class="btn w-full" @click="this.selectButton(5)">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                :fill="this.selectedButtonNumber === 4 ? 'white' : 'black'" viewBox="0 0 1024 1024"
+                :fill="this.selectedButtonNumber === 5 ? 'white' : 'black'" viewBox="0 0 1024 1024"
                 stroke="currentColor" stroke-width="2">
                 <path
                   d="M959.718832 123.963683C872.444401 50.185297 704.593576 0.299912 511.850044 0.299912S151.255687 50.185297 63.981255 123.963683C23.193205 158.453578 0 198.04198 0 240.22962v543.840672c0 132.461193 229.132871 239.929708 511.850044 239.929708s511.850044-107.468515 511.850044-239.929708v-543.840672c0-42.18764-23.193205-81.776042-63.981256-116.265937zM87.774285 189.64444c19.794201-21.893586 50.685151-43.087377 89.373816-61.182075 42.287611-19.794201 92.073025-35.489603 147.956653-46.586352C384.087474 70.17944 446.869081 64.281168 511.850044 64.281168s127.76257 5.898272 186.745289 17.594845c55.883628 11.096749 105.669042 26.792151 147.956654 46.586352 38.688665 18.094699 69.579615 39.28849 89.373816 61.182075 15.795372 17.494875 23.793029 34.489896 23.793029 50.48521 0 16.095285-7.997657 33.090306-23.793029 50.485209-19.794201 21.893586-50.685151 43.087377-89.373816 61.182075-42.287611 19.894172-92.073025 35.489603-147.956654 46.586352-58.98272 11.696573-121.864298 17.594845-186.745289 17.594845s-127.76257-5.898272-186.74529-17.594845c-55.883628-11.096749-105.669042-26.792151-147.956653-46.586352-38.688665-18.094699-69.579615-39.28849-89.373816-61.182075C71.978912 273.319926 63.981255 256.324905 63.981255 240.22962s7.997657-33.090306 23.79303-50.58518zM63.981255 356.495558c87.274431 73.778385 255.125256 123.66377 447.868789 123.66377s360.594357-49.885385 447.868788-123.66377v155.254515c0 16.095285-7.997657 33.090306-23.793029 50.48521-19.794201 21.893586-50.685151 43.087377-89.373816 61.182075-42.287611 19.794201-92.073025 35.489603-147.956654 46.586352-58.98272 11.696573-121.864298 17.594845-186.745289 17.594845s-127.76257-5.898272-186.74529-17.594845c-55.883628-11.096749-105.669042-26.792151-147.956653-46.586352-38.688665-18.094699-69.579615-39.28849-89.373816-61.182075C71.978912 544.740408 63.981255 527.745387 63.981255 511.750073V356.495558z m895.737577 427.574734c0 16.095285-7.997657 33.090306-23.793029 50.485209-19.794201 21.893586-50.685151 43.087377-89.373816 61.182076-42.287611 19.894172-92.073025 35.489603-147.956654 46.586352-58.98272 11.696573-121.864298 17.594845-186.745289 17.594845s-127.76257-5.898272-186.74529-17.594845c-55.883628-11.096749-105.669042-26.792151-147.956653-46.586352-38.688665-18.094699-69.579615-39.28849-89.373816-61.182076C71.978912 817.160597 63.981255 800.165576 63.981255 784.070292V627.91604c87.274431 73.778385 255.125256 123.66377 447.868789 123.663771s360.594357-49.885385 447.868788-123.663771v156.154252z"
-                  p-id="5503" :fill="this.selectedButtonNumber === 4 ? 'white' : 'black'"></path>
+                  p-id="5503" :fill="this.selectedButtonNumber === 5 ? 'white' : 'black'"></path>
                 <path
                   d="M167.950796 519.847701m-39.988285 0a39.988285 39.988285 0 1 0 79.976569 0 39.988285 39.988285 0 1 0-79.976569 0Z"
-                  p-id="5504" :fill="this.selectedButtonNumber === 4 ? 'white' : 'black'"></path>
+                  p-id="5504" :fill="this.selectedButtonNumber === 5 ? 'white' : 'black'"></path>
                 <path
                   d="M167.950796 791.768037m-39.988285 0a39.988285 39.988285 0 1 0 79.976569 0 39.988285 39.988285 0 1 0-79.976569 0Z"
-                  p-id="5505" :fill="this.selectedButtonNumber === 4 ? 'white' : 'black'"></path>
+                  p-id="5505" :fill="this.selectedButtonNumber === 5 ? 'white' : 'black'"></path>
               </svg>
               数据库的管理
             </button>
+          </li>
+
+          <li class="mb-2">
+            <button
+              :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 6, 'btn-primary-500': this.selectedButtonNumber === 6, 'text-black': this.selectedButtonNumber !== 6, 'text-white': this.selectedButtonNumber === 6 }"
+              class="btn w-full" @click="this.selectButton(6)">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
+                :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" viewBox="0 0 1024 1024" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M231.722667 317.056L341.333333 426.666667H85.333333V170.666667l85.333334 85.333333a426.368 426.368 0 0 1 341.333333-170.666667c235.648 0 426.666667 191.018667 426.666667 426.666667s-191.018667 426.666667-426.666667 426.666667v-85.333334A341.333333 341.333333 0 1 0 231.722667 317.056z"
+                  :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" p-id="4328"></path>
+                <path
+                  d="M554.666667 493.994667l128 128.469333L622.336 682.666667 469.333333 529.237333V341.333333h85.333334z"
+                  :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" p-id="4329"></path>
+              </svg>
+              历史样本数据
+            </button>
+            <div v-if="this.selectedButtonNumber === 6 || this.selectedButtonNumber === 7 || this.selectedButtonNumber === 8 || this.selectedButtonNumber === 9">
+              <div class="flex items-center my-2">
+                <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                  xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
+                  <path
+                    d="M477.8 816.4l304.1-304.6-303.8-303.2c-18.5-18.5-18.5-48.5 0-67.1 18.5-18.6 48.6-18.6 67.1-0.1l337.3 336.7c18.5 18.5 18.5 48.5 0 67.1L544.9 883.4c-18.5 18.6-48.6 18.6-67.1 0.1-18.5-18.5-18.5-48.5 0-67.1z"
+                    fill="#515151" p-id="2643"></path>
+                </svg>
+                <button
+                  :class="{ 'btn btn-primary': this.selectedButtonNumber === 7, 'btn-primary-500': this.selectedButtonNumber === 7, 'text-black': this.selectedButtonNumber !== 7, 'text-white': this.selectedButtonNumber === 7 }"
+                  class="btn ml-4" @click="this.selectButton(7); getFileHistory('get_secure_report')">
+                  历史文件分析
+                </button>
+              </div>
+
+              <div class="flex items-center mb-2">
+                <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                  xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
+                  <path
+                    d="M477.8 816.4l304.1-304.6-303.8-303.2c-18.5-18.5-18.5-48.5 0-67.1 18.5-18.6 48.6-18.6 67.1-0.1l337.3 336.7c18.5 18.5 18.5 48.5 0 67.1L544.9 883.4c-18.5 18.6-48.6 18.6-67.1 0.1-18.5-18.5-18.5-48.5 0-67.1z"
+                    fill="#515151" p-id="2643"></path>
+                </svg>
+                <button
+                  :class="{ 'btn btn-primary': this.selectedButtonNumber === 8, 'btn-primary-500': this.selectedButtonNumber === 8, 'text-black': this.selectedButtonNumber !== 8, 'text-white': this.selectedButtonNumber === 8 }"
+                  class="btn ml-4" @click="this.selectButton(8); getFileHistory('get_url_report')">
+                  历史URL分析
+                </button>
+              </div>
+
+              <div class="flex items-center mb-2">
+                <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                  xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
+                  <path
+                    d="M477.8 816.4l304.1-304.6-303.8-303.2c-18.5-18.5-18.5-48.5 0-67.1 18.5-18.6 48.6-18.6 67.1-0.1l337.3 336.7c18.5 18.5 18.5 48.5 0 67.1L544.9 883.4c-18.5 18.6-48.6 18.6-67.1 0.1-18.5-18.5-18.5-48.5 0-67.1z"
+                    fill="#515151" p-id="2643"></path>
+                </svg>
+                <button
+                  :class="{ 'btn btn-primary': this.selectedButtonNumber === 9, 'btn-primary-500': this.selectedButtonNumber === 9, 'text-black': this.selectedButtonNumber !== 9, 'text-white': this.selectedButtonNumber === 9 }"
+                  class="btn ml-4" @click="this.selectButton(9); getFileHistory('get_ip_report')">
+                  历史IP分析
+                </button>
+              </div>
+            </div>
           </li>
         </ul>
 
@@ -198,7 +208,9 @@
             class="menu rounded-box w-full">
             <li v-for="(chat, index) in chatHistory" :key="index" @click="loadChat(index)">
               <div class="flex items-center justify-between mr-2">
-                <a class="text-base font-bold text-gray-700">Chat {{ index + 1 }}</a>
+                <a class="text-base font-bold text-gray-700"> {{ this.chatHistory[index][0]?.content?.substring(0, 10)
+                  || 'New Chat' }}
+                  {{ this.chatHistory[index][0]?.content ? '...' : '' }}</a>
                 <button @click="deleteChat(index)">
                   <svg t="1722251570726" class="icon" viewBox="0 0 1024 1024" version="1.1"
                     xmlns="http://www.w3.org/2000/svg" p-id="5947" width="20" height="20">
@@ -220,17 +232,23 @@
         <div class="card w-auto shadow-2xl bg-base-100 md:w-4/5">
           <div class="card-body p-5">
             <div
-              v-if="selectedButtonNumber !== 4 && selectedButtonNumber !== 5 && selectedButtonNumber !== 7 && selectedButtonNumber !== 8">
+              v-if="selectedButtonNumber !== 5 && selectedButtonNumber !== 7 && selectedButtonNumber !== 8  && selectedButtonNumber !== 9">
               <h2 class="card-title">Cyber Secure</h2>
               <div id="chat-panel" ref="chatPanel" class="h-[32rem] max-h-full py-3 overflow-auto">
-                <div v-if="messages.length === 0 " class="grid justify-items-center">
+                <div v-if="messages.length === 0" class="grid justify-items-center">
                   <div class="card bg-base-100 w-2/3 shadow-xl">
                     <div class="card-body">
-                      <h2 class="card-title">你好~我是一名网络安全专家能为你解答一切安全相关的问题</h2>
+                      <h2 class="card-title">你好~我是一名网络安全专家，能为你解答一切安全相关的问题</h2>
                       <div class="w-full">
-                        <button v-for="(item, index) in suggestions" :key="index" class="btn w-full my-1 " @click="setTextMessage(item)">
-                          {{ item }}
-                        </button>
+                        <!-- 遍历每个类别的建议项，并显示当前选中类别的按钮 -->
+                        <template v-for="(items, category) in suggestions" :key="category">
+                          <div class="my-2" v-if="category === String(selectedButtonNumber)">
+                            <button v-for="(item, index) in items" :key="index" class="btn w-full my-1"
+                                    @click="setTextMessage(item)">
+                              {{ item }}
+                            </button>
+                          </div>
+                        </template>
                       </div>
                     </div>
                   </div>
@@ -297,7 +315,7 @@
               </div>
             </div>
 
-            <div v-if="this.selectedButtonNumber === 4">
+            <div v-if="this.selectedButtonNumber === 5">
               <h2 class="card-title">知识库配置</h2>
 
               <div class="h-[32rem] max-h-full py-3 overflow-auto">
@@ -387,7 +405,7 @@
               </div>
             </div>
 
-            <div v-if="this.selectedButtonNumber === 5">
+            <div v-if="this.selectedButtonNumber === 7">
               <div class="h-[40rem] max-h-full py-3 overflow-auto">
                 <h2 class="card-title">最近上传样本</h2>
 
@@ -422,7 +440,7 @@
               </div>
             </div>
 
-            <div v-if="this.selectedButtonNumber === 7">
+            <div v-if="this.selectedButtonNumber === 8">
               <div class="h-[40rem] max-h-full py-3 overflow-auto">
                 <h2 class="card-title">最近上传样本</h2>
 
@@ -455,7 +473,7 @@
               </div>
             </div>
 
-            <div v-if="this.selectedButtonNumber === 8">
+            <div v-if="this.selectedButtonNumber === 9">
               <div class="h-[40rem] max-h-full py-3 overflow-auto">
                 <h2 class="card-title">最近上传样本</h2>
 
@@ -531,7 +549,12 @@ export default {
       messages: [],
       selectedButtonNumber: 1,
       tool: 'chat',
-      suggestions: ['云计算环境中的数据加密有哪些主要方法？', '如何检测和防止SQL注入攻击？', '防火墙在现代网络安全策略中扮演什么角色？'],
+      suggestions:{
+        '1':['云计算环境中的数据加密有哪些主要方法？', '如何检测和防止SQL注入攻击？', '防火墙在现代网络安全策略中扮演什么角色？'],
+        '2':['上传文件，并分析文件安全性','2','3'],
+        '3':['5','3','2'],
+        '4':['jkjkdsj','cdjkcsj','hdjkahac']
+      },
       databases: ['ccc', 'web_leak', 'cve'],
       selectedDatabase: null,
       dropdownVisible: false,
@@ -641,12 +664,10 @@ export default {
       const chatPanel = this.$refs.chatPanel;
       if (chatPanel) {
         const scrollHeight = chatPanel.scrollHeight;
-        console.log(scrollHeight)
         const scrollStep = (scrollHeight - chatPanel.scrollTop) / 30; // 滑动的步长
 
         function scrollDown() {
           // 检查是否已经在底部，如果是则停止滚动
-          console.log(chatPanel.scrollTop + chatPanel.clientHeight)
           if (chatPanel.scrollTop + chatPanel.clientHeight < scrollHeight - 1) {
             chatPanel.scrollTop += scrollStep;
             window.requestAnimationFrame(scrollDown);
@@ -705,9 +726,9 @@ export default {
       } else if (this.selectedButtonNumber === 2) {
         this.tool = 'get_secure_report';
       } else if (this.selectedButtonNumber === 3) {
-        this.tool = 'get_wireshark';
-      } else if (this.selectedButtonNumber === 6) {
         this.tool = 'get_url_report'
+      } else if (this.selectedButtonNumber === 4) {
+        this.tool = 'get_wireshark';
       }
       if (msg) {
         this.textMessage = '';
@@ -726,6 +747,13 @@ export default {
     selectButton: function (buttonNumber) {
       this.selectedButtonNumber = buttonNumber;
       console.log(this.selectedButtonNumber)
+      console.log(buttonNumber)
+      if (buttonNumber !== 6 && buttonNumber !== 7 && buttonNumber !== 8 && buttonNumber !== 5 && buttonNumber !== 6 && buttonNumber !== 9) {
+        this.createNewConversation();
+      }
+      if (buttonNumber === 6){
+
+      }
     },
     selectUpload: function () {
       let fileInput = document.getElementById('file-input');
@@ -823,8 +851,8 @@ export default {
       console.log(index);
       this.currentChatIndex = index;
       this.messages = this.chatHistory[index];
-      console.log(this.chatHistory[index][0]);
-
+      const key = 'content';
+      console.log(this.chatHistory[index][0].content);
       this.$nextTick(() => {
         this.scrollToBottom();
       });

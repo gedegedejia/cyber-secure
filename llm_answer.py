@@ -254,8 +254,8 @@ def sse():
             if image_url:
                 answer = f'{answer}\n![图片]({image_url})'
             messages = update_messages
-            #llm_answer = getAnswer(question, context, str(tool_message), messages, tool_call)
-            #answer = f'{answer}\n'+llm_answer
+            llm_answer = getAnswer(question, context, str(tool_message), messages, tool_call)
+            answer = f'{answer}\n'+llm_answer
             
             Response={'content':answer}
         

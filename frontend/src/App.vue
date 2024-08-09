@@ -235,7 +235,7 @@
               v-if="selectedButtonNumber !== 5 && selectedButtonNumber !== 7 && selectedButtonNumber !== 8  && selectedButtonNumber !== 9">
               <h2 class="card-title">Cyber Secure</h2>
               <div id="chat-panel" ref="chatPanel" class="h-[32rem] max-h-full py-3 overflow-auto">
-                <div v-if="messages.length === 0" class="grid justify-items-center">
+                <div v-if="messages.length === 0 && this.selectedButtonNumber !== 6" class="grid justify-items-center">
                   <div class="card bg-base-100 w-2/3 shadow-xl">
                     <div class="card-body">
                       <h2 class="card-title">你好~我是一名网络安全专家，能为你解答一切安全相关的问题</h2>
@@ -551,9 +551,9 @@ export default {
       tool: 'chat',
       suggestions:{
         '1':['云计算环境中的数据加密有哪些主要方法？', '如何检测和防止SQL注入攻击？', '防火墙在现代网络安全策略中扮演什么角色？'],
-        '2':['上传文件，并分析文件安全性','2','3'],
-        '3':['5','3','2'],
-        '4':['jkjkdsj','cdjkcsj','hdjkahac']
+        '2':['在恶意文件分析过程中，识别恶意代码的常见特征有哪些？','如何使用静态分析技术来识别恶意文件中的可疑行为？','利用动态分析（如沙箱技术）进行恶意文件分析时需要注意哪些关键点？'],
+        '3':['在检测恶意URL时，哪些静态特征分析技术最为有效？','在恶意IP检测中，如何利用威胁情报来提高检测效率？','如何利用机器学习和数据分析技术来识别恶意IP活动模式？'],
+        '4':['如何利用Wireshark或其他网络分析工具来识别恶意数据包？','在恶意数据包分析中，如何区分正常网络流量与潜在的恶意活动？','在恶意数据包分析过程中，如何确定数据包的来源是否可疑？']
       },
       databases: ['ccc', 'web_leak', 'cve'],
       selectedDatabase: null,
@@ -746,13 +746,12 @@ export default {
     },
     selectButton: function (buttonNumber) {
       this.selectedButtonNumber = buttonNumber;
-      console.log(this.selectedButtonNumber)
-      console.log(buttonNumber)
       if (buttonNumber !== 6 && buttonNumber !== 7 && buttonNumber !== 8 && buttonNumber !== 5 && buttonNumber !== 6 && buttonNumber !== 9) {
         this.createNewConversation();
+        console.log(this.chatHistory)
       }
       if (buttonNumber === 6){
-
+        this.ready = false
       }
     },
     selectUpload: function () {
@@ -848,11 +847,10 @@ export default {
       return marked.parse(md);
     },
     loadChat(index) {
-      console.log(index);
       this.currentChatIndex = index;
       this.messages = this.chatHistory[index];
+      console.log(this.messages)
       const key = 'content';
-      console.log(this.chatHistory[index][0].content);
       this.$nextTick(() => {
         this.scrollToBottom();
       });

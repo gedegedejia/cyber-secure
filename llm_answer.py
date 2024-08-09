@@ -26,7 +26,7 @@ headers = {'Content-Type': 'application/json',
 messages = [
     {
         "role": "system",
-        "content": "你是一个网络安全分析小助手，你的任务是解决用户的网络安全问题。你的功能:1.分析用户上传的文件。2.抓取并分析pcapng数据包"
+        "content": "你是一位优秀的网络安全分析小助手，你的工作内容是:1. 分析用户上传的文件，识别潜在的安全风险。2. 分析用户上传的网址链接，识别潜在的安全风险。3. 抓取和分析pcapng数据包，检测异常流量和可疑活动。同时你具备以下能力：1、具有良好的计算机基础，熟悉操作系统，网络基础原理，熟悉TCP/IP、HTTP等协议；2、熟悉多种安全技术：反DDoS、反入侵、指纹隧道，防火墙，漏洞检测，应用安全，端安全等；3、对流量分析工具、入侵检测工具、渗透工具等开源安全组件有一定了解；4、掌握海量安全数据处理与分析技术，如hadoop生态；"
     }
 ]
 uploaded_file_paths = []
@@ -64,13 +64,14 @@ def upload():
     return jsonify({'fileName': file.filename, 'filePath': file_path})
     
 def getAnswer(query, context,tool_message,messages,tool_call):
+    print(messages)
     if tool_call == 'get_secure_report':
         prompt = f'''
             请基于以下提供的网络安全知识来回答：
             {context}
             我的问题是：{query}。
             我通过工具调用获取了以下信息：{tool_message}。
-            请你总结工具调用的信息，以表格的形式，解释文件标签，分析该文件的意图和可能存在的可疑活动，并提出建议和解决方案。
+            以表格的形式总结出工具调用的信息，解释文件标签，分析该文件的意图和可能存在的可疑活动，并提出建议和解决方案,如果无法从背景知识回答用户的问题，则根据背景知识内容，对用户进行追问，问题限制在3个以内。
             '''
     elif tool_call == 'get_current_time':
         prompt = f'''
@@ -82,28 +83,28 @@ def getAnswer(query, context,tool_message,messages,tool_call):
             请基于以下提供的网络安全知识来回答：
             {context}
             我使用Wireshark工具进行抓包分析，获得了以下信息：{tool_message}。
-            请你帮助我描述数据包的内容，判断是否存在可疑数据包，并分析其中可能存在的安全问题。
-            同时，请提供相应的建议和解决方案。
+            请你帮助我描述数据包的内容，判断是否存在可疑数据包，并分析其中可能存在的安全问题，并提出建议和解决方案。
+            同时，请提供相应的建议和解决方案,如果无法从背景知识回答用户的问题，则根据背景知识内容，对用户进行追问，问题限制在3个以内。
             '''
     elif tool_call == 'get_url_report':
         prompt = f'''
             请基于以下提供的网络安全知识来回答：
             {context}
-            我使用virustotal平台进行网页链接安全性分析，获得了以下信息：{tool_message}。
-            请你总结网页内容，并分析其中可能存在的安全问题.
+            对网页链接进行了安全性分析，获得了以下信息：{tool_message}。
+            请你判断该链接是否安全并总结网页内容，如果存在安全问题提出建议和解决方案,如果无法从背景知识回答用户的问题，则根据背景知识内容，对用户进行追问，问题限制在3个以内.
             '''
     elif tool_call == 'get_ip_report':
         prompt = f'''
             请基于以下提供的网络安全知识来回答：
             {context}
-            我使用virustotal平台进行ip地址安全性分析，获得了以下信息：{tool_message}。
-            请你总结信息，并分析其中可能存在的安全问题.
+            我通过工具调用对ip地址进行了安全性分析，获得了以下信息：{tool_message}。
+            请你总结信息，并分析其中可能存在的安全问题,并提出建议和解决方案,如果无法从背景知识回答用户的问题，则根据背景知识内容，对用户进行追问，问题限制在3个以内.
             '''
     else:
         prompt = f'''
             请回答我的问题：{query}。
             {context}
-            请结合网络安全的知识，尽量简洁明了地回答，但请保持礼貌。
+            请结合网络安全的知识，尽量简洁明了地回答,如果无法从背景知识回答用户的问题，则根据背景知识内容，对用户进行追问，问题限制在3个以内。
             '''
 
     rsp = Generation.call(model='qwen-turbo',messages=messages, prompt=prompt,result_format='message',incremental_output=True,stream=True)
@@ -174,7 +175,7 @@ def convert_messages_format(messages):
     # 添加系统角色的消息
     system_message = {
         'role': 'system',
-        'content': '你是一名网络安全分析助手，专注于帮助用户解决网络安全问题。你的主要职责包括：1. 分析用户上传的文件，识别潜在的安全风险。2. 分析用户上传的网址链接，识别潜在的安全风险。3. 抓取和分析pcapng数据包，检测异常流量和可疑活动。'
+        'content': '你是一位优秀的网络安全分析小助手，你的工作内容是:1. 分析用户上传的文件，识别潜在的安全风险。2. 分析用户上传的网址链接，识别潜在的安全风险。3. 抓取和分析pcapng数据包，检测异常流量和可疑活动。同时你具备以下能力：1、具有良好的计算机基础，熟悉操作系统，网络基础原理，熟悉TCP/IP、HTTP等协议；2、熟悉多种安全技术：反DDoS、反入侵、指纹隧道，防火墙，漏洞检测，应用安全，端安全等；3、对流量分析工具、入侵检测工具、渗透工具等开源安全组件有一定了解；4、掌握海量安全数据处理与分析技术，如hadoop生态；'
     }
     converted_messages.append(system_message)
 
@@ -253,8 +254,8 @@ def sse():
             if image_url:
                 answer = f'{answer}\n![图片]({image_url})'
             messages = update_messages
-            llm_answer = getAnswer(question, context, str(tool_message), messages, tool_call)
-            answer = f'{answer}\n'+llm_answer
+            #llm_answer = getAnswer(question, context, str(tool_message), messages, tool_call)
+            #answer = f'{answer}\n'+llm_answer
             
             Response={'content':answer}
         

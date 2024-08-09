@@ -155,6 +155,7 @@ def get_url_report(url):
         load_dotenv()
         apikey = os.getenv('API_KEY1')   
         json = v2_uploadFile.getUrlReportResult(apikey,url)
+        print(json)
         txt,perlink = v2_uploadFile.getUrlResult(json)
         tool_answer,virus_number,fine_number = v2_uploadFile.culuateDate_url(txt)
         url_type = json['data']['type']
@@ -199,7 +200,7 @@ def get_ip_report(ip):
         print(f"An error occurred: {e}")
         return None
 
-def get_wireshark(interface="WLAN", duration=5):
+def get_wireshark(interface="WLAN", duration=1):
     try:
         print(os.getenv('tshark_path'))
         tshark_path = os.getenv('tshark_path')

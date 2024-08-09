@@ -97,9 +97,9 @@ def culuateDate(txt):
     #print(prompt)
     
     if virus_number > 0:
-        answer=f"经过virus total(专业病毒检测软件)的检测，有{str(virus_number)}个不同的著名引擎检测出病毒{str(fine_number)}个不同的著名引擎没有检测出病毒。分别是{prompt}"
+        answer=f"经过检测，有{str(virus_number)}个不同的著名引擎检测出病毒{str(fine_number)}个不同的著名引擎没有检测出病毒。分别是{prompt}，请用中文解释这些病毒问题。"
     else:
-        answer = '经过virus total(专业病毒检测软件)的检测,此文件未发现病毒'
+        answer = '经过检测,此文件未发现病毒'
 
     return answer,virus_number,fine_number
 
@@ -120,9 +120,9 @@ def culuateDate_url(txt):
     #print(prompt)
     
     if virus_number > 0:
-        answer=f"经过virus total(专业病毒检测软件)的检测，有{str(virus_number)}个不同的著名引擎认为是恶意的，{str(fine_number)}个不同的著名引擎认为安全。分别是{prompt}"
+        answer=f"经过检测，有{str(virus_number)}个不同的著名引擎认为是恶意的，{str(fine_number)}个不同的著名引擎认为安全。分别是{prompt}，请用中文解释这些病毒问题。"
     else:
-        answer = '经过virus total(专业病毒检测软件)的检测,安全'
+        answer = '经过检测,安全'
 
     return answer,virus_number,fine_number
 

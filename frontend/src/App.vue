@@ -132,7 +132,8 @@
               :class="{ 'btn btn-primary w-full': this.selectedButtonNumber === 6, 'btn-primary-500': this.selectedButtonNumber === 6, 'text-black': this.selectedButtonNumber !== 6, 'text-white': this.selectedButtonNumber === 6 }"
               class="btn w-full" @click="this.selectButton(6)">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
-                :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" viewBox="0 0 1024 1024" stroke="currentColor" stroke-width="2">
+                :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" viewBox="0 0 1024 1024"
+                stroke="currentColor" stroke-width="2">
                 <path
                   d="M231.722667 317.056L341.333333 426.666667H85.333333V170.666667l85.333334 85.333333a426.368 426.368 0 0 1 341.333333-170.666667c235.648 0 426.666667 191.018667 426.666667 426.666667s-191.018667 426.666667-426.666667 426.666667v-85.333334A341.333333 341.333333 0 1 0 231.722667 317.056z"
                   :fill="this.selectedButtonNumber === 6 ? 'white' : 'black'" p-id="4328"></path>
@@ -142,7 +143,8 @@
               </svg>
               历史样本数据
             </button>
-            <div v-if="this.selectedButtonNumber === 6 || this.selectedButtonNumber === 7 || this.selectedButtonNumber === 8 || this.selectedButtonNumber === 9">
+            <div
+              v-if="this.selectedButtonNumber === 6 || this.selectedButtonNumber === 7 || this.selectedButtonNumber === 8 || this.selectedButtonNumber === 9">
               <div class="flex items-center my-2">
                 <svg t="1722501183923" class="icon" viewBox="0 0 1024 1024" version="1.1"
                   xmlns="http://www.w3.org/2000/svg" p-id="2642" width="24" height="24">
@@ -232,7 +234,7 @@
         <div class="card w-auto shadow-2xl bg-base-100 md:w-4/5">
           <div class="card-body p-5">
             <div
-              v-if="selectedButtonNumber !== 5 && selectedButtonNumber !== 7 && selectedButtonNumber !== 8  && selectedButtonNumber !== 9">
+              v-if="selectedButtonNumber !== 5 && selectedButtonNumber !== 7 && selectedButtonNumber !== 8 && selectedButtonNumber !== 9">
               <h2 class="card-title">Cyber Secure</h2>
               <div id="chat-panel" ref="chatPanel" class="h-[32rem] max-h-full py-3 overflow-auto">
                 <div v-if="messages.length === 0 && this.selectedButtonNumber !== 6" class="grid justify-items-center">
@@ -244,7 +246,7 @@
                         <template v-for="(items, category) in suggestions" :key="category">
                           <div class="my-2" v-if="category === String(selectedButtonNumber)">
                             <button v-for="(item, index) in items" :key="index" class="btn w-full my-1"
-                                    @click="setTextMessage(item)">
+                              @click="setTextMessage(item)">
                               {{ item }}
                             </button>
                           </div>
@@ -319,16 +321,14 @@
               <h2 class="card-title">知识库配置</h2>
 
               <div class="h-[32rem] max-h-full py-3 overflow-auto">
-                <div class="mx-2 my-2 align">
-                  <a aria-hidden="true" tabindex="-1" href="#heading-1">
+                <div class="mx-2 my-2 align flex items-center">
+                  <a aria-hidden="true" tabindex="-1" href="#selectKnowledge">
                     <span
                       class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle relative -mt-1">
                       #
                     </span>
                     <text class="font-bold ml-1">知识库选择</text>
                   </a>
-
-
                   <div class="dropdown ml-7 my-2">
                     <div tabindex="0" role="button" class="btn m-1" @click="toggleDropdown">
                       {{ selectedDatabase || '点击选择知识库' }}
@@ -342,37 +342,32 @@
                   </div>
                 </div>
 
-                <div class="mx-2 flex align ">
-                  <div class="flex justify-start items-center">
-                    <a aria-hidden="true" tabindex="-1" href="#heading-1" class="flex items-center">
-                      <span
-                        class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle relative -mt-1">
-                        #
-                      </span>
-                      <span class="font-bold ml-1 w-auto whitespace-nowrap">文件选择</span>
-                    </a>
-                  </div>
-
-                  <div class="justify-between ml-12">
-                    <input type="file" class="file-input file-input-bordered file-input-primary" id="fileInput" />
-                  </div>
-                  <div class="flex items-center justify-end w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                      class="h-5 w-5 shrink-0 text-gray-500 stroke-current">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span class="mr-2 text-med text-gray-500 font-bold">文件上传仅支持格式为txt的文件</span>
-                  </div>
+                <div class="flex items-center my-2">
+                  <a aria-hidden="true" tabindex="-1" href="#selectFile">
+                    <span class="opacity-20 hover:opacity-60 text-base font-bold inline-block align-middle">
+                      #
+                    </span>
+                    <span class="font-bold ml-1 w-auto whitespace-nowrap">文件选择</span>
+                  </a>
+                  <input type="file" class="file-input file-input-bordered file-input-primary ml-14" id="fileInput" />
+                  <button class="btn btn-active btn-link ml-14 font-bold text-base" @click="downloadFile">示例文件下载</button>
                 </div>
 
+                <div role="alert" class="alert mt-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    class="h-6 w-6 shrink-0 stroke-current">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="font-bold">支持 UTF-8 编码的 Microsoft Excel 逗号分隔值 (.csv) 文件</span>
+                </div>
 
                 <div class="mx-2 my-4">
                   <h2 class="card-title my-4">知识库简介</h2>
                   <textarea class="textarea textarea-primary w-full my-2" placeholder="请输入知识库简介"></textarea>
                 </div>
 
-                <div class="mx-2">
+                <div class="mx-2 mb-8">
                   <h2 class="card-title my-4">用户对知识库{{ selectedDatabase }}上传的文件</h2>
                   <div class="overflow-x-auto">
                     <table class="table table-zebra">
@@ -549,11 +544,11 @@ export default {
       messages: [],
       selectedButtonNumber: 1,
       tool: 'chat',
-      suggestions:{
-        '1':['云计算环境中的数据加密有哪些主要方法？', '如何检测和防止SQL注入攻击？', '防火墙在现代网络安全策略中扮演什么角色？'],
-        '2':['在恶意文件分析过程中，识别恶意代码的常见特征有哪些？','如何使用静态分析技术来识别恶意文件中的可疑行为？','利用动态分析（如沙箱技术）进行恶意文件分析时需要注意哪些关键点？'],
-        '3':['在检测恶意URL时，哪些静态特征分析技术最为有效？','在恶意IP检测中，如何利用威胁情报来提高检测效率？','如何利用机器学习和数据分析技术来识别恶意IP活动模式？'],
-        '4':['如何利用Wireshark或其他网络分析工具来识别恶意数据包？','在恶意数据包分析中，如何区分正常网络流量与潜在的恶意活动？','在恶意数据包分析过程中，如何确定数据包的来源是否可疑？']
+      suggestions: {
+        '1': ['云计算环境中的数据加密有哪些主要方法？', '如何检测和防止SQL注入攻击？', '防火墙在现代网络安全策略中扮演什么角色？'],
+        '2': ['在恶意文件分析过程中，识别恶意代码的常见特征有哪些？', '如何使用静态分析技术来识别恶意文件中的可疑行为？', '利用动态分析（如沙箱技术）进行恶意文件分析时需要注意哪些关键点？'],
+        '3': ['在检测恶意URL时，哪些静态特征分析技术最为有效？', '在恶意IP检测中，如何利用威胁情报来提高检测效率？', '如何利用机器学习和数据分析技术来识别恶意IP活动模式？'],
+        '4': ['如何利用Wireshark或其他网络分析工具来识别恶意数据包？', '在恶意数据包分析中，如何区分正常网络流量与潜在的恶意活动？', '在恶意数据包分析过程中，如何确定数据包的来源是否可疑？']
       },
       databases: ['ccc', 'web_leak', 'cve'],
       selectedDatabase: null,
@@ -587,6 +582,13 @@ export default {
     }
   },
   methods: {
+    downloadFile() {
+      // 使用相对路径直接引用文件
+      const link = document.createElement('a');
+      link.href = '/example.csv'; // 指向 public 目录中的文件
+      link.download = 'example.csv'; // 下载后的文件名
+      link.click(); // 触发点击事件进行下载
+    },
     async setPath(newTsharkPath) {
       if (!newTsharkPath) {
         alert('路径不能为空，请输入有效的tshark路径。');
@@ -604,6 +606,7 @@ export default {
 
         if (response.ok) {
           this.tshark_path = newTsharkPath; // 更新显示的 tshark 路径
+          console.log(this.tshark_path)
           this.newTsharkPath = ''; // 清空输入框
           alert('tshark 路径已成功更新。');
         }
@@ -633,13 +636,11 @@ export default {
       }
     },
     handleUpload(selectedDatabase) {
-      this.isUploading = true; // 显示进度条
-      this.addKnowledge(selectedDatabase)
-        .finally(() => {
-          this.isUploading = false; // 隐藏进度条
-        });
-    },
-    handleUpload(selectedDatabase) {
+      if (!selectedDatabase) {
+        alert('请选择数据库后再进行上传操作。');
+        return;
+      }
+
       this.isUploading = true; // 显示进度条
       this.addKnowledge(selectedDatabase)
         .finally(() => {
@@ -750,7 +751,7 @@ export default {
         this.createNewConversation();
         console.log(this.chatHistory)
       }
-      if (buttonNumber === 6){
+      if (buttonNumber === 6) {
         this.ready = false
       }
     },

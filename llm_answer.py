@@ -204,7 +204,7 @@ def sse():
     def stream():
         if request_type == 'chat':
             messages = update_messages
-            context = search(question, 'ccc')
+            context = search(question, 'web_leak')
             print(context)
             answer = getAnswer(question, context, '', messages, '')
 

@@ -200,7 +200,7 @@ def get_ip_report(ip):
         print(f"An error occurred: {e}")
         return None
 
-def get_wireshark(interface="WLAN", duration=1):
+def get_wireshark(interface="WLAN", duration=5):
     try:
         print(os.getenv('tshark_path'))
         tshark_path = os.getenv('tshark_path')

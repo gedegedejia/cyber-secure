@@ -5,6 +5,8 @@ import dashscope
 from dashscope import TextEmbedding
 from pymilvus import connections, FieldSchema, CollectionSchema, DataType, Collection, utility
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 def prepareData(path, batch_size=25):
     batch_docs = []
@@ -18,6 +20,20 @@ def prepareData(path, batch_size=25):
     if batch_docs:
         yield batch_docs
 
+def reorder_embeddings(embeddings):
+    # Calculate the cosine similarity between all pairs of embeddings
+    similarity_matrix = cosine_similarity(embeddings)
+    
+    # Sum the similarities for each embedding to get a "relevance score"
+    relevance_scores = np.sum(similarity_matrix, axis=1)
+    
+    # Get the indices that would sort the embeddings by their relevance score (descending order)
+    sorted_indices = np.argsort(-relevance_scores)
+    
+    # Reorder the embeddings and corresponding texts
+    sorted_embeddings = [embeddings[i] for i in sorted_indices]
+    
+    return sorted_embeddings
 
 def getEmbedding(texts):
     model = TextEmbedding.call(
@@ -41,7 +57,7 @@ def uploadKnowledge(COLLECTION_NAME, data_path):
 
     # 检查集合是否存在
     if not utility.has_collection(COLLECTION_NAME):
-        # Create collection which includes the id, question, answer, and embedding.
+        # 创建集合
         fields = [
             FieldSchema(name='id', dtype=DataType.INT64, description='Ids', is_primary=True, auto_id=False),
             FieldSchema(name='question', dtype=DataType.VARCHAR, description='Question', max_length=4096),
@@ -51,7 +67,7 @@ def uploadKnowledge(COLLECTION_NAME, data_path):
         schema = CollectionSchema(fields=fields, description='CEC Corpus Collection')
         collection = Collection(name=COLLECTION_NAME, schema=schema)
         
-        # Create an index for the collection.
+        # 创建索引
         index_params = {
             'index_type': 'IVF_FLAT',
             'metric_type': 'L2',
@@ -68,10 +84,9 @@ def uploadKnowledge(COLLECTION_NAME, data_path):
     results = collection.query(expr="id >= 0", output_fields=['id'])
     if len(results) > 0:
         max_id=len(results)
-        print(max_id)
     
     id = max_id + 1
-    print("id:",id)
+
     # 列出指定目录中的所有文件
     for filename in os.listdir(data_path):
         if filename.endswith('.csv'):
@@ -87,20 +102,22 @@ def uploadKnowledge(COLLECTION_NAME, data_path):
                 exists = collection.query(expr=exists_query, output_fields=['id'])
                 
                 if not exists:
-                    print(exists_query,"插入")
                     texts = [question, answer]
                     vectors = getEmbedding(texts)
-
-                    ins = [[id], [question], [answer], [vectors[0]]]  # 使用第一个向量作为嵌入向量
+                    
+                    # 重排序嵌入向量
+                    sorted_vectors = reorder_embeddings(vectors)
+                    
+                    # 使用第一个向量作为嵌入向量
+                    ins = [[id], [question], [answer], [sorted_vectors[0]]]
                     collection.insert(ins)
                     collection.load()  # 刷新集合数据
                     id += 1
                     time.sleep(2)
                 else:
-                    print(exists_query,"重复")
+                    print(exists_query, "重复")
 
 if __name__ == '__main__':
     data_path = 'E:\\C4 A-ST\\uploads\\knowledge\\ccc'  # 数据下载git clone https://github.com/shijiebei2009/CEC-Corpus.git
     COLLECTION_NAME = 'ysx'
-    
     uploadKnowledge(COLLECTION_NAME, data_path)

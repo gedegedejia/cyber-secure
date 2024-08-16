@@ -71,7 +71,7 @@ def getAnswer(query, context,tool_message,messages,tool_call):
             {context}
             我的问题是：{query}。
             我通过工具调用获取了以下信息：{tool_message}。
-            以表格的形式总结出工具调用的信息，解释文件标签，分析该文件的意图和可能存在的可疑活动，并提出建议和解决方案,如果无法从背景知识回答用户的问题，则根据背景知识内容，对用户进行追问，问题限制在3个以内。
+            以表格的形式总结出工具调用的信息，总结工具调用信息，如果文件被认为不安全，则提出建议和解决方案，字数控制在200字左右
             '''
     elif tool_call == 'get_current_time':
         prompt = f'''
@@ -198,6 +198,8 @@ def convert_messages_format(messages):
 def sse():
     question = request.args.get('message')
     request_type = request.args.get('type')
+    stop_flag = request.args.get('stop', 'false').lower() == 'true'
+
     if not question:
         return jsonify({'error': 'No message provided'}), 400
 
@@ -215,9 +217,7 @@ def sse():
             tool_call = tool.tool_jude(question)
             messages = update_messages
             tool_message = ''
-            print("++++++++++++++++++++++++++")
             print(tool_call)
-            print("++++++++++++++++++++++++++")
             if(tool_call == 'get_secure_report'):
                 if uploaded_file_paths:
                     tool_message = str(tool.get_secure_report(str(uploaded_file_paths[-1])))
@@ -279,7 +279,12 @@ def sse():
             return
 
         for char in Response['content']:
-            response_data = {'message': char,'done': False}
+            if stop_flag:
+                response_data = {'message': '', 'done': True}
+                yield f'data: {json.dumps(response_data)}\n\n'
+                break
+
+            response_data = {'message': char, 'done': False}
             yield f'data: {json.dumps(response_data)}\n\n'
             time.sleep(0.05)  # 控制发送速度
 

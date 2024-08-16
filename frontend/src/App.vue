@@ -230,13 +230,13 @@
         </div>
 
       </div>
-      <div class="hero-content w-4/5 overflow-hidden" style="margin-left: 20%;">
-        <div class="card w-auto shadow-2xl bg-base-100 md:w-4/5">
-          <div class="card-body p-5">
+      <div class="hero-content w-full overflow-hidden" style="margin-left: 20%;">
+        <div class="card w-full shadow-2xl bg-base-100 mx-4">
+          <div class="card-body">
             <div
               v-if="selectedButtonNumber !== 5 && selectedButtonNumber !== 7 && selectedButtonNumber !== 8 && selectedButtonNumber !== 9">
               <h2 class="card-title">Cyber Secure</h2>
-              <div id="chat-panel" ref="chatPanel" class="h-[32rem] max-h-full py-3 overflow-auto">
+              <div id="chat-panel" ref="chatPanel" class="h-[32rem] max-h-full overflow-auto">
                 <div v-if="messages.length === 0 && this.selectedButtonNumber !== 6" class="grid justify-items-center">
                   <div class="card bg-base-100 w-2/3 shadow-xl">
                     <div class="card-body">
@@ -274,7 +274,7 @@
                   <span class="loading loading-dots loading-md ml-4"></span>
                 </div>
               </div>
-              <div class="card-actions justify-end flex-nowrap">
+              <div class="card-actions flex-nowrap flex items-center">
                 <button class="btn btn-primary btn-circle btn-md" @click="selectUpload" :disabled="!ready">
                   <input type="file" id="file-input" class="hidden" />
                   <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5">
@@ -295,11 +295,14 @@
                       stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </button>
-                <div class="drawer drawer-end justify-end w-1/5">
+
+                <button class="btn btn-primary w-auto" @click="stopSSE">停止输出</button>
+
+                <div class="drawer drawer-end w-auto">
                   <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
                   <div class="drawer-content">
                     <!-- Page content here -->
-                    <label for="my-drawer-4" class="drawer-button btn btn-primary">提示词模板</label>
+                    <label for="my-drawer" class="drawer-button btn btn-primary">提示模板</label>
                   </div>
                   <div class="drawer-side">
                     <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -570,6 +573,7 @@ export default {
       isUploading: false,
       fileHistory: [],
       loading: false, // 加载状态
+      eventSource:null
     }
   },
   mounted() {
@@ -579,6 +583,8 @@ export default {
     if (this.chatHistory.length === 0) {
       this.createNewConversation();
       this.loadChat(0);
+    }else{
+      this.loadChat(this.chatHistory.length-1)
     }
   },
   methods: {
@@ -731,6 +737,7 @@ export default {
       } else if (this.selectedButtonNumber === 4) {
         this.tool = 'get_wireshark';
       }
+
       if (msg) {
         this.textMessage = '';
         this.messages.push({
@@ -797,18 +804,18 @@ export default {
       this.loading = true;
 
       try {
-        const eventSource = new EventSource(`/api/sse?message=${encodeURIComponent(msg)}&type=${this.tool}`);
+        this.eventSource = new EventSource(`/api/sse?message=${encodeURIComponent(msg)}&type=${this.tool}`);
         let fullMessage = '';
 
         // 处理从服务器接收到的消息
-        eventSource.onmessage = (event) => {
+        this.eventSource.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            this.loading = false;  // 加载完成，隐藏转圈
             if (data.done) {
               this.scrollToBottom();
-              eventSource.close();
+              this.eventSource.close();
               this.ready = true;
+              this.eventSource=null;
             } else {
               // 累积完整消息
               fullMessage += data.message;
@@ -821,6 +828,7 @@ export default {
                   content: fullMessage
                 });
               }
+            this.loading = false;  // 加载完成，隐藏转圈
             }
           } catch (e) {
             console.error('Error parsing JSON:', e);
@@ -830,10 +838,11 @@ export default {
         };
 
         // 处理连接错误
-        eventSource.onerror = (error) => {
+        this.eventSource.onerror = (error) => {
           console.error('SSE error:', error);
           this.showErr('SSE 连接出错');
-          eventSource.close();
+          this.stopSSE();
+          this.eventSource.close();
           this.ready = true;
           this.loading = false;  // 连接出错，隐藏转圈
         };
@@ -842,6 +851,13 @@ export default {
         this.showErr('SSE 初始化错误');
         this.ready = true;
         this.loading = false;  // 初始化错误，隐藏转圈
+      }
+    },
+    stopSSE() {
+      if(this.eventSource){
+        this.eventSource.close();
+        this.eventSource = null;
+        this.loading = false;
       }
     },
     md2html: function (md) {
@@ -904,6 +920,20 @@ export default {
     // 设置预设消息
     setTextMessage(message) {
       this.textMessage = message;
+    },
+    pauseSSE: function () {
+      this.paused = true;  // 暂停接收消息
+    },
+    resumeSSE: function () {
+      this.paused = false;  // 继续接收消息
+    },
+
+    stopSSE: function () {
+      if (this.eventSource) {
+        this.eventSource.close();  // 关闭连接
+        this.ready = true;
+        this.loading = false;  // 停止后隐藏转圈
+      }
     },
     addKnowledge(KnowledgeName) {
       const fileInput = document.getElementById('fileInput');

@@ -21,16 +21,9 @@ def prepareData(path, batch_size=25):
         yield batch_docs
 
 def reorder_embeddings(embeddings):
-    # Calculate the cosine similarity between all pairs of embeddings
     similarity_matrix = cosine_similarity(embeddings)
-    
-    # Sum the similarities for each embedding to get a "relevance score"
     relevance_scores = np.sum(similarity_matrix, axis=1)
-    
-    # Get the indices that would sort the embeddings by their relevance score (descending order)
     sorted_indices = np.argsort(-relevance_scores)
-    
-    # Reorder the embeddings and corresponding texts
     sorted_embeddings = [embeddings[i] for i in sorted_indices]
     
     return sorted_embeddings
